@@ -1,36 +1,66 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 📂 Administrador de Archivos para la Municipalidad Distrital de Guadalupe 
+### https://munifilemanager.vercel.app/
 
-## Getting Started
+Este proyecto es una aplicación web creada con **Next.js** que permite la administración y gestión de archivos para la Municipalidad Distrital de Guadalupe. El sistema facilita el almacenamiento, organización y visualización de documentos de manera eficiente.
 
-First, run the development server:
+## 🚀 Características
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+- **📁 Gestión de archivos:** Subida, descarga y eliminación de documentos.
+- **🔍 Búsqueda avanzada:** Filtrado de archivos por nombre, tipo o fecha.
+- **📊 Informes:** Generación de reportes detallados sobre el uso del sistema.
+- **🔒 Seguridad:** Protección mediante autenticación de usuarios.
+- **💼 Gestión de usuarios:** Administración de roles y permisos.
+- **📱 Multiplataforma:** Funciona en dispositivos móviles y de escritorio.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🛠️ Tecnologías Utilizadas
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- **Next.js**: Framework de React para la creación de aplicaciones web.
+- **React**: Biblioteca para construir interfaces de usuario.
+- **Node.js**: Entorno de ejecución para JavaScript en el servidor.
+- **PostgreSQL**: Base de datos para almacenar los archivos.
+- **Tailwind CSS & Shadcn/UI** (opcional): Para el diseño responsivo y moderno.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🗂️ Componentes
 
-## Learn More
+El proyecto cuenta con los siguientes componentes dentro de la carpeta `components/ui`:
 
-To learn more about Next.js, take a look at the following resources:
+- **📄 Document Tracking (`document-tracking.tsx`):** Seguimiento de los documentos subidos y gestionados en el sistema.
+- **📁 File Management (`file-management.tsx`):** Gestión de archivos, incluyendo la subida, descarga y eliminación.
+- **📊 Reports (`reports.tsx`):** Generación de informes sobre los documentos y actividad del sistema.
+- **🔐 Sign In (`sign-in.tsx`):** Componente para la autenticación de usuarios.
+- **👥 User Management (`user-management.tsx`):** Gestión de usuarios, roles y permisos.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## 🚀 Instalación
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/marsheltatiana/muni-guadalupe-filemanager
+   ```
 
-## Deploy on Vercel
+2. Instalar dependencias
+   ```bash
+    cd muni-guadalupe-filemanager
+    npm install
+   ```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ⚙️ Configuración
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+3. Crear el archivo .env.local
+   ```bash
+    cp .env.example .env.local
+   ```
+4. Establecer las variables de entorno
+> Crear una App en Google Cloud y optener las credenciales para la API de oAuth2
+   ```bash
+   AUTH_GOOGLE_ID=<tu id>
+   AUTH_GOOGLE_SECRET=<tu secreto>
+   ```
+## 🚀 Despliege en local
+5. Ejecutar el servidor de desarrollo
+   ```bash
+    npm run dev
+   ```
+6. Accede a la aplicacion en tu navegador.
+   ```
+    http://localhost:3000
+   ```
