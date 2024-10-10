@@ -2,6 +2,7 @@
 
 import DocumentTracking from "@/components/document-tracking";
 import FileManagement from "@/components/file-management";
+import LoanControl from "@/components/loan-control";
 import Reports from "@/components/reports";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import UserManagement from "@/components/user-management";
@@ -17,6 +18,7 @@ export default function DashboardPage() {
         <TabsList>
           <TabsTrigger value="users">Gestión de Usuarios</TabsTrigger>
           <TabsTrigger value="files">Gestión de Archivos</TabsTrigger>
+          <TabsTrigger value="loans">Control de prestamos</TabsTrigger>
           <TabsTrigger value="tracking">Seguimiento de Documentos</TabsTrigger>
           <TabsTrigger value="reports">Reportes</TabsTrigger>
         </TabsList>
@@ -25,6 +27,9 @@ export default function DashboardPage() {
         </TabsContent>
         <TabsContent value="files">
           <FileManagement />
+        </TabsContent>
+        <TabsContent value="loans">
+          <LoanControl />
         </TabsContent>
         <TabsContent value="tracking">
           <DocumentTracking />
