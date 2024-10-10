@@ -2,7 +2,12 @@
 import { signIn } from "@/lib/auth"
 import { Button } from "./ui/button"
  
-export default function SignIn() {
+type SignInProps = {
+  className?: string
+  variant: "default" | "destructive" | "outline" | "secondary" | "ghost" | "link" | null | undefined
+}
+
+const SignIn: React.FC<SignInProps> = ({className, variant}) => {
   return (
     <form
       action={async () => {
@@ -10,7 +15,9 @@ export default function SignIn() {
         await signIn("google")
       }}
     >
-      <Button type="submit">Iniciar session</Button>
+      <Button type="submit" variant={variant}>Iniciar session</Button>
     </form>
   )
 } 
+
+export default SignIn
