@@ -13,6 +13,7 @@ import { AlertCircle, FileUp, Loader2, Weight } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { put, PutBlobResult } from "@vercel/blob";
 import Link from 'next/link'
+import { sql } from "@vercel/postgres";
 
 export default function DocumentRegistrationForm() {
   const { toast } = useToast()
