@@ -1,5 +1,6 @@
 "use client"
 
+import DocumentRegistrationForm from "@/components/document-registration-form";
 import DocumentTracking from "@/components/document-tracking";
 import FileManagement from "@/components/file-management";
 import LoanControl from "@/components/loan-control";
@@ -26,7 +27,7 @@ export default function DashboardPageClient() {
           <UserManagement />
         </TabsContent>
         <TabsContent value="files">
-          <FileManagement />
+        <DocumentRegistrationForm/>
         </TabsContent>
         <TabsContent value="loans">
           <LoanControl />
