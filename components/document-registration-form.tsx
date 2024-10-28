@@ -8,12 +8,14 @@ import { Label } from "@/components/ui/label"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Switch } from "@/components/ui/switch"
-import { Toast } from "@/components/ui/toast"
+import { useToast } from "@/hooks/use-toast"
 import { AlertCircle, FileUp, Loader2, Weight } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { put } from "@vercel/blob";
+import { put, PutBlobResult } from "@vercel/blob";
+import Link from 'next/link'
 
 export default function DocumentRegistrationForm() {
+  const { toast } = useToast()
   const [formData, setFormData] = useState({
     documentName: '',
     description: '',
@@ -27,7 +29,8 @@ export default function DocumentRegistrationForm() {
   const [pdfFile, setPdfFile] = useState<File | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
+  const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  
   const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = event.target
     setFormData(prev => ({ ...prev, [name]: value }))
@@ -62,15 +65,20 @@ export default function DocumentRegistrationForm() {
     }
 
     try {
-      // Simulate API call
-      const blob = await put(pdfFile.name, pdfFile, { access: 'public' });
-  
+      const response = await fetch(
+        `/api/subir-pdf?filename=${formData.fileName}`,
+        {
+          method: 'POST',
+          body: pdfFile,
+        },
+      );
+
+      const newBlob = (await response.json()) as PutBlobResult;
+
+      setBlob(newBlob);
       
-      // Here you would typically send the formData and pdfFile to your backend
-      console.log('Form submitted', { ...formData, pdfFile })
-      
-      Toast({
-        title: "Documento registrado",
+      toast({ 
+        title: "Documento registrado ✅",
       })
       
       // Reset form after successful submission
@@ -86,6 +94,7 @@ export default function DocumentRegistrationForm() {
       })
       setPdfFile(null)
     } catch (error) {
+      console.log(error)
       setError('Hubo un error al registrar el documento. Por favor, intente de nuevo.')
     } finally {
       setIsSubmitting(false)
@@ -234,6 +243,11 @@ export default function DocumentRegistrationForm() {
           </Button>
         </form>
       </CardContent>
+      {blob && (
+        <div>
+          URL del archivo: <Link href={blob.url} target='_blank'>{blob.url}</Link>
+        </div>
+      )}
     </Card>
   )
 }
