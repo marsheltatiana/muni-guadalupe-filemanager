@@ -30,6 +30,7 @@ import {
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
+import { SignOut } from "./sign-out";
 
 const mantenedoresItems = [
   {
@@ -195,7 +196,7 @@ export async function AppSidebar() {
                   <span>Cuenta</span>
                 </DropdownMenuItem>
                 <DropdownMenuItem>
-                  <span className="text-red-600">Cerrar sessión</span>
+                  <SignOut />
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
