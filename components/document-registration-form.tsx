@@ -103,7 +103,7 @@ export default function DocumentRegistrationForm() {
   }
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-fit">
       <CardHeader>
         <CardTitle className="text-2xl font-bold text-center">Registro de Documento</CardTitle>
       </CardHeader>
