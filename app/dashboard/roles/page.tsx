@@ -1,5 +1,6 @@
 "use client";
 
+import CrearPermiso from "@/components/crear-permiso";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -75,6 +76,7 @@ export default function RolesPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingRole, setEditingRole] = useState<Role | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false)
 
   const filteredRoles = roles.filter(
     (role) =>
@@ -111,6 +113,18 @@ export default function RolesPage() {
             className="pl-10 pr-4 py-2"
           />
         </div>
+        <section className="flex items-center gap-4">
+
+        <Dialog open={isPermissionDialogOpen} onOpenChange={setIsPermissionDialogOpen}>
+          <DialogTrigger asChild>
+            <Button onClick={() => {}}>
+              <Plus className="mr-2 h-4 w-4" /> Añadir Permiso
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <CrearPermiso/>
+          </DialogContent>
+          </Dialog>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
             <Button onClick={() => setEditingRole(null)}>
@@ -142,6 +156,7 @@ export default function RolesPage() {
             />
           </DialogContent>
         </Dialog>
+        </section>
       </div>
 
       <div className="bg-white shadow rounded-lg overflow-hidden">
