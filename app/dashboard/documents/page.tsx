@@ -1,4 +1,4 @@
-import DocumentManagement from "@/components/document-registration-form";
+import {DocumentManagement} from "@/components/document-management";
 
 const DocumentsPage = () => {
   return (
