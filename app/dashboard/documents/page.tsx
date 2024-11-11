@@ -1,9 +1,9 @@
-import DocumentRegistrationForm from "@/components/document-registration-form";
+import DocumentManagement from "@/components/document-registration-form";
 
 const DocumentsPage = () => {
   return (
     <div>
-      <DocumentRegistrationForm />
+      <DocumentManagement/>
     </div>
   );
 };
