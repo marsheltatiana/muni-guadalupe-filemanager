@@ -25,6 +25,7 @@ import {
   Printer,
   SearchSlash,
   Sheet,
+  Touchpad,
   User2,
 } from "lucide-react";
 import Image from "next/image";
@@ -46,6 +47,11 @@ const mantenedoresItems = [
   {
     title: "Gestión de documentos",
     url: "/dashboard/documents",
+    icon: Touchpad,
+  },
+  {
+    title: "Gestion de Estantes",
+    url: "/dashboard/shelf",
     icon: Archive,
   },
 ];

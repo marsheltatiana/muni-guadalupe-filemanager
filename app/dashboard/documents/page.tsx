@@ -1,4 +1,4 @@
-import {DocumentManagement} from "@/components/document-management";
+import {DocumentManagement} from "@/components/ui/document-management";
 
 const DocumentsPage = () => {
   return (
