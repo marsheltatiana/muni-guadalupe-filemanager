@@ -1,53 +1,66 @@
-"use client"
+"use client";
 
-import React, { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Edit, Search, Trash2, UserPlus } from 'lucide-react'
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { Rol, Usuario } from "@prisma/client";
+import { Edit, Search, Trash2, UserPlus } from "lucide-react";
+import React, { useEffect, useState } from "react";
 
 // Tipos de datos
-type User = {
-  id: string
-  name: string
-  email: string
-  role: string
+interface UserWithRol extends Usuario {
+  Rol: Rol;
 }
 
 export default function UserManagement() {
-  const [users, setUsers] = useState<User[]>([
-    { id: '1', name: 'Juan Pérez', email: 'juan@ejemplo.com', role: 'admin' },
-    { id: '2', name: 'María García', email: 'maria@ejemplo.com', role: 'editor' },
-    { id: '3', name: 'Carlos López', email: 'carlos@ejemplo.com', role: 'user' },
-  ])
-  
+  const [users, setUsers] = useState<UserWithRol[]>([]);
+
   const [newUser, setNewUser] = useState({
-    name: '',
-    email: '',
-    role: 'user'
-  })
-  
-  const [searchTerm, setSearchTerm] = useState('')
+    name: "",
+    email: "",
+    role: "user",
+  });
+
+  useEffect(() => {
+    async function fetchUsers(): Promise<void> {
+      const users: UserWithRol[] = await fetch("/api/usuarios").then((res) =>
+        res.json()
+      );
+      setUsers(users);
+    }
+
+    fetchUsers();
+  }, []);
+
+  const [searchTerm, setSearchTerm] = useState("");
 
   const handleAddUser = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (newUser.name && newUser.email) {
-      setUsers([...users, { ...newUser, id: Date.now().toString() }])
-      setNewUser({ name: '', email: '', role: 'user' })
-    }
-  }
+    e.preventDefault();
+  };
 
-  const handleDeleteUser = (id: string) => {
-    setUsers(users.filter(user => user.id !== id))
-  }
+  const handleDeleteUser = (id: number) => {};
 
-  const filteredUsers = users.filter(user => 
-    user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    user.role.toLowerCase().includes(searchTerm.toLowerCase())
-  )
+  const filteredUsers = users.filter(
+    (user) =>
+      user.nombre!.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email!.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.Rol.nombre_rol!.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="container p-6 w-fit">
@@ -76,18 +89,24 @@ export default function UserManagement() {
               <Input
                 placeholder="Nombre"
                 value={newUser.name}
-                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, name: e.target.value })
+                }
               />
               <Input
                 placeholder="Correo Electrónico"
                 type="email"
                 value={newUser.email}
-                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                onChange={(e) =>
+                  setNewUser({ ...newUser, email: e.target.value })
+                }
                 className="md:col-span-2"
               />
               <Select
                 value={newUser.role}
-                onValueChange={(value) => setNewUser({ ...newUser, role: value })}
+                onValueChange={(value) =>
+                  setNewUser({ ...newUser, role: value })
+                }
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccionar rol" />
@@ -118,16 +137,15 @@ export default function UserManagement() {
               </TableHeader>
               <TableBody>
                 {filteredUsers.map((user) => (
-                  <TableRow key={user.id}>
-                    <TableCell className="font-medium">{user.name}</TableCell>
+                  <TableRow key={user.id_usuario}>
+                    <TableCell className="font-medium">{user.nombre}</TableCell>
                     <TableCell>{user.email}</TableCell>
                     <TableCell>
-                      <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
-                        ${user.role === 'admin' ? 'bg-red-100 text-red-800' : 
-                          user.role === 'editor' ? 'bg-yellow-100 text-yellow-800' : 
-                          'bg-green-100 text-green-800'}`}>
-                        {user.role === 'admin' ? 'Administrador' : 
-                         user.role === 'editor' ? 'Editor' : 'Usuario'}
+                      <span
+                        className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium
+                        bg-yellow-100 text-yellow-800`}
+                      >
+                        {user.Rol?.nombre_rol}
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
@@ -137,7 +155,7 @@ export default function UserManagement() {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => handleDeleteUser(user.id)}
+                        onClick={() => handleDeleteUser(user.id_usuario)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
@@ -150,5 +168,5 @@ export default function UserManagement() {
         </CardContent>
       </Card>
     </div>
-  )
+  );
 }
