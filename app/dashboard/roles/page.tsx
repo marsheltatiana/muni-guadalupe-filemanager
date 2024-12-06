@@ -192,13 +192,13 @@ function RoleForm({ permisos }: RoleFormProps) {
         description: "El rol se ha creado correctamente.",
         variant: "default",
       });
+    } else {
+      toast({
+        title: "Error",
+        description: "Ha ocurrido un error al crear el rol.",
+        variant: "destructive",
+      });
     }
-
-    toast({
-      title: "Error",
-      description: "Ha ocurrido un error al crear el rol.",
-      variant: "destructive",
-    });
   };
 
   return (
