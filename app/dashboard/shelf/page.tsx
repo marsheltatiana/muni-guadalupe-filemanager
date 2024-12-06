@@ -1,12 +1,14 @@
-'use client'
+"use client";
 
-import { useState } from "react"
-import { PlusCircle, Edit2Icon, ArchiveIcon, EyeIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { ScrollArea } from "@/components/ui/scroll-area"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -15,43 +17,66 @@ import {
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card"
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Tipo_Contenedor } from "@prisma/client";
+import { ArchiveIcon, EyeIcon, PlusCircle } from "lucide-react";
+import { useEffect, useState } from "react";
 
 type Container = {
-  id: number
-  name: string
-  description: string
-  type: string
-  row: number
-  column: number
-}
+  id: number;
+  name: string;
+  description: string;
+  type: string;
+  row: number;
+  column: number;
+};
 
 type Shelf = {
-  id: number
-  name: string
-  isEditing: boolean
-  rows: number
-  columns: number
-  containers: Container[]
-}
+  id: number;
+  name: string;
+  isEditing: boolean;
+  rows: number;
+  columns: number;
+  containers: Container[];
+};
 
 export default function ShelfManagement() {
-  const [shelves, setShelves] = useState<Shelf[]>(Array.from({ length: 10 }, (_, i) => ({
-    id: i + 1,
-    name: `Estante ${i + 1}`,
-    isEditing: false,
-    rows: 5,
-    columns: 5,
-    containers: [],
-  })))
+  const [containerTypes, setContainerTypes] = useState<
+    Tipo_Contenedor[] | null
+  >(null);
+
+  useEffect(() => {
+    async function fetchContainerTypes() {
+      const response = await fetch("/api/contenedor/tipos");
+      const data = await response.json();
+
+      setContainerTypes(data);
+    }
+
+    fetchContainerTypes();
+  }, []);
+
+  const [shelves, setShelves] = useState<Shelf[]>(
+    Array.from({ length: 10 }, (_, i) => ({
+      id: i + 1,
+      name: `Estante ${i + 1}`,
+      isEditing: false,
+      rows: 5,
+      columns: 5,
+      containers: [],
+    }))
+  );
 
   const handleAddShelf = () => {
     const newShelf: Shelf = {
@@ -63,35 +88,48 @@ export default function ShelfManagement() {
       containers: [],
     };
     setShelves([...shelves, newShelf]);
-  }
+  };
 
   const handleEditShelf = (id: number) => {
     setShelves(
       shelves.map((shelf) =>
         shelf.id === id ? { ...shelf, isEditing: true } : shelf
       )
-    )
-  }
+    );
+  };
 
   const handleSaveShelf = (id: number, newName: string) => {
     setShelves(
       shelves.map((shelf) =>
-        shelf.id === id
-          ? { ...shelf, name: newName, isEditing: false }
-          : shelf
+        shelf.id === id ? { ...shelf, name: newName, isEditing: false } : shelf
       )
-    )
-  }
+    );
+  };
 
-  const handleAddContainer = (shelfId: number, container: { name: string; description: string; type: string; row: number; column: number }) => {
+  const handleAddContainer = (
+    shelfId: number,
+    container: {
+      name: string;
+      description: string;
+      type: string;
+      row: number;
+      column: number;
+    }
+  ) => {
     setShelves(
       shelves.map((shelf) =>
         shelf.id === shelfId
-          ? { ...shelf, containers: [...(shelf.containers || []), { ...container, id: shelf.containers.length + 1 }] }
+          ? {
+              ...shelf,
+              containers: [
+                ...(shelf.containers || []),
+                { ...container, id: shelf.containers.length + 1 },
+              ],
+            }
           : shelf
       )
-    )
-  }
+    );
+  };
 
   return (
     <div className="container mx-auto p-6">
@@ -114,7 +152,8 @@ export default function ShelfManagement() {
                   )}
                 </CardTitle>
                 <CardDescription>
-                  Filas: {shelf.rows} | Columnas: {shelf.columns} | Contenedores: {shelf.containers ? shelf.containers.length : 0}
+                  Filas: {shelf.rows} | Columnas: {shelf.columns} |
+                  Contenedores: {shelf.containers ? shelf.containers.length : 0}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -141,70 +180,106 @@ export default function ShelfManagement() {
                       <DialogHeader>
                         <DialogTitle>Agregar Contenedor</DialogTitle>
                         <DialogDescription>
-                          Ingrese los detalles del nuevo contenedor para {shelf.name}
+                          Ingrese los detalles del nuevo contenedor para{" "}
+                          {shelf.name}
                         </DialogDescription>
                       </DialogHeader>
-                      <form onSubmit={(e) => {
-                        e.preventDefault()
-                        const formData = new FormData(e.currentTarget)
-                        const newContainer = {
-                          name: formData.get('name') as string,
-                          description: formData.get('description') as string,
-                          type: formData.get('type') === 'otro' ? formData.get('customTypeInput') as string : formData.get('type') as string,
-                          row: parseInt(formData.get('row') as string),
-                          column: parseInt(formData.get('column') as string),
-                        }
-                        handleAddContainer(shelf.id, newContainer)
-                      }}>
+                      <form
+                        onSubmit={(e) => {
+                          e.preventDefault();
+                          const formData = new FormData(e.currentTarget);
+                          const newContainer = {
+                            name: formData.get("name") as string,
+                            description: formData.get("description") as string,
+                            type:
+                              formData.get("type") === "otro"
+                                ? (formData.get("customTypeInput") as string)
+                                : (formData.get("type") as string),
+                            row: parseInt(formData.get("row") as string),
+                            column: parseInt(formData.get("column") as string),
+                          };
+                          handleAddContainer(shelf.id, newContainer);
+                        }}
+                      >
                         <div className="grid gap-4 py-4">
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="name" className="text-right">
                               Nombre
                             </Label>
-                            <Input id="name" name="name" className="col-span-3" />
+                            <Input
+                              id="name"
+                              name="name"
+                              className="col-span-3"
+                            />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="description" className="text-right">
                               Descripción
                             </Label>
-                            <Textarea id="description" name="description" className="col-span-3" />
+                            <Textarea
+                              id="description"
+                              name="description"
+                              className="col-span-3"
+                            />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="type" className="text-right">
                               Tipo de Contenedor
                             </Label>
-                            <select id="type" name="type" className="col-span-3 form-select" onChange={(e) => {
-                              if (e.target.value === "otro") {
-                                // @ts-ignore
-                                document.getElementById("customType").style.display = "block";
-                              } else {
-                                // @ts-ignore
-                                document.getElementById("customType").style.display = "none";
-                              }
-                            }}>
-                              <option value="archivador">Archivador</option>
-                              <option value="folder">Folder</option>
-                              <option value="libro">Libro</option>
-                              <option value="otro">Otro</option>
-                            </select>
+                            <Select>
+                              <SelectTrigger className="w-[180px]">
+                                <SelectValue placeholder="Seleccione tipo de contenedor" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {containerTypes?.map((type) => (
+                                  <SelectItem
+                                    value={type.nombre!}
+                                    key={type.id_tipo_contenedor}
+                                  >
+                                    {type.nombre}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
                           </div>
-                          <div id="customType" style={{ display: 'none' }} className="grid grid-cols-4 items-center gap-4">
-                            <Label htmlFor="customTypeInput" className="text-right">
+                          <div
+                            id="customType"
+                            style={{ display: "none" }}
+                            className="grid grid-cols-4 items-center gap-4"
+                          >
+                            <Label
+                              htmlFor="customTypeInput"
+                              className="text-right"
+                            >
                               Tipo personalizado
                             </Label>
-                            <Input id="customTypeInput" name="customTypeInput" className="col-span-3" />
+                            <Input
+                              id="customTypeInput"
+                              name="customTypeInput"
+                              className="col-span-3"
+                            />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="row" className="text-right">
                               Fila
                             </Label>
-                            <Input id="row" name="row" type="number" className="col-span-3" />
+                            <Input
+                              id="row"
+                              name="row"
+                              type="number"
+                              className="col-span-3"
+                            />
                           </div>
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="column" className="text-right">
                               Columna
                             </Label>
-                            <Input id="column" name="column" type="number" className="col-span-3" />
+                            <Input
+                              id="column"
+                              name="column"
+                              type="number"
+                              className="col-span-3"
+                            />
                           </div>
                         </div>
                         <DialogFooter>
@@ -271,5 +346,5 @@ export default function ShelfManagement() {
         </Button>
       </div>
     </div>
-  )
+  );
 }
