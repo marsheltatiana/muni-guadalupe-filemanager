@@ -149,12 +149,13 @@ export default function UserManagement() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="mr-2">
+                      <Button variant="ghost" size="icon" className="mr-2" disabled>
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
                         size="icon"
+                        disabled
                         onClick={() => handleDeleteUser(user.id_usuario)}
                       >
                         <Trash2 className="h-4 w-4" />
