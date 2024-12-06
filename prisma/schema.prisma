@@ -20,10 +20,11 @@ model Contenedor {
   a_o                DateTime?        @map("año") @db.Date
   nombre             String?          @db.VarChar(255)
   descripcion        String?          @db.VarChar(255)
+  fila               String           @db.VarChar(10)
+  columna            String?          @db.VarChar(10)
   Estante            Estante?         @relation(fields: [estante_id], references: [id_estante], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_estante")
   Tipo_Contenedor    Tipo_Contenedor? @relation(fields: [tipo_contenedor_id], references: [id_tipo_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_tipo")
   Documento          Documento[]
-  Ubicacion          Ubicacion[]
 }
 
 model Documento {
@@ -49,11 +50,8 @@ model Estado_Transaccion {
 
 model Estante {
   id_estante     Int          @id @default(autoincrement())
-  usuario_id     Int?
   nombre_estante String?      @db.VarChar(255)
   Contenedor     Contenedor[]
-  Usuario        Usuario?     @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_estante_usuario")
-  Ubicacion      Ubicacion[]
 }
 
 model Historial_Transacciones {
@@ -124,16 +122,6 @@ model Transaccion {
   Usuario                 Usuario?                  @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
 }
 
-model Ubicacion {
-  id_ubicacion  Int         @id @default(autoincrement())
-  fila          Int?
-  columna       Int?
-  estante_id    Int?
-  contenedor_id Int?
-  Contenedor    Contenedor? @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_ubicacion_contenedor")
-  Estante       Estante?    @relation(fields: [estante_id], references: [id_estante], onDelete: NoAction, onUpdate: NoAction, map: "fk_ubicacion_estante")
-}
-
 model Usuario {
   id_usuario    Int           @id @default(autoincrement())
   nombre        String?       @db.VarChar(255)
@@ -141,7 +129,6 @@ model Usuario {
   contrase_a    String?       @map("contraseña") @db.VarChar(255)
   imagen_perfil String?       @db.VarChar(255)
   rol_id        Int?
-  Estante       Estante[]
   Solicitud     Solicitud[]
   Transaccion   Transaccion[]
   Rol           Rol?          @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_rol")

@@ -29,8 +29,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Tipo_Contenedor } from "@prisma/client";
+import { toast } from "@/hooks/use-toast";
+import { Contenedor, Estante, Tipo_Contenedor } from "@prisma/client";
 import { ArchiveIcon, EyeIcon, PlusCircle } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 type Container = {
@@ -51,7 +53,12 @@ type Shelf = {
   containers: Container[];
 };
 
+interface EstanteConContenedores extends Estante {
+  Contenedor: Contenedor[];
+}
+
 export default function ShelfManagement() {
+  const router = useRouter();
   const [containerTypes, setContainerTypes] = useState<
     Tipo_Contenedor[] | null
   >(null);
@@ -67,107 +74,101 @@ export default function ShelfManagement() {
     fetchContainerTypes();
   }, []);
 
-  const [shelves, setShelves] = useState<Shelf[]>(
-    Array.from({ length: 10 }, (_, i) => ({
-      id: i + 1,
-      name: `Estante ${i + 1}`,
-      isEditing: false,
-      rows: 5,
-      columns: 5,
-      containers: [],
-    }))
+  const [estantes, setEstantes] = useState<EstanteConContenedores[] | null>(
+    null
   );
 
-  const handleAddShelf = () => {
-    const newShelf: Shelf = {
-      id: shelves.length + 1,
-      name: `Estante ${shelves.length + 1}`,
-      isEditing: false,
-      rows: 5,
-      columns: 5,
-      containers: [],
-    };
-    setShelves([...shelves, newShelf]);
-  };
+  const [nombreEstante, setNombreEstante] = useState("");
 
-  const handleEditShelf = (id: number) => {
-    setShelves(
-      shelves.map((shelf) =>
-        shelf.id === id ? { ...shelf, isEditing: true } : shelf
-      )
-    );
-  };
+  useEffect(() => {
+    async function fetchShelves() {
+      const response = await fetch("/api/estantes");
+      const data = await response.json();
 
-  const handleSaveShelf = (id: number, newName: string) => {
-    setShelves(
-      shelves.map((shelf) =>
-        shelf.id === id ? { ...shelf, name: newName, isEditing: false } : shelf
-      )
-    );
-  };
-
-  const handleAddContainer = (
-    shelfId: number,
-    container: {
-      name: string;
-      description: string;
-      type: string;
-      row: number;
-      column: number;
+      if (response.ok) {
+        setEstantes(data);
+      }
     }
-  ) => {
-    setShelves(
-      shelves.map((shelf) =>
-        shelf.id === shelfId
-          ? {
-              ...shelf,
-              containers: [
-                ...(shelf.containers || []),
-                { ...container, id: shelf.containers.length + 1 },
-              ],
-            }
-          : shelf
-      )
-    );
-  };
+
+    fetchShelves();
+  }, []);
 
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Gestión de Estantes</h1>
+      <Dialog>
+        <DialogTrigger className="my-3">
+          <Button>Agregar estante</Button>
+        </DialogTrigger>
+        <DialogContent>
+          <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+
+              const formData = new FormData(e.currentTarget);
+
+              const response = await fetch("/api/estantes", {
+                method: "POST",
+                body: JSON.stringify({
+                  nombre_estante: formData.get("nombre_estante"),
+                }),
+              });
+
+              if (response.ok) {
+                toast({
+                  title: "Éxito",
+                  description: "Estante creado exitosamente",
+                });
+              } else {
+                toast({
+                  title: "Error",
+                  description: "Hubo un error al crear el estante",
+                  variant: "destructive",
+                });
+              }
+              router.refresh();
+            }}
+          >
+            <div className="grid gap-4 my-3">
+              <div className="grid grid-cols-4 items-center gap-4">
+                <Label htmlFor="name" className="text-right">
+                  Nombre
+                </Label>
+                <Input
+                  id="nombre_estante"
+                  name="nombre_estante"
+                  value={nombreEstante}
+                  onChange={(e) => setNombreEstante(e.target.value)}
+                  className="col-span-3"
+                />
+              </div>
+            </div>
+            <DialogFooter>
+              <Button type="submit">Guardar Estante</Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
       <ScrollArea className="h-[calc(100vh-10rem)]">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {shelves.map((shelf) => (
-            <Card key={shelf.id} className="transition-all hover:shadow-lg">
+          {estantes?.map((estante) => (
+            <Card
+              key={estante.id_estante}
+              className="transition-all hover:shadow-lg"
+            >
               <CardHeader>
                 <CardTitle>
-                  {shelf.isEditing ? (
-                    <Input
-                      className="text-lg font-bold"
-                      defaultValue={shelf.name}
-                      onBlur={(e) => handleSaveShelf(shelf.id, e.target.value)}
-                      autoFocus
-                    />
-                  ) : (
-                    <span className="text-lg font-bold">{shelf.name}</span>
-                  )}
+                  <span className="text-lg font-bold">
+                    {estante.nombre_estante}
+                  </span>
                 </CardTitle>
-                <CardDescription>
-                  Filas: {shelf.rows} | Columnas: {shelf.columns} |
-                  Contenedores: {shelf.containers ? shelf.containers.length : 0}
-                </CardDescription>
+                <CardDescription></CardDescription>
               </CardHeader>
               <CardContent>
                 <div className="flex justify-between">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() =>
-                      shelf.isEditing
-                        ? handleSaveShelf(shelf.id, shelf.name)
-                        : handleEditShelf(shelf.id)
-                    }
-                  >
-                    {shelf.isEditing ? "Guardar" : "Editar"}
+                  <Button size="sm" variant="outline" onClick={() => {}}>
+                    Editar
                   </Button>
                   <Dialog>
                     <DialogTrigger asChild>
@@ -181,24 +182,13 @@ export default function ShelfManagement() {
                         <DialogTitle>Agregar Contenedor</DialogTitle>
                         <DialogDescription>
                           Ingrese los detalles del nuevo contenedor para{" "}
-                          {shelf.name}
+                          {estante.nombre_estante}
                         </DialogDescription>
                       </DialogHeader>
                       <form
                         onSubmit={(e) => {
                           e.preventDefault();
                           const formData = new FormData(e.currentTarget);
-                          const newContainer = {
-                            name: formData.get("name") as string,
-                            description: formData.get("description") as string,
-                            type:
-                              formData.get("type") === "otro"
-                                ? (formData.get("customTypeInput") as string)
-                                : (formData.get("type") as string),
-                            row: parseInt(formData.get("row") as string),
-                            column: parseInt(formData.get("column") as string),
-                          };
-                          handleAddContainer(shelf.id, newContainer);
                         }}
                       >
                         <div className="grid gap-4 py-4">
@@ -300,7 +290,9 @@ export default function ShelfManagement() {
                   </DialogTrigger>
                   <DialogContent className="sm:max-w-[625px]">
                     <DialogHeader>
-                      <DialogTitle>Contenido de {shelf.name}</DialogTitle>
+                      <DialogTitle>
+                        Contenido de {estante.nombre_estante}
+                      </DialogTitle>
                       <DialogDescription>
                         Lista de todos los contenedores en este estante
                       </DialogDescription>
@@ -316,14 +308,14 @@ export default function ShelfManagement() {
                           </tr>
                         </thead>
                         <tbody>
-                          {shelf.containers.map((container) => (
+                          {/* {shelf.containers.map((container) => (
                             <tr key={container.id}>
                               <td className="py-2">{container.name}</td>
                               <td className="py-2">{container.type}</td>
                               <td className="py-2">{container.row}</td>
                               <td className="py-2">{container.column}</td>
                             </tr>
-                          ))}
+                          ))} */}
                         </tbody>
                       </table>
                     </ScrollArea>
@@ -340,7 +332,7 @@ export default function ShelfManagement() {
         </div>
       </ScrollArea>
       <div className="mt-6">
-        <Button onClick={handleAddShelf} className="w-full max-w-xs">
+        <Button onClick={() => {}} className="w-full max-w-xs">
           <PlusCircle className="mr-2 h-4 w-4" />
           Agregar Nuevo Estante
         </Button>
