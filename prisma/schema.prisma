@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,4 +5,144 @@ generator client {
 datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
+}
+
+model Categoria_Documento {
+  id_categoria     Int         @id @default(autoincrement())
+  nombre_categoria String?     @db.VarChar(255)
+  Documento        Documento[]
+}
+
+model Contenedor {
+  id_contenedor      Int              @id @default(autoincrement())
+  tipo_contenedor_id Int?
+  estante_id         Int?
+  a_o                DateTime?        @map("año") @db.Date
+  nombre             String?          @db.VarChar(255)
+  descripcion        String?          @db.VarChar(255)
+  Estante            Estante?         @relation(fields: [estante_id], references: [id_estante], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_estante")
+  Tipo_Contenedor    Tipo_Contenedor? @relation(fields: [tipo_contenedor_id], references: [id_tipo_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_contenedor_tipo")
+  Documento          Documento[]
+  Ubicacion          Ubicacion[]
+}
+
+model Documento {
+  id_documento        Int                  @id @default(autoincrement())
+  contenedor_id       Int?
+  nombre              String?              @db.VarChar(255)
+  descripcion         String?              @db.VarChar(255)
+  a_o                 DateTime?            @map("año") @db.Date
+  categoria_id        Int?
+  tipo_documento_id   Int?
+  Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
+  Contenedor          Contenedor?          @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_contenedor")
+  Tipo_Documento      Tipo_Documento?      @relation(fields: [tipo_documento_id], references: [id_tipo_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_tipo")
+  Solicitud           Solicitud[]
+  Transaccion         Transaccion[]
+}
+
+model Estado_Transaccion {
+  id_estado     Int           @id @default(autoincrement())
+  nombre_estado String?       @db.VarChar(255)
+  Transaccion   Transaccion[]
+}
+
+model Estante {
+  id_estante     Int          @id @default(autoincrement())
+  usuario_id     Int?
+  nombre_estante String?      @db.VarChar(255)
+  Contenedor     Contenedor[]
+  Usuario        Usuario?     @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_estante_usuario")
+  Ubicacion      Ubicacion[]
+}
+
+model Historial_Transacciones {
+  id_historial   Int          @id @default(autoincrement())
+  transaccion_id Int?
+  estado         String?      @db.VarChar(255)
+  fecha_cambio   DateTime?    @db.Date
+  Transaccion    Transaccion? @relation(fields: [transaccion_id], references: [id_transaccion], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_transaccion")
+}
+
+model Permisos {
+  id_permiso     Int            @id @default(autoincrement())
+  nombre_permiso String?        @db.VarChar(255)
+  Rol_Permisos   Rol_Permisos[]
+}
+
+model Rol {
+  id_rol       Int            @id @default(autoincrement())
+  nombre_rol   String?        @db.VarChar(255)
+  descripcion  String?        @db.VarChar(255)
+  Rol_Permisos Rol_Permisos[]
+  Usuario      Usuario[]
+}
+
+model Rol_Permisos {
+  id_rol_permiso Int       @id @default(autoincrement())
+  rol_id         Int?
+  permiso_id     Int?
+  Permisos       Permisos? @relation(fields: [permiso_id], references: [id_permiso], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_permiso_permiso")
+  Rol            Rol?      @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_permiso_rol")
+}
+
+model Solicitud {
+  id_solicitud     Int        @id @default(autoincrement())
+  usuario_id       Int?
+  documento_id     Int?
+  fecha_solicitud  DateTime?  @db.Date
+  estado_solicitud String?    @db.VarChar(255)
+  motivo           String?    @db.VarChar(255)
+  Documento        Documento? @relation(fields: [documento_id], references: [id_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_solicitud_documento")
+  Usuario          Usuario?   @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_solicitud_usuario")
+}
+
+model Tipo_Contenedor {
+  id_tipo_contenedor Int          @id @default(autoincrement())
+  nombre             String?      @db.VarChar(255)
+  Contenedor         Contenedor[]
+}
+
+model Tipo_Documento {
+  id_tipo_documento Int         @id @default(autoincrement())
+  nombre_tipo       String?     @db.VarChar(255)
+  descripcion       String?     @db.VarChar(255)
+  Documento         Documento[]
+}
+
+model Transaccion {
+  id_transaccion          Int                       @id @default(autoincrement())
+  usuario_id              Int?
+  documento_id            Int?
+  tipo_transaccion        String?                   @db.VarChar(255)
+  fecha_inicio            DateTime?                 @db.Date
+  fecha_fin               DateTime?                 @db.Date
+  estado_id               Int?
+  Historial_Transacciones Historial_Transacciones[]
+  Documento               Documento?                @relation(fields: [documento_id], references: [id_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_documento")
+  Estado_Transaccion      Estado_Transaccion?       @relation(fields: [estado_id], references: [id_estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_estado")
+  Usuario                 Usuario?                  @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
+}
+
+model Ubicacion {
+  id_ubicacion  Int         @id @default(autoincrement())
+  fila          Int?
+  columna       Int?
+  estante_id    Int?
+  contenedor_id Int?
+  Contenedor    Contenedor? @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_ubicacion_contenedor")
+  Estante       Estante?    @relation(fields: [estante_id], references: [id_estante], onDelete: NoAction, onUpdate: NoAction, map: "fk_ubicacion_estante")
+}
+
+model Usuario {
+  id_usuario    Int           @id @default(autoincrement())
+  nombre        String?       @db.VarChar(255)
+  email         String?       @db.VarChar(255)
+  contrase_a    String?       @map("contraseña") @db.VarChar(255)
+  imagen_perfil String?       @db.VarChar(255)
+  rol_id        Int?
+  Estante       Estante[]
+  Solicitud     Solicitud[]
+  Transaccion   Transaccion[]
+  Rol           Rol?          @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_rol")
 }
