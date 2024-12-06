@@ -15,7 +15,7 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { nombre_permiso } = await request.json();
+  const { nombre_permiso }: { nombre_permiso: string } = await request.json();
 
   if (!nombre_permiso) {
     return NextResponse.json(
@@ -26,9 +26,14 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const nombrePermiso = nombre_permiso
+    .trim()
+    .toLowerCase()
+    .replace(/\s+/g, "_");
+
   const permiso = await prisma.permisos.create({
     data: {
-      nombre_permiso,
+      nombre_permiso: nombrePermiso,
     },
   });
 
