@@ -32,7 +32,6 @@ export default function RolesPage() {
   const [roles, setRoles] = useState<Rol[]>([]);
   const [permisos, setPermisos] = useState<Permisos[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingRole, setEditingRole] = useState<Rol | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
 
@@ -93,7 +92,7 @@ export default function RolesPage() {
           </Dialog>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
-              <Button onClick={() => setEditingRole(null)}>
+              <Button onClick={() => {}}>
                 <Plus className="mr-2 h-4 w-4" /> Añadir Rol
               </Button>
             </DialogTrigger>
@@ -138,7 +137,6 @@ export default function RolesPage() {
                     variant="ghost"
                     size="icon"
                     onClick={() => {
-                      setEditingRole(role);
                       setIsDialogOpen(true);
                     }}
                   >
