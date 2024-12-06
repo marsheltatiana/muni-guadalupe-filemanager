@@ -23,84 +23,47 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Permisos, Rol } from "@prisma/client";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
-import React, { useState } from "react";
-
-// Tipos para nuestros datos
-type Permission = {
-  id: string;
-  name: string;
-  description: string;
-};
-
-type Role = {
-  id: string;
-  name: string;
-  description: string;
-  permissions: string[];
-};
-
-// Datos de ejemplo
-const initialPermissions: Permission[] = [
-  { id: "1", name: "leer_documentos", description: "Leer documentos" },
-  { id: "2", name: "guardar_documentos", description: "Escribir documentos" },
-  { id: "3", name: "eliminar_documentos", description: "Eliminar documentos" },
-  { id: "4", name: "administrar_usuarios", description: "Gestionar usuarios" },
-  { id: "5", name: "generar_reportes", description: "Generar reportes" },
-];
-
-const initialRoles: Role[] = [
-  {
-    id: "1",
-    name: "Administrador",
-    description: "Control total del sistema",
-    permissions: ["1", "2", "3", "4", "5"],
-  },
-  {
-    id: "2",
-    name: "Editor",
-    description: "Puede editar y crear documentos",
-    permissions: ["1", "2"],
-  },
-  {
-    id: "3",
-    name: "Lector",
-    description: "Solo puede leer documentos",
-    permissions: ["1"],
-  },
-];
+import React, { useEffect, useState } from "react";
 
 export default function RolesPage() {
-  const [roles, setRoles] = useState<Role[]>(initialRoles);
-  const [permissions] = useState<Permission[]>(initialPermissions);
+  const [roles, setRoles] = useState<Rol[]>([]);
+  const [permisos, setPermisos] = useState<Permisos[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingRole, setEditingRole] = useState<Role | null>(null);
+  const [editingRole, setEditingRole] = useState<Rol | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false)
+  const [isPermissionDialogOpen, setIsPermissionDialogOpen] = useState(false);
+
+  useEffect(() => {
+    async function fetchRoles(): Promise<void> {
+      const roles: Rol[] = await fetch("/api/roles").then((res) => res.json());
+
+      setRoles(roles);
+    }
+
+    async function fetchPermissions(): Promise<void> {
+      const permissions: Permisos[] = await fetch("/api/permisos").then((res) =>
+        res.json()
+      );
+
+      setPermisos(permissions);
+    }
+
+    Promise.all([fetchRoles(), fetchPermissions()]);
+
+    return () => {};
+  }, []);
 
   const filteredRoles = roles.filter(
     (role) =>
-      role.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      role.description.toLowerCase().includes(searchTerm.toLowerCase())
+      role.nombre_rol!.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      role.descripcion?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleAddOrUpdateRole = (role: Role) => {
-    if (editingRole) {
-      setRoles(roles.map((r) => (r.id === role.id ? role : r)));
-    } else {
-      setRoles([...roles, { ...role, id: Date.now().toString() }]);
-    }
-    setIsDialogOpen(false);
-    setEditingRole(null);
-  };
-
-  const handleDeleteRole = (id: string) => {
-    setRoles(roles.filter((role) => role.id !== id));
-  };
 
   return (
     <div className="container p-6 w-fit">
-      <h1 className="text-3xl font-bold mb-6">Gestión de Roles</h1>
+      <h1 className="text-3xl font-bold mb-6">Gestión de roles y permisos</h1>
 
       <div className="flex justify-between items-center mb-6">
         <div className="relative">
@@ -114,48 +77,35 @@ export default function RolesPage() {
           />
         </div>
         <section className="flex items-center gap-4">
-
-        <Dialog open={isPermissionDialogOpen} onOpenChange={setIsPermissionDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => {}}>
-              <Plus className="mr-2 h-4 w-4" /> Añadir Permiso
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <CrearPermiso/>
-          </DialogContent>
+          <Dialog
+            open={isPermissionDialogOpen}
+            onOpenChange={setIsPermissionDialogOpen}
+          >
+            <DialogTrigger asChild>
+              <Button onClick={() => {}}>
+                <Plus className="mr-2 h-4 w-4" /> Añadir Permiso
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <CrearPermiso />
+            </DialogContent>
           </Dialog>
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-          <DialogTrigger asChild>
-            <Button onClick={() => setEditingRole(null)}>
-              <Plus className="mr-2 h-4 w-4" /> Añadir Rol
-            </Button>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px]">
-            <DialogHeader>
-              <DialogTitle>
-                {editingRole ? "Editar Rol" : "Añadir Nuevo Rol"}
-              </DialogTitle>
-              <DialogDescription>
-                {editingRole
-                  ? "Modifica los detalles del rol aquí."
-                  : "Crea un nuevo rol y asigna permisos."}
-              </DialogDescription>
-            </DialogHeader>
-            <RoleForm
-              role={
-                editingRole || {
-                  id: "",
-                  name: "",
-                  description: "",
-                  permissions: [],
-                }
-              }
-              permissions={permissions}
-              onSave={handleAddOrUpdateRole}
-            />
-          </DialogContent>
-        </Dialog>
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button onClick={() => setEditingRole(null)}>
+                <Plus className="mr-2 h-4 w-4" /> Añadir Rol
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-[425px]">
+              <DialogHeader>
+                <DialogTitle>Añadir Nuevo Rol</DialogTitle>
+                <DialogDescription>
+                  Crea un nuevo rol y asigna permisos
+                </DialogDescription>
+              </DialogHeader>
+              <RoleForm permisos={permisos} />
+            </DialogContent>
+          </Dialog>
         </section>
       </div>
 
@@ -171,16 +121,16 @@ export default function RolesPage() {
           </TableHeader>
           <TableBody>
             {filteredRoles.map((role) => (
-              <TableRow key={role.id}>
-                <TableCell className="font-medium">{role.name}</TableCell>
-                <TableCell>{role.description}</TableCell>
+              <TableRow key={role.id_rol}>
+                <TableCell className="font-medium">{role.nombre_rol}</TableCell>
+                <TableCell>{role.descripcion}</TableCell>
                 <TableCell>
-                  {role.permissions
+                  {/* {role.permissions
                     .map(
                       (permId) =>
                         permissions.find((p) => p.id === permId)?.description
                     )
-                    .join(", ")}
+                    .join(", ")} */}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
@@ -193,11 +143,7 @@ export default function RolesPage() {
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => handleDeleteRole(role.id)}
-                  >
+                  <Button variant="ghost" size="icon" onClick={() => {}}>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -211,26 +157,23 @@ export default function RolesPage() {
 }
 
 type RoleFormProps = {
-  role: Role;
-  permissions: Permission[];
-  onSave: (role: Role) => void;
+  permisos: Permisos[];
 };
 
-function RoleForm({ role, permissions, onSave }: RoleFormProps) {
-  const [formData, setFormData] = useState(role);
+function RoleForm({ permisos }: RoleFormProps) {
+  const [formData, setFormData] = useState<Rol>({
+    id_rol: 0,
+    nombre_rol: "",
+    descripcion: "",
+  });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [persmisosSeleccionados, setPersmisosSeleccionados] = useState<
+    number[]
+  >([]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    onSave(formData);
-  };
-
-  const handlePermissionChange = (permissionId: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      permissions: prev.permissions.includes(permissionId)
-        ? prev.permissions.filter((id) => id !== permissionId)
-        : [...prev.permissions, permissionId],
-    }));
+    console.log("Permisos seleccionados", persmisosSeleccionados);
   };
 
   return (
@@ -241,9 +184,12 @@ function RoleForm({ role, permissions, onSave }: RoleFormProps) {
             Nombre
           </Label>
           <Input
-            id="name"
-            value={formData.name}
-            onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+            id="nombre_rol"
+            type="text"
+            value={formData.nombre_rol || ""}
+            onChange={(e) =>
+              setFormData({ ...formData, nombre_rol: e.target.value })
+            }
             className="col-span-3"
           />
         </div>
@@ -252,10 +198,11 @@ function RoleForm({ role, permissions, onSave }: RoleFormProps) {
             Descripción
           </Label>
           <Input
-            id="description"
-            value={formData.description}
+            id="descripcion"
+            type="text"
+            value={formData.descripcion || ""}
             onChange={(e) =>
-              setFormData({ ...formData, description: e.target.value })
+              setFormData({ ...formData, descripcion: e.target.value })
             }
             className="col-span-3"
           />
@@ -263,21 +210,33 @@ function RoleForm({ role, permissions, onSave }: RoleFormProps) {
         <div className="grid grid-cols-4 items-start gap-4">
           <Label className="text-right">Permisos</Label>
           <ScrollArea className="h-[200px] col-span-3">
-            {permissions.map((permission) => (
+            {permisos.map((permiso) => (
               <div
-                key={permission.id}
+                key={permiso.id_permiso}
                 className="flex items-center space-x-2 mb-2"
               >
                 <Checkbox
-                  id={`permission-${permission.id}`}
-                  checked={formData.permissions.includes(permission.id)}
-                  onCheckedChange={() => handlePermissionChange(permission.id)}
+                  id={permiso.id_permiso.toString()}
+                  onCheckedChange={(state) => {
+                    if (!state) {
+                      setPersmisosSeleccionados(
+                        persmisosSeleccionados.filter(
+                          (id) => id !== permiso.id_permiso
+                        )
+                      );
+                      return;
+                    }
+                    setPersmisosSeleccionados([
+                      ...persmisosSeleccionados,
+                      permiso.id_permiso,
+                    ]);
+                  }}
                 />
                 <label
-                  htmlFor={`permission-${permission.id}`}
+                  htmlFor={`permission-${permiso.id_permiso}`}
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  {permission.description}
+                  {permiso.nombre_permiso?.replace(/_/g, " ").toUpperCase()}
                 </label>
               </div>
             ))}
