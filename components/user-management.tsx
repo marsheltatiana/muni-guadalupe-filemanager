@@ -118,7 +118,7 @@ export default function UserManagement() {
                 </SelectContent>
               </Select>
             </div>
-            <Button type="submit" className="w-full">
+            <Button type="submit" className="w-full" disabled>
               <UserPlus className="mr-2 h-4 w-4" />
               Agregar Usuario
             </Button>
