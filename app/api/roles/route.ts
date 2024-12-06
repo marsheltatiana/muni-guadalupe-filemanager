@@ -3,8 +3,20 @@ import { Rol } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const roles = await prisma.rol.findMany();
-
+  const roles = await prisma.rol.findMany({
+    include: {
+      Rol_Permisos: {
+        select: {
+          Permisos: {
+            select: {
+              nombre_permiso: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  
   if (roles.length === 0) {
     return NextResponse.json(
       { message: "No hay roles registrados." },

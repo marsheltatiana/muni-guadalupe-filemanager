@@ -24,12 +24,20 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
-import { Permisos, Rol } from "@prisma/client";
+import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
 
+interface Rol_PermisosWithPermiso extends Rol_Permisos {
+  Permisos: Permisos;
+}
+
+interface RolWithPermissions extends Rol {
+  Rol_Permisos: Rol_PermisosWithPermiso[];
+}
+
 export default function RolesPage() {
-  const [roles, setRoles] = useState<Rol[]>([]);
+  const [roles, setRoles] = useState<RolWithPermissions[]>([]);
   const [permisos, setPermisos] = useState<Permisos[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -37,7 +45,7 @@ export default function RolesPage() {
 
   useEffect(() => {
     async function fetchRoles(): Promise<void> {
-      const roles: Rol[] = await fetch("/api/roles").then((res) => res.json());
+      const roles: RolWithPermissions[] = await fetch("/api/roles").then((res) => res.json());
 
       setRoles(roles);
     }
@@ -125,12 +133,11 @@ export default function RolesPage() {
                 <TableCell className="font-medium">{role.nombre_rol}</TableCell>
                 <TableCell>{role.descripcion}</TableCell>
                 <TableCell>
-                  {/* {role.permissions
-                    .map(
-                      (permId) =>
-                        permissions.find((p) => p.id === permId)?.description
-                    )
-                    .join(", ")} */}
+                  {role.Rol_Permisos.map((rp) => (
+                    <span key={rp.permiso_id} className="mr-2">
+                      {rp.Permisos.nombre_permiso?.replace(/_/g, " ")}
+                    </span>
+                  ))}
                 </TableCell>
                 <TableCell className="text-right">
                   <Button
