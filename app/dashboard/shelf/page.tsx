@@ -98,7 +98,7 @@ export default function ShelfManagement() {
       <h1 className="text-3xl font-bold mb-6">Gestión de Estantes</h1>
       <Dialog>
         <DialogTrigger className="my-3" suppressHydrationWarning asChild>
-          <Button>Agregar estante</Button>
+          <Button>Registrar estante</Button>
         </DialogTrigger>
         <DialogContent>
           <form
