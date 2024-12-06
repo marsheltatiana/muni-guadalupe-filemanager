@@ -143,13 +143,14 @@ export default function RolesPage() {
                   <Button
                     variant="ghost"
                     size="icon"
+                    disabled
                     onClick={() => {
                       setIsDialogOpen(true);
                     }}
                   >
                     <Edit className="h-4 w-4" />
                   </Button>
-                  <Button variant="ghost" size="icon" onClick={() => {}}>
+                  <Button variant="ghost" size="icon" onClick={() => {}} disabled>
                     <Trash2 className="h-4 w-4" />
                   </Button>
                 </TableCell>
