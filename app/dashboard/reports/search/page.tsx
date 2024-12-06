@@ -106,8 +106,11 @@ export default function ReportsDashboardPage() {
   const departmentSearchesChartRef = useRef(null)
 
   useEffect(() => {
+    // @ts-ignore
     setDocumentMovements(documentMovementsData[period])
+    // @ts-ignore
     setForecast(forecastData[period])
+    // @ts-ignore
     setDepartmentSearches(departmentSearchesData[period])
   }, [period])
 
@@ -126,8 +129,10 @@ export default function ReportsDashboardPage() {
     // Movimientos de Documentos
     doc.setFontSize(14)
     doc.text('Movimientos de Documentos', 14, 55)
+    // @ts-ignore
     doc.autoTable({
       head: [['Período', 'Entradas', 'Salidas']],
+      // @ts-ignore
       body: documentMovements.map(item => [item.month || item.trimestre || item.year, item.entradas, item.salidas]),
       startY: 60
     })
@@ -136,6 +141,7 @@ export default function ReportsDashboardPage() {
     if (movementsChartRef.current) {
       const canvas = await html2canvas(movementsChartRef.current)
       const imgData = canvas.toDataURL('image/png')
+      // @ts-ignore
       doc.addImage(imgData, 'PNG', 10, doc.lastAutoTable.finalY + 10, 190, 100)
     }
     
@@ -143,8 +149,10 @@ export default function ReportsDashboardPage() {
     doc.addPage()
     doc.setFontSize(14)
     doc.text('Pronóstico de Documentos', 14, 20)
+    // @ts-ignore
     doc.autoTable({
       head: [['Período', 'Documentos Proyectados']],
+      // @ts-ignore
       body: forecast.map(item => [item.month || item.trimestre || item.year, item.documentos]),
       startY: 25
     })
@@ -153,6 +161,7 @@ export default function ReportsDashboardPage() {
     if (forecastChartRef.current) {
       const canvas = await html2canvas(forecastChartRef.current)
       const imgData = canvas.toDataURL('image/png')
+      // @ts-ignore
       doc.addImage(imgData, 'PNG', 10, doc.lastAutoTable.finalY + 10, 190, 100)
     }
     
@@ -160,6 +169,7 @@ export default function ReportsDashboardPage() {
     doc.addPage()
     doc.setFontSize(14)
     doc.text('Temas Más Buscados', 14, 20)
+    // @ts-ignore
     doc.autoTable({
       head: [['Tema', 'Cantidad de Búsquedas']],
       body: searchTopics.map(item => [item.name, item.value]),
@@ -170,6 +180,7 @@ export default function ReportsDashboardPage() {
     if (topicsChartRef.current) {
       const canvas = await html2canvas(topicsChartRef.current)
       const imgData = canvas.toDataURL('image/png')
+      // @ts-ignore
       doc.addImage(imgData, 'PNG', 10, doc.lastAutoTable.finalY + 10, 190, 100)
     }
     
@@ -177,8 +188,10 @@ export default function ReportsDashboardPage() {
     doc.addPage()
     doc.setFontSize(14)
     doc.text('Búsquedas por Área', 14, 20)
+    // @ts-ignore
     doc.autoTable({
       head: [['Período', 'Gerencia Municipal', 'Desarrollo Urbano', 'Administración']],
+      // @ts-ignore
       body: departmentSearches.map(item => [item.month || item.trimestre || item.year, item.gerencia, item.desarrollo, item.administracion]),
       startY: 25
     })
@@ -187,6 +200,7 @@ export default function ReportsDashboardPage() {
     if (departmentSearchesChartRef.current) {
       const canvas = await html2canvas(departmentSearchesChartRef.current)
       const imgData = canvas.toDataURL('image/png')
+      // @ts-ignore
       doc.addImage(imgData, 'PNG', 10, doc.lastAutoTable.finalY + 10, 190, 100)
     }
     

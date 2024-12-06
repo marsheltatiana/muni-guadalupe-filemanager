@@ -175,8 +175,10 @@ export default function ShelfManagement() {
                             </Label>
                             <select id="type" name="type" className="col-span-3 form-select" onChange={(e) => {
                               if (e.target.value === "otro") {
+                                // @ts-ignore
                                 document.getElementById("customType").style.display = "block";
                               } else {
+                                // @ts-ignore
                                 document.getElementById("customType").style.display = "none";
                               }
                             }}>
