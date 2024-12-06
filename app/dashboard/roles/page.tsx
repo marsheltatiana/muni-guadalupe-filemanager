@@ -23,6 +23,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 import { Permisos, Rol } from "@prisma/client";
 import { Edit, Plus, Search, Trash2 } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -173,7 +174,31 @@ function RoleForm({ permisos }: RoleFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Permisos seleccionados", persmisosSeleccionados);
+
+    const response = await fetch("/api/roles", {
+      method: "POST",
+      body: JSON.stringify({
+        rol: formData,
+        permisos: persmisosSeleccionados,
+      }),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      toast({
+        title: "Rol Creado",
+        description: "El rol se ha creado correctamente.",
+        variant: "default",
+      });
+    }
+
+    toast({
+      title: "Error",
+      description: "Ha ocurrido un error al crear el rol.",
+      variant: "destructive",
+    });
   };
 
   return (
