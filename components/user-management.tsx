@@ -18,6 +18,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 import { Rol, Usuario } from "@prisma/client";
 import { Edit, Search, Trash2, UserPlus } from "lucide-react";
 import React, { useEffect, useState } from "react";
@@ -43,7 +44,7 @@ export default function UserManagement() {
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
-    role: "user",
+    role: "",
   });
 
   useEffect(() => {
@@ -59,8 +60,29 @@ export default function UserManagement() {
 
   const [searchTerm, setSearchTerm] = useState("");
 
-  const handleAddUser = (e: React.FormEvent) => {
+  const handleAddUser = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    const response = await fetch("/api/usuarios", {
+      method: "POST",
+      body: JSON.stringify(newUser),
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (response.ok) {
+      toast({
+        title: "Éxito",
+        description: "Usuario creado exitosamente",
+      });
+    } else {
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al crear el usuario",
+        variant: "destructive",
+      });
+    }
   };
 
   const handleDeleteUser = (id: number) => {};
