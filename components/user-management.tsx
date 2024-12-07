@@ -29,6 +29,16 @@ interface UserWithRol extends Usuario {
 
 export default function UserManagement() {
   const [users, setUsers] = useState<UserWithRol[]>([]);
+  const [roles, setRoles] = useState<Rol[]>([]);
+
+  useEffect(() => {
+    async function fetchRoles(): Promise<void> {
+      const roles: Rol[] = await fetch("/api/roles").then((res) => res.json());
+      setRoles(roles);
+    }
+
+    fetchRoles();
+  }, []);
 
   const [newUser, setNewUser] = useState({
     name: "",
@@ -112,9 +122,11 @@ export default function UserManagement() {
                   <SelectValue placeholder="Seleccionar rol" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="admin">Administrador</SelectItem>
-                  <SelectItem value="editor">Editor</SelectItem>
-                  <SelectItem value="user">Usuario</SelectItem>
+                  {roles.map((rol) => (
+                    <SelectItem key={rol.id_rol} value={rol.nombre_rol!}>
+                      {rol.nombre_rol}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
@@ -149,7 +161,12 @@ export default function UserManagement() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right">
-                      <Button variant="ghost" size="icon" className="mr-2" disabled>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="mr-2"
+                        disabled
+                      >
                         <Edit className="h-4 w-4" />
                       </Button>
                       <Button
