@@ -31,7 +31,7 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Contenedor, Estante, Tipo_Contenedor } from "@prisma/client";
-import { ArchiveIcon, EyeIcon, PlusCircle } from "lucide-react";
+import { ArchiveIcon, EyeIcon, PlusCircle, Search } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -93,9 +93,27 @@ export default function ShelfManagement() {
     fetchShelves();
   }, []);
 
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const filteredEstantes = estantes?.filter((estante) =>
+    estante.nombre_estante!.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Gestión de Estantes</h1>
+      {/* Búsqueda */}
+      <div className="mb-6 w-1/2">
+        <div className="relative">
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
+          <Input
+            type="text"
+            placeholder="Buscar estante..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-8"
+          />
+        </div>
+      </div>
       <Dialog>
         <DialogTrigger className="my-3" suppressHydrationWarning asChild>
           <Button>Registrar estante</Button>
@@ -152,7 +170,7 @@ export default function ShelfManagement() {
 
       <ScrollArea className="h-[calc(100vh-10rem)]">
         <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {estantes?.map((estante) => (
+          {filteredEstantes?.map((estante) => (
             <Card
               key={estante.id_estante}
               className="transition-all hover:shadow-lg"
