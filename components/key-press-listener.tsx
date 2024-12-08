@@ -8,7 +8,7 @@ const KeyPressListener = () => {
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
       // Cambia 'KeyO' por la tecla que deseas
-      if (event.code === "F1") {
+      if (event.code === "F1" || event.code === "F10") {
         window.open(DOCUMENTATION_URL, "_blank"); // URL que quieres abrir
       }
     };
