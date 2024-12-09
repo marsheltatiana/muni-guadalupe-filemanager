@@ -17,7 +17,7 @@ model Contenedor {
   id_contenedor      Int              @id @default(autoincrement())
   tipo_contenedor_id Int?
   estante_id         Int?
-  a_o                DateTime?        @map("año") @db.Date
+  anio               DateTime?        @db.Date
   nombre             String?          @db.VarChar(255)
   descripcion        String?          @db.VarChar(255)
   fila               String           @db.VarChar(10)
@@ -32,7 +32,7 @@ model Documento {
   contenedor_id       Int?
   nombre              String?              @db.VarChar(255)
   descripcion         String?              @db.VarChar(255)
-  a_o                 DateTime?            @map("año") @db.Date
+  anio                DateTime?            @db.Date
   categoria_id        Int?
   tipo_documento_id   Int?
   Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
@@ -126,7 +126,7 @@ model Usuario {
   id_usuario    Int           @id @default(autoincrement())
   nombre        String?       @db.VarChar(255)
   email         String?       @db.VarChar(255)
-  contrase_a    String?       @map("contraseña") @db.VarChar(255)
+  contrasenia   String?       @db.VarChar(255)
   imagen_perfil String?       @db.VarChar(255)
   rol_id        Int?
   Solicitud     Solicitud[]

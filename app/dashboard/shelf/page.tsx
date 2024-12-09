@@ -98,6 +98,13 @@ export default function ShelfManagement() {
   const filteredEstantes = estantes?.filter((estante) =>
     estante.nombre_estante!.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  const [containerName, setContainerName] = useState("");
+  const [containerDescription, setContainerDescription] = useState("");
+  const [containerTipoContenedor, setContainerTipoContenedor] = useState("");
+  const [containerRow, setContainerRow] = useState("");
+  const [containerColumn, setcontainerColumn] = useState("");
+  const [containerYear, setContainerYear] = useState(2024)
   return (
     <div className="container mx-auto p-6">
       <h1 className="text-3xl font-bold mb-6">Gestión de Estantes</h1>
@@ -204,9 +211,37 @@ export default function ShelfManagement() {
                         </DialogDescription>
                       </DialogHeader>
                       <form
-                        onSubmit={(e) => {
+                        onSubmit={async (e) => {
                           e.preventDefault();
-                          const formData = new FormData(e.currentTarget);
+                          const containerPayload = {
+                            nombre: containerName,
+                            descripcion: containerDescription,
+                            tipo: containerTipoContenedor,
+                            fila: containerRow,
+                            columna: containerColumn,
+                            id_stante: estante.id_estante,
+                            año: containerYear
+                          };
+
+                          const response = await fetch("/api/contenedor", {
+                            method: "POST",
+                            body: JSON.stringify(containerPayload),
+                          });
+
+                          if (response.ok) {
+                            toast({
+                              title: "Éxito",
+                              description: "Contenedor creado exitosamente",
+                            });
+                          } else {
+                            toast({
+                              title: "Error",
+                              description:
+                                "Hubo un error al crear el Contenedor",
+                              variant: "destructive",
+                            });
+                          }
+                          router.refresh();
                         }}
                       >
                         <div className="grid gap-4 py-4">
@@ -217,6 +252,8 @@ export default function ShelfManagement() {
                             <Input
                               id="name"
                               name="name"
+                              value={containerName}
+                              onChange={(e) => setContainerName(e.target.value)}
                               className="col-span-3"
                             />
                           </div>
@@ -227,6 +264,10 @@ export default function ShelfManagement() {
                             <Textarea
                               id="description"
                               name="description"
+                              value={containerDescription}
+                              onChange={(e) =>
+                                setContainerDescription(e.target.value)
+                              }
                               className="col-span-3"
                             />
                           </div>
@@ -234,7 +275,12 @@ export default function ShelfManagement() {
                             <Label htmlFor="type" className="text-right">
                               Tipo de Contenedor
                             </Label>
-                            <Select>
+                            <Select
+                              name="type"
+                              onValueChange={(value) => {
+                                setContainerTipoContenedor(value);
+                              }}
+                            >
                               <SelectTrigger className="w-[180px]">
                                 <SelectValue placeholder="Seleccione tipo de contenedor" />
                               </SelectTrigger>
@@ -250,23 +296,7 @@ export default function ShelfManagement() {
                               </SelectContent>
                             </Select>
                           </div>
-                          <div
-                            id="customType"
-                            style={{ display: "none" }}
-                            className="grid grid-cols-4 items-center gap-4"
-                          >
-                            <Label
-                              htmlFor="customTypeInput"
-                              className="text-right"
-                            >
-                              Tipo personalizado
-                            </Label>
-                            <Input
-                              id="customTypeInput"
-                              name="customTypeInput"
-                              className="col-span-3"
-                            />
-                          </div>
+
                           <div className="grid grid-cols-4 items-center gap-4">
                             <Label htmlFor="row" className="text-right">
                               Fila
@@ -274,6 +304,8 @@ export default function ShelfManagement() {
                             <Input
                               id="row"
                               name="row"
+                              value={containerRow}
+                              onChange={(e) => setContainerRow(e.target.value)}
                               type="number"
                               className="col-span-3"
                             />
@@ -285,6 +317,25 @@ export default function ShelfManagement() {
                             <Input
                               id="column"
                               name="column"
+                              value={containerColumn}
+                              onChange={(e) =>
+                                setcontainerColumn(e.target.value)
+                              }
+                              type="number"
+                              className="col-span-3"
+                            />
+                          </div>
+                          <div className="grid grid-cols-4 items-center gap-4">
+                            <Label htmlFor="column" className="text-right">
+                              Año
+                            </Label>
+                            <Input
+                              id="year"
+                              name="year"
+                              value={containerYear}
+                              onChange={(e) =>
+                                setContainerYear(Number(e.target.value))
+                              }
                               type="number"
                               className="col-span-3"
                             />
