@@ -4,7 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const estantes = await prisma.estante.findMany({
     include: {
-      Contenedor: true,
+      Contenedor: {
+        include: {
+          Tipo_Contenedor: true
+        }
+      },
     },
   });
 

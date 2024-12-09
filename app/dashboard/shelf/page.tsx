@@ -53,8 +53,12 @@ type Shelf = {
   containers: Container[];
 };
 
+interface ContenedorConTipo extends Contenedor {
+  Tipo_Contenedor: Tipo_Contenedor
+}
+
 interface EstanteConContenedores extends Estante {
-  Contenedor: Contenedor[];
+  Contenedor: ContenedorConTipo[];
 }
 
 export default function ShelfManagement() {
@@ -371,20 +375,24 @@ export default function ShelfManagement() {
                         <thead>
                           <tr>
                             <th className="text-left font-medium">Nombre</th>
+                            <th className="text-left font-medium">Descripción</th>
+                            <th className="text-left font-medium">Año</th>
                             <th className="text-left font-medium">Tipo</th>
                             <th className="text-left font-medium">Fila</th>
                             <th className="text-left font-medium">Columna</th>
                           </tr>
                         </thead>
                         <tbody>
-                          {/* {shelf.containers.map((container) => (
-                            <tr key={container.id}>
-                              <td className="py-2">{container.name}</td>
-                              <td className="py-2">{container.type}</td>
-                              <td className="py-2">{container.row}</td>
-                              <td className="py-2">{container.column}</td>
+                          {estante.Contenedor.map((contenedor) => (
+                            <tr key={contenedor.id_contenedor}>
+                              <td className="py-2">{contenedor.nombre}</td>
+                              <td className="py-2">{contenedor.descripcion}</td>
+                              <td className="py-2">{contenedor.anio?.toString()}</td>
+                              <td className="py-2">{contenedor.Tipo_Contenedor.nombre}</td>
+                              <td className="py-2">{contenedor.fila}</td>
+                              <td className="py-2">{contenedor.columna}</td>
                             </tr>
-                          ))} */}
+                          ))}
                         </tbody>
                       </table>
                     </ScrollArea>
