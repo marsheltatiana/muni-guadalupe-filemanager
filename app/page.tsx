@@ -34,8 +34,8 @@ export default async function Home() {
             <Link href="#" target="_blank" rel="noopener noreferrer">
               <SignIn variant={"secondary"}/>
             </Link>
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              <Button variant={"default"}>Leer manual</Button>
+            <Link href="https://muni-guadalupe-filemanager-documentacion.vercel.app/" target="_blank" rel="noopener noreferrer">
+              <Button variant={"default"}>Ayuda en linea</Button>
             </Link>
           </div>
         </section>
