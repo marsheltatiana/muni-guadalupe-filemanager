@@ -19,6 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "@/hooks/use-toast";
 import { Categoria_Documento, Contenedor, Estante } from "@prisma/client";
 import { FileText, Upload } from "lucide-react";
 import { useEffect, useState } from "react";
@@ -58,36 +59,40 @@ export function DocumentManagement() {
       .then((data) => setShelves(data));
   }, []);
 
-  // // Update containers when shelf is selected
-  // useEffect(() => {
-  //   if (selectedShelf) {
-  //     const shelf = shelves.find((s) => s.id.toString() === selectedShelf);
-  //     setContainers(shelf?.containers || []);
-  //     setSelectedContainer("");
-  //   } else {
-  //     setContainers([]);
-  //   }
-  // }, [selectedShelf, shelves]);
-
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setSelectedFile(e.target.files[0]);
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Handle document registration logic here
-    console.log({
-      documentName,
-      description,
-      hasTome,
-      tomeNumber,
-      year,
-      selectedShelf,
-      selectedContainer,
-      selectedFile,
+
+    const formData = new FormData();
+    formData.append("contenedor_id", selectedContainer);
+    formData.append("nombre", documentName);
+    formData.append("descripcion", description);
+    formData.append("anio", year);
+    formData.append("categoria_id", selectedCategory);
+    formData.append("file_name", selectedFile!.name);
+    formData.append("file", selectedFile!);
+
+    const response = await fetch("/api/documentos", {
+      method: "POST",
+      body: formData,
     });
+
+    if (response.ok) {
+      toast({
+        title: "Documento registrado correctamente",
+        variant: "default",
+      });
+    } else {
+      toast({
+        title: "Error al registrar el documento",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -148,7 +153,7 @@ export function DocumentManagement() {
                   {categories?.map((category) => (
                     <SelectItem
                       key={category.id_categoria}
-                      value={category.nombre_categoria!}
+                      value={category.id_categoria.toString()!}
                     >
                       {category.nombre_categoria}
                     </SelectItem>
@@ -199,9 +204,10 @@ export function DocumentManagement() {
                     (selectedShelf.Contenedor ?? []).map((container) => (
                       <SelectItem
                         key={container.id_contenedor}
-                        value={container.nombre!}
+                        value={container.id_contenedor.toString()!}
                       >
-                        {container.nombre} (Fila: {container.fila}, Columna: {container.columna})
+                        {container.nombre} (Fila: {container.fila}, Columna:{" "}
+                        {container.columna})
                       </SelectItem>
                     ))}
                 </SelectContent>

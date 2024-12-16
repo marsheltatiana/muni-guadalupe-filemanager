@@ -32,12 +32,11 @@ model Documento {
   contenedor_id       Int?
   nombre              String?              @db.VarChar(255)
   descripcion         String?              @db.VarChar(255)
-  anio                DateTime?            @db.Date
+  anio                String?              @db.VarChar(4)
   categoria_id        Int?
-  tipo_documento_id   Int?
+  documento_url       String
   Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
   Contenedor          Contenedor?          @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_contenedor")
-  Tipo_Documento      Tipo_Documento?      @relation(fields: [tipo_documento_id], references: [id_tipo_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_tipo")
   Solicitud           Solicitud[]
   Transaccion         Transaccion[]
 }
@@ -99,13 +98,6 @@ model Tipo_Contenedor {
   id_tipo_contenedor Int          @id @default(autoincrement())
   nombre             String?      @db.VarChar(255)
   Contenedor         Contenedor[]
-}
-
-model Tipo_Documento {
-  id_tipo_documento Int         @id @default(autoincrement())
-  nombre_tipo       String?     @db.VarChar(255)
-  descripcion       String?     @db.VarChar(255)
-  Documento         Documento[]
 }
 
 model Transaccion {
