@@ -1,93 +1,82 @@
-'use client'
+"use client";
 
-import { useState, useEffect } from "react"
-import { FileText, Upload } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Switch } from "@/components/ui/switch"
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  CardFooter,
-} from "@/components/ui/card"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { Categoria_Documento, Contenedor, Estante } from "@prisma/client";
+import { FileText, Upload } from "lucide-react";
+import { useEffect, useState } from "react";
 
-type Container = {
-  id: number
-  name: string
-  type: string
-}
-
-type Shelf = {
-  id: number
-  name: string
-  containers: Container[]
+interface EstanteWithContainers extends Estante {
+  Contenedor: Contenedor[];
 }
 
 export function DocumentManagement() {
-  const [shelves, setShelves] = useState<Shelf[]>([])
-  const [selectedShelf, setSelectedShelf] = useState<string>("")
-  const [containers, setContainers] = useState<Container[]>([])
-  const [selectedContainer, setSelectedContainer] = useState<string>("")
-  const [hasTome, setHasTome] = useState(false)
-  const [documentName, setDocumentName] = useState("")
-  const [description, setDescription] = useState("")
-  const [tomeNumber, setTomeNumber] = useState("1")
-  const [year, setYear] = useState(new Date().getFullYear().toString())
-  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [shelves, setShelves] = useState<EstanteWithContainers[]>([]);
+  const [selectedShelf, setSelectedShelf] =
+    useState<EstanteWithContainers | null>(null);
+  const [containers, setContainers] = useState<Contenedor[]>([]);
+  const [selectedContainer, setSelectedContainer] = useState<string>("");
+  const [hasTome, setHasTome] = useState(false);
+  const [documentName, setDocumentName] = useState("");
+  const [description, setDescription] = useState("");
+  const [tomeNumber, setTomeNumber] = useState("1");
+  const [year, setYear] = useState(new Date().getFullYear().toString());
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
 
-  // Simulated shelves data - replace with your actual data fetching logic
-  useEffect(() => {
-    setShelves([
-      {
-        id: 1,
-        name: "Estante 1",
-        containers: [
-          { id: 1, name: "Contenedor 1", type: "archivador" },
-          { id: 2, name: "Contenedor 2", type: "folder" },
-        ],
-      },
-      {
-        id: 2,
-        name: "Estante 2",
-        containers: [
-          { id: 3, name: "Contenedor 3", type: "libro" },
-          { id: 4, name: "Contenedor 4", type: "archivador" },
-        ],
-      },
-    ])
-  }, [])
+  //////////////////////////////////////
 
-  // Update containers when shelf is selected
+  const [categories, setCategories] = useState<Categoria_Documento[] | null>(
+    null
+  );
+  const [selectedCategory, setSelectedCategory] = useState("");
   useEffect(() => {
-    if (selectedShelf) {
-      const shelf = shelves.find(s => s.id.toString() === selectedShelf)
-      setContainers(shelf?.containers || [])
-      setSelectedContainer("")
-    } else {
-      setContainers([])
-    }
-  }, [selectedShelf, shelves])
+    fetch("/api/categorias")
+      .then((res) => res.json())
+      .then((data) => setCategories(data));
+  }, []);
+
+  useEffect(() => {
+    fetch("/api/estantes")
+      .then((res) => res.json())
+      .then((data) => setShelves(data));
+  }, []);
+
+  // // Update containers when shelf is selected
+  // useEffect(() => {
+  //   if (selectedShelf) {
+  //     const shelf = shelves.find((s) => s.id.toString() === selectedShelf);
+  //     setContainers(shelf?.containers || []);
+  //     setSelectedContainer("");
+  //   } else {
+  //     setContainers([]);
+  //   }
+  // }, [selectedShelf, shelves]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0])
+      setSelectedFile(e.target.files[0]);
     }
-  }
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+    e.preventDefault();
     // Handle document registration logic here
     console.log({
       documentName,
@@ -98,8 +87,8 @@ export function DocumentManagement() {
       selectedShelf,
       selectedContainer,
       selectedFile,
-    })
-  }
+    });
+  };
 
   return (
     <Card className="w-full max-w-2xl mx-auto">
@@ -123,7 +112,6 @@ export function DocumentManagement() {
               />
             </div>
 
-
             <div className="grid gap-2">
               <Label htmlFor="description">Descripción</Label>
               <Textarea
@@ -134,28 +122,6 @@ export function DocumentManagement() {
                 className="min-h-[100px]"
               />
             </div>
-
-            <div className="flex items-center space-x-2">
-              <Switch
-                id="tome"
-                checked={hasTome}
-                onCheckedChange={setHasTome}
-              />
-              <Label htmlFor="tome">¿Tiene tomo?</Label>
-            </div>
-
-            {hasTome && (
-              <div className="grid gap-2">
-                <Label htmlFor="tomeNumber">Número de Tomo</Label>
-                <Input
-                  id="tomeNumber"
-                  type="number"
-                  min="1"
-                  value={tomeNumber}
-                  onChange={(e) => setTomeNumber(e.target.value)}
-                />
-              </div>
-            )}
 
             <div className="grid gap-2">
               <Label htmlFor="year">Año</Label>
@@ -170,18 +136,47 @@ export function DocumentManagement() {
             </div>
 
             <div className="grid gap-2">
+              <Label htmlFor="shelf">Seleccionar Categoria</Label>
+              <Select
+                value={selectedCategory}
+                onValueChange={setSelectedCategory}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Seleccione una categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  {categories?.map((category) => (
+                    <SelectItem
+                      key={category.id_categoria}
+                      value={category.nombre_categoria!}
+                    >
+                      {category.nombre_categoria}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="grid gap-2">
               <Label htmlFor="shelf">Seleccionar Estante</Label>
               <Select
-                value={selectedShelf}
-                onValueChange={setSelectedShelf}
+                value={selectedShelf?.nombre_estante!}
+                onValueChange={(e) => {
+                  setSelectedShelf(
+                    shelves.find((shelf) => shelf.nombre_estante === e)!
+                  );
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Seleccione un estante" />
                 </SelectTrigger>
                 <SelectContent>
                   {shelves.map((shelf) => (
-                    <SelectItem key={shelf.id} value={shelf.id.toString()}>
-                      {shelf.name}
+                    <SelectItem
+                      key={shelf.id_estante}
+                      value={shelf.nombre_estante!}
+                    >
+                      {shelf.nombre_estante}
                     </SelectItem>
                   ))}
                 </SelectContent>
@@ -199,11 +194,16 @@ export function DocumentManagement() {
                   <SelectValue placeholder="Seleccione un contenedor" />
                 </SelectTrigger>
                 <SelectContent>
-                  {containers.map((container) => (
-                    <SelectItem key={container.id} value={container.id.toString()}>
-                      {container.name} ({container.type})
-                    </SelectItem>
-                  ))}
+                  {selectedShelf?.Contenedor &&
+                    selectedShelf.Contenedor.length > 0 &&
+                    (selectedShelf.Contenedor ?? []).map((container) => (
+                      <SelectItem
+                        key={container.id_contenedor}
+                        value={container.nombre!}
+                      >
+                        {container.nombre} (Fila: {container.fila}, Columna: {container.columna})
+                      </SelectItem>
+                    ))}
                 </SelectContent>
               </Select>
             </div>
@@ -221,7 +221,7 @@ export function DocumentManagement() {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => document.getElementById('file')?.click()}
+                  onClick={() => document.getElementById("file")?.click()}
                   className="w-full"
                   disabled={!selectedContainer}
                 >
@@ -245,5 +245,5 @@ export function DocumentManagement() {
         </Button>
       </CardFooter>
     </Card>
-  )
+  );
 }

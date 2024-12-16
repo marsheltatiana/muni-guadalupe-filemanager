@@ -1,205 +1,186 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Switch } from "@/components/ui/switch"
-import { useToast } from "@/hooks/use-toast"
-import { AlertCircle, FileUp, Loader2, Weight } from "lucide-react"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { put, PutBlobResult } from "@vercel/blob";
-import Link from 'next/link'
-import { sql } from "@vercel/postgres";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { PutBlobResult } from "@vercel/blob";
+import { AlertCircle, FileUp, Loader2 } from "lucide-react";
+import Link from "next/link";
+import { useState } from "react";
 
 export default function DocumentRegistrationForm() {
-  const { toast } = useToast()
+  const { toast } = useToast();
   const [formData, setFormData] = useState({
-    documentName: '',
-    description: '',
-    fileName: '',
+    documentName: "",
+    description: "",
+    fileName: "",
     hasVolume: false,
-    volumeNumber: '',
-    year: '',
-    shelfNumber: '',
-    rowNumber: '',
-  })
-  const [pdfFile, setPdfFile] = useState<File | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+    volumeNumber: "",
+    year: "",
+    shelfNumber: "",
+    rowNumber: "",
+  });
+  const [pdfFile, setPdfFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
-  
-  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    const { name, value } = event.target
-    setFormData(prev => ({ ...prev, [name]: value }))
-  }
+
+  const handleInputChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
 
   const handleSwitchChange = (checked: boolean) => {
-    setFormData(prev => ({ ...prev, hasVolume: checked, volumeNumber: checked ? prev.volumeNumber : '' }))
-  }
+    setFormData((prev) => ({
+      ...prev,
+      hasVolume: checked,
+      volumeNumber: checked ? prev.volumeNumber : "",
+    }));
+  };
 
   const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     if (event.target.files && event.target.files[0]) {
-      const file = event.target.files[0]
-      if (file.type === 'application/pdf') {
-        setPdfFile(file)
-        setError(null)
+      const file = event.target.files[0];
+      if (file.type === "application/pdf") {
+        setPdfFile(file);
+        setError(null);
       } else {
-        setPdfFile(null)
-        setError('Por favor, seleccione un archivo PDF válido.')
+        setPdfFile(null);
+        setError("Por favor, seleccione un archivo PDF válido.");
       }
     }
-  }
+  };
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    setIsSubmitting(true)
-    setError(null)
+    event.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
 
     if (!pdfFile) {
-      setError('Por favor, seleccione un archivo PDF para subir.')
-      setIsSubmitting(false)
-      return
+      setError("Por favor, seleccione un archivo PDF para subir.");
+      setIsSubmitting(false);
+      return;
     }
 
     try {
       const response = await fetch(
         `/api/subir-pdf?filename=${formData.fileName}`,
         {
-          method: 'POST',
+          method: "POST",
           body: pdfFile,
-        },
+        }
       );
 
       const newBlob = (await response.json()) as PutBlobResult;
 
       setBlob(newBlob);
-      
-      toast({ 
+
+      toast({
         title: "Documento registrado ✅",
-      })
-      
+      });
+
       // Reset form after successful submission
       setFormData({
-        documentName: '',
-        description: '',
-        fileName: '',
+        documentName: "",
+        description: "",
+        fileName: "",
         hasVolume: false,
-        volumeNumber: '',
-        year: '',
-        shelfNumber: '',
-        rowNumber: '',
-      })
-      setPdfFile(null)
+        volumeNumber: "",
+        year: "",
+        shelfNumber: "",
+        rowNumber: "",
+      });
+      setPdfFile(null);
     } catch (error) {
-      console.log(error)
-      setError('Hubo un error al registrar el documento. Por favor, intente de nuevo.')
+      console.log(error);
+      setError(
+        "Hubo un error al registrar el documento. Por favor, intente de nuevo."
+      );
     } finally {
-      setIsSubmitting(false)
+      setIsSubmitting(false);
     }
-  }
+  };
 
   return (
     <Card className="w-fit">
       <CardHeader>
-        <CardTitle className="text-2xl font-bold text-center">Registro de Documento</CardTitle>
+        <CardTitle className="text-2xl font-bold text-center">
+          Registro de Documento
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <Label htmlFor="documentName">Nombre del documento</Label>
-              <Input 
-                id="documentName" 
+              <Input
+                id="documentName"
                 name="documentName"
                 value={formData.documentName}
                 onChange={handleInputChange}
-                placeholder="Ingrese el nombre del documento" 
+                placeholder="Ingrese el nombre del documento"
                 required
               />
             </div>
             <div>
               <Label htmlFor="fileName">Nombre del archivo</Label>
-              <Input 
-                id="fileName" 
+              <Input
+                id="fileName"
                 name="fileName"
                 value={formData.fileName}
                 onChange={handleInputChange}
-                placeholder="Nombre del archivo para guardar" 
+                placeholder="Nombre del archivo para guardar"
                 required
               />
             </div>
           </div>
           <div>
             <Label htmlFor="description">Descripción</Label>
-            <Textarea 
-              id="description" 
+            <Textarea
+              id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Breve descripción del documento" 
+              placeholder="Breve descripción del documento"
               className="min-h-[100px]"
             />
           </div>
-          <div className="flex items-center space-x-2">
-            <Switch
-              id="hasVolume"
-              checked={formData.hasVolume}
-              onCheckedChange={handleSwitchChange}
-            />
-            <Label htmlFor="hasVolume">¿Tiene tomo?</Label>
-          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {formData.hasVolume && (
-              <div>
-                <Label htmlFor="volumeNumber">Número de Tomo</Label>
-                <Select 
-                  name="volumeNumber" 
-                  value={formData.volumeNumber} 
-                  onValueChange={(value) => setFormData(prev => ({ ...prev, volumeNumber: value }))}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Seleccionar" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {[...Array(10)].map((_, i) => (
-                      <SelectItem key={i} value={`${i + 1}`}>{i + 1}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            )}
             <div>
               <Label htmlFor="year">Año</Label>
-              <Input 
-                id="year" 
+              <Input
+                id="year"
                 name="year"
                 value={formData.year}
                 onChange={handleInputChange}
-                placeholder="YYYY" 
+                placeholder="YYYY"
               />
             </div>
             <div>
               <Label htmlFor="shelfNumber">Número de Estante</Label>
-              <Input 
-                id="shelfNumber" 
+              <Input
+                id="shelfNumber"
                 name="shelfNumber"
                 value={formData.shelfNumber}
                 onChange={handleInputChange}
-                placeholder="Número de estante" 
+                placeholder="Número de estante"
               />
             </div>
             <div>
               <Label htmlFor="rowNumber">Número de Fila</Label>
-              <Input 
-                id="rowNumber" 
+              <Input
+                id="rowNumber"
                 name="rowNumber"
                 value={formData.rowNumber}
                 onChange={handleInputChange}
-                placeholder="Número de fila" 
+                placeholder="Número de fila"
               />
             </div>
           </div>
@@ -221,7 +202,9 @@ export default function DocumentRegistrationForm() {
                 Seleccionar archivo PDF
               </Label>
               {pdfFile && (
-                <span className="ml-3 text-sm text-gray-500">{pdfFile.name}</span>
+                <span className="ml-3 text-sm text-gray-500">
+                  {pdfFile.name}
+                </span>
               )}
             </div>
           </div>
@@ -239,16 +222,19 @@ export default function DocumentRegistrationForm() {
                 Registrando...
               </>
             ) : (
-              'Registrar Documento'
+              "Registrar Documento"
             )}
           </Button>
         </form>
       </CardContent>
       {blob && (
         <div>
-          URL del archivo: <Link href={blob.url} target='_blank'>{blob.url}</Link>
+          URL del archivo:{" "}
+          <Link href={blob.url} target="_blank">
+            {blob.url}
+          </Link>
         </div>
       )}
     </Card>
-  )
+  );
 }
