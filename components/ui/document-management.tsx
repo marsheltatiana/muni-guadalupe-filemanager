@@ -77,14 +77,21 @@ export function DocumentManagement() {
     formData.append("file_name", selectedFile!.name);
     formData.append("file", selectedFile!);
 
+    const initialTime = new Date().getTime();
+
     const response = await fetch("/api/documentos", {
       method: "POST",
       body: formData,
     });
 
     if (response.ok) {
+      const finalTime = new Date().getTime();
+
+      const timeInSeconds = (finalTime - initialTime) / 1000;
+
       toast({
-        title: "Documento registrado correctamente",
+        title: "Documento registrado correctamente 🎉",
+        description: `El documento se registró en ${timeInSeconds} segundos`,
         variant: "default",
       });
     } else {
