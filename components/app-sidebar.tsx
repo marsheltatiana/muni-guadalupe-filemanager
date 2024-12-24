@@ -183,14 +183,20 @@ export async function AppSidebar() {
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
+                  {user.image ? (
                   <Image
-                    src={user.image!}
+                    src={user.image}
                     width={24}
                     height={24}
                     alt="avatar"
                     className="rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu"
                   />
-                  {user?.name}
+                  ) : (
+                  <div className="w-6 h-6 flex items-center justify-center bg-gray-300 rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu">
+                    {user.name!.charAt(0).toUpperCase()}
+                  </div>
+                  )}
+                  {user.name}
                   <ChevronUp className="ml-auto" />
                 </SidebarMenuButton>
               </DropdownMenuTrigger>
