@@ -10,7 +10,10 @@ interface UserWithRol extends Usuario {
 
 const UsersPage = async () => {
   const users: UserWithRol[] = await fetch(
-    `${process.env.APP_URL}/api/usuarios`
+    `${process.env.APP_URL}/api/usuarios`,
+    {
+      cache: "no-cache",
+    }
   ).then((res) => res.json());
 
   return (

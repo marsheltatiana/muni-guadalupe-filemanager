@@ -1,5 +1,6 @@
 import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcrypt";
 
 export async function GET(request: NextRequest) {
   const users = await prisma.usuario.findMany({
@@ -23,13 +24,15 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { name, email, password, role } = await request.json();
+  const { name, email, password: passwordTextPlain, role } = await request.json();
+
+  const hashPwd = await bcrypt.hash(passwordTextPlain, 14);
 
   const user = await prisma.usuario.create({
     data: {
       nombre: name,
       email,
-      contrasenia: password,
+      contrasenia: hashPwd,
       Rol: {
         connect: {
           id_rol: Number.parseInt(role),

@@ -2,7 +2,7 @@ import prisma from "@/lib/db";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = 'nodejs'
+export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   try {
@@ -18,6 +18,9 @@ export async function POST(req: NextRequest) {
 
     const user = await prisma.usuario.findUnique({
       where: { email },
+      include: {
+        Rol: true,
+      },
     });
 
     if (!user) {
@@ -31,6 +34,31 @@ export async function POST(req: NextRequest) {
         { message: "Invalid credentials." },
         { status: 401 }
       );
+    }
+
+    if (!user.Rol?.nombre_rol) {
+      const adminRole = await prisma.rol.findFirst({
+        where: {
+          nombre_rol: "Admin",
+        },
+      });
+
+      if (!adminRole) return;
+
+      if (process.env.SUPERADMIN_EMAIL === user.email) {
+        await prisma.usuario.update({
+          where: {
+            email: user.email,
+          },
+          data: {
+            Rol: {
+              create: {
+                nombre_rol: adminRole.nombre_rol,
+              },
+            },
+          },
+        });
+      }
     }
 
     return NextResponse.json({
