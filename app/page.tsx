@@ -20,8 +20,8 @@ export default async function Home() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <main className="flex flex-col sm:flex-row justify-center items-center w-full gap-16">
-        <section className="flex flex-col gap-8 text-center sm:text-left">
+      <main className="flex flex-col sm:flex-row justify-around items-center w-full gap-16">
+        <section className="flex flex-col gap-8 text-center sm:text-left items-start">
           <h1 className="text-2xl lg:text-6xl font-bold text-white">
             Archivo General
           </h1>
