@@ -28,7 +28,7 @@ async function onSubmitSignUp(values: z.infer<typeof signUpSchema>) {
     .then((user) => {
       toast({
         title: `${user.nombre} te has registrado correctamente. 🎉`,
-        description: `Bienvenido ${user.nombre}`,
+        description: `Ahora puedes iniciar sesión. 😊`,
       });
     })
     .catch((error) => {
