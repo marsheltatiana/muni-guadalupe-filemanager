@@ -1,15 +1,13 @@
-import SignIn from "@/components/sign-in";
-import { Button } from "@/components/ui/button";
-import Link from "next/link";
-import Image from "next/image";
+import { ProfileForm } from "@/components/profile-form";
 import { auth } from "@/lib/auth";
+import Image from "next/image";
 import { redirect } from "next/navigation";
 
 export default async function Home() {
-  const session = await auth()
+  const session = await auth();
 
   if (session?.user) {
-    redirect("/dashboard")
+    redirect("/dashboard");
   }
 
   return (
@@ -17,26 +15,21 @@ export default async function Home() {
       className="flex flex-col justify-center items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]"
       style={{
         backgroundImage: 'url("/guadalupe-background.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
       }}
     >
       <main className="flex flex-col sm:flex-row justify-center items-center w-full gap-16">
         <section className="flex flex-col gap-8 text-center sm:text-left">
           <h1 className="text-2xl lg:text-6xl font-bold text-white">
-            Administrador de archivos
+            Archivo General
           </h1>
-          <h5 className="text-md font-[family-name:var(--font-geist-mono)] text-white">
+          <h4 className="text-lg text-white -mt-6">
             Municipalidad Distrital de Guadalupe
-          </h5>
+          </h4>
           <div className="flex gap-4 items-center flex-col sm:flex-row">
-            <Link href="#" target="_blank" rel="noopener noreferrer">
-              <SignIn variant={"secondary"}/>
-            </Link>
-            <Link href="https://muni-guadalupe-filemanager-documentacion.vercel.app/" target="_blank" rel="noopener noreferrer">
-              <Button variant={"default"}>Ayuda en linea</Button>
-            </Link>
+            <ProfileForm />
           </div>
         </section>
         <section className="flex justify-center items-center">
