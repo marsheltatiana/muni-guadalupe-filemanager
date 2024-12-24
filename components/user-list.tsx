@@ -14,7 +14,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Rol, Usuario } from "@prisma/client";
 import { Edit, Search, Trash2 } from "lucide-react";
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 
 interface UserWithRol extends Usuario {
   Rol: Rol;
@@ -22,37 +22,15 @@ interface UserWithRol extends Usuario {
 
 interface UserListProps {
   className?: string;
+  users: UserWithRol[];
 }
 
-export const UserList: React.FC<UserListProps> = ({ className }) => {
-  const [users, setUsers] = useState<UserWithRol[]>([]);
-  const [roles, setRoles] = useState<Rol[]>([]);
-
-  useEffect(() => {
-    async function fetchRoles(): Promise<void> {
-      const roles: Rol[] = await fetch("/api/roles").then((res) => res.json());
-      setRoles(roles);
-    }
-
-    fetchRoles();
-  }, []);
-
+export const UserList: React.FC<UserListProps> = ({ className, users }) => {
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
     role: "",
   });
-
-  useEffect(() => {
-    async function fetchUsers(): Promise<void> {
-      const users: UserWithRol[] = await fetch("/api/usuarios").then((res) =>
-        res.json()
-      );
-      setUsers(users);
-    }
-
-    fetchUsers();
-  }, []);
 
   const [searchTerm, setSearchTerm] = useState("");
 
