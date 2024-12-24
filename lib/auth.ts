@@ -1,52 +1,39 @@
 import NextAuth from "next-auth";
+import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
-import prisma from "./db";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
-  providers: [Google],
-  callbacks: {
-    signIn: async ({ user, account, profile }) => {
-      // check if the user exists in the database
-
-      const prismaUser = await prisma.usuario.findFirst({
-        where: {
-          email: user.email,
-        },
-      });
-
-      if (!prismaUser) {
-        // if the user does not exist, create it
-
-        const roleTrabajador = await prisma.rol.findFirst({
-          where: {
-            nombre_rol: "Trabajador",
-          },
-        });
-
-        if (!roleTrabajador) {
-          const role = await prisma.rol.create({
-            data: {
-              nombre_rol: "Trabajador",
-              descripcion: "Rol por defecto para los trabajadores.",
-            },
+  providers: [
+    Google,
+    Credentials({
+      credentials: {
+        email: { label: "email", type: "text" },
+        password: { label: "password", type: "password" },
+      },
+      authorize: async (credentials) => {
+        try {
+          const response = await fetch(`${process.env.APP_URL}/api/bcrypt`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(credentials),
           });
+
+          if (!response.ok) {
+            throw new Error("Invalid credentials.");
+          }
+
+          const user = await response.json();
+
+          return user;
+        } catch (error) {
+          if (error instanceof Error) {
+            console.error("Authorization error:", error.message);
+          } else {
+            console.error("Authorization error:", error);
+          }
+          return null;
         }
-
-        await prisma.usuario.create({
-          data: {
-            email: user.email,
-            nombre: user.name,
-            imagen_perfil: user.image,
-            Rol: {
-              connect: {
-                id_rol: roleTrabajador?.id_rol,
-              },
-            },
-          },
-        });
-      }
-
-      return true;
-    },
-  },
+      },
+    }),
+  ],
 });

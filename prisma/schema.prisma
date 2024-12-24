@@ -116,9 +116,9 @@ model Transaccion {
 
 model Usuario {
   id_usuario    Int           @id @default(autoincrement())
-  nombre        String?       @db.VarChar(255)
-  email         String?       @db.VarChar(255)
-  contrasenia   String?       @db.VarChar(255)
+  nombre        String        @db.VarChar(255)
+  email         String        @unique(map: "usuario_pk_email") @db.VarChar(255)
+  contrasenia   String        @db.VarChar(255)
   imagen_perfil String?       @db.VarChar(255)
   rol_id        Int?
   Solicitud     Solicitud[]
