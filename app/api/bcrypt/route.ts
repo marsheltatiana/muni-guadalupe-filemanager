@@ -51,11 +51,24 @@ export async function POST(req: NextRequest) {
             email: user.email,
           },
           data: {
-            Rol: {
-              create: {
-                nombre_rol: adminRole.nombre_rol,
-              },
-            },
+            rol_id: adminRole.id_rol,
+          },
+        });
+      } else {
+        const trabajadorRole = await prisma.rol.findFirst({
+          where: {
+            nombre_rol: "Trabajador",
+          },
+        });
+
+        if (!trabajadorRole) return;
+
+        await prisma.usuario.update({
+          where: {
+            email: user.email,
+          },
+          data: {
+            rol_id: trabajadorRole.id_rol,
           },
         });
       }
