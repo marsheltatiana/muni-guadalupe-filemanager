@@ -22,24 +22,17 @@ export async function GET(request: NextRequest) {
   return NextResponse.json(users);
 }
 
-// Crear un usuario
-
 export async function POST(request: NextRequest) {
-  const { name, email, rol } = await request.json();
-
-  const role = await prisma.rol.findFirst({
-    where: {
-      nombre_rol: rol as string,
-    },
-  });
+  const { name, email, password, role } = await request.json();
 
   const user = await prisma.usuario.create({
     data: {
       nombre: name,
       email,
+      contrasenia: password,
       Rol: {
         connect: {
-          id_rol: role?.id_rol,
+          id_rol: Number.parseInt(role),
         },
       },
     },
