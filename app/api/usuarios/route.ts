@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
-import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   const users = await prisma.usuario.findMany({
@@ -24,7 +24,12 @@ export async function GET(request: NextRequest) {
 }
 
 export async function POST(request: NextRequest) {
-  const { name, email, password: passwordTextPlain, role } = await request.json();
+  const {
+    name,
+    email,
+    password: passwordTextPlain,
+    role,
+  } = await request.json();
 
   const hashPwd = await bcrypt.hash(passwordTextPlain, 14);
 
@@ -49,4 +54,31 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(user, { status: 201 });
+}
+
+export async function DELETE(request: NextRequest) {
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
+
+  if (!id) {
+    return NextResponse.json(
+      { message: "No se proporcionó un ID de usuario." },
+      { status: 400 }
+    );
+  }
+
+  const user = await prisma.usuario.delete({
+    where: {
+      id_usuario: Number.parseInt(id),
+    },
+  });
+
+  if (!user) {
+    return NextResponse.json(
+      { message: "No se pudo eliminar el usuario." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(user, { status: 200 });
 }

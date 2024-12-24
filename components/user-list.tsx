@@ -14,6 +14,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Rol, Usuario } from "@prisma/client";
 import { Edit, Search, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 interface UserWithRol extends Usuario {
@@ -26,6 +27,8 @@ interface UserListProps {
 }
 
 export const UserList: React.FC<UserListProps> = ({ className, users }) => {
+  const router = useRouter();
+
   const [newUser, setNewUser] = useState({
     name: "",
     email: "",
@@ -50,6 +53,8 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
         title: "Éxito",
         description: "Usuario creado exitosamente",
       });
+
+      router.refresh();
     } else {
       toast({
         title: "Error",
@@ -59,7 +64,26 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
     }
   };
 
-  const handleDeleteUser = (id: number) => {};
+  const handleDeleteUser = async (id: number) => {
+    const response = await fetch(`/api/usuarios?id=${id}`, {
+      method: "DELETE",
+    });
+
+    if (response.ok) {
+      toast({
+        title: "Éxito",
+        description: "Usuario eliminado exitosamente",
+      });
+
+      router.refresh();
+    } else {
+      toast({
+        title: "Error",
+        description: "Ocurrió un error al eliminar el usuario",
+        variant: "destructive",
+      });
+    }
+  };
 
   const filteredUsers = users.filter(
     (user) =>
@@ -123,7 +147,6 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
                     <Button
                       variant="ghost"
                       size="icon"
-                      disabled
                       onClick={() => handleDeleteUser(user.id_usuario)}
                     >
                       <Trash2 className="h-4 w-4" />
