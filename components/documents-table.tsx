@@ -20,14 +20,13 @@ import { Documento } from "@prisma/client";
 import { Download, FileText, Filter } from "lucide-react";
 import * as React from "react";
 
-export function DocumentsTable() {
-  const [documents, setDocuments] = React.useState<Documento[]>([]);
+type DocumentsTableProps = {
+  documents: Documento[];
+};
 
-  React.useEffect(() => {
-    fetch("/api/documentos")
-      .then((res) => res.json())
-      .then((data) => setDocuments(data));
-  }, []);
+export const DocumentsTable: React.FC<DocumentsTableProps> = ({
+  documents,
+}) => {
 
   const [search, setSearch] = React.useState("");
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
@@ -109,4 +108,4 @@ export function DocumentsTable() {
       </div>
     </div>
   );
-}
+};
