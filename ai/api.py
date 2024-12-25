@@ -166,6 +166,7 @@ def supersearch(query: Query):
         "metadata": {
             "search_duration": search_duration,
             "search_duration_unit": "seconds",
-            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime()),
+            "total_documents": len(data_store["texts"])
         }
     }
