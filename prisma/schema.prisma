@@ -17,7 +17,7 @@ model Contenedor {
   id_contenedor      Int              @id @default(autoincrement())
   tipo_contenedor_id Int?
   estante_id         Int?
-  anio               DateTime?        @db.Date
+  anio               String?          @db.VarChar(4)
   nombre             String?          @db.VarChar(255)
   descripcion        String?          @db.VarChar(255)
   fila               String           @db.VarChar(10)

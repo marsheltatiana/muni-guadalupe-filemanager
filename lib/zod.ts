@@ -20,3 +20,19 @@ export const signUpSchema = z.object({
     .min(10, "Debe tener al menos 10 caracteres")
     .regex(/.*[!@#$%^&*].*/, "Debe incluir un carácter especial"),
 });
+
+export const createShelfSchema = z.object({
+  nombre_estante: z.string().min(1, "El nombre del estante es requerido"),
+})
+
+export const createContainerSchema = z.object({
+  nombre: z.string().min(1, "El nombre del contenedor es requerido"),
+  descripcion: z.string().optional(),
+  anio: z.string().refine((val) => !Number.isNaN(Date.parse(val)), {
+    message: "Fecha inválida",
+  }),
+  fila: z.string().min(1, "La fila es requerida"),
+  columna: z.string().optional(),
+  tipo_contenedor_id: z.string(),
+})
+
