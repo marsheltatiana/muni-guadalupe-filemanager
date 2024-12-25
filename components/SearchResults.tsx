@@ -1,8 +1,10 @@
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
-import { SquareArrowOutUpRight } from "lucide-react";
+import { Download, Share, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
 import { Badge } from "./ui/badge";
+import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle } from "./ui/card";
 import {
   Dialog,
@@ -70,26 +72,94 @@ export function SearchResults({ results }: SearchResultsProps) {
                     <DialogHeader>
                       <DialogTitle>{result.filename}</DialogTitle>
                       <DialogDescription>
-                        <Link
-                          href={result.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="underline flex items-center gap-3"
-                        >
-                          <span>Ver documento</span>
-                          <SquareArrowOutUpRight width={16} height={16} />
-                        </Link>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            variant="outline"
+                            asChild
+                            className="w-fit justify-between"
+                          >
+                            <Link
+                              href={result.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              <span>Ver</span>
+                              <SquareArrowOutUpRight className="h-4 w-4 ml-2" />
+                            </Link>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={() => {
+                              navigator.clipboard.writeText(result.url);
+
+                              toast({
+                                title: "Enlace copiado al portapapeles 📋",
+                                description:
+                                  "Puedes compartir este documento pegando el enlace donde desees",
+                              });
+                            }}
+                            aria-label="Copiar enlace"
+                            title="Copiar enlace"
+                          >
+                            <Share />
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="icon"
+                            onClick={async () => {
+                              try {
+                                const response = await fetch(result.url);
+                                const blob = await response.blob();
+                                const url = window.URL.createObjectURL(blob);
+                                const a = document.createElement("a");
+                                a.href = url;
+                                a.download = result.filename;
+                                document.body.appendChild(a);
+                                a.click();
+                                window.URL.revokeObjectURL(url);
+                                document.body.removeChild(a);
+
+                                toast({
+                                  title: "Descargando documento 📥",
+                                  description:
+                                    "El documento comenzará a descargarse en breve",
+                                });
+                              } catch (error) {
+                                toast({
+                                  title: "Error al descargar",
+                                  description:
+                                    "No se pudo descargar el documento",
+                                  variant: "destructive",
+                                });
+                              }
+                            }}
+                            aria-label="Descargar documento"
+                            title="Descargar documento"
+                          >
+                            <Download className="h-4 w-4" />
+                          </Button>
+                        </div>
                       </DialogDescription>
                     </DialogHeader>
                     <span className="font-semibold">Ubicación física</span>
                     <span className="font-semibold">
                       Vista previa del contenido
                     </span>
-                    <div className="relative">
-                      <p className="text-gray-800 text-justify pb-4 text-wrap max-w-md break-all overflow-wrap-anywhere whitespace-pre-line">
+                    <div className="relative mt-4 bg-gray-50 rounded-lg p-4">
+                      <p
+                        className="text-gray-700 leading-relaxed text-base tracking-normal
+                      prose prose-sm max-w-none
+                      font-normal break-words
+                      line-clamp-6"
+                      >
                         {result.fragment}
                       </p>
-                      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent" />
+                      <div
+                        className="absolute bottom-0 left-0 w-full h-16 
+                      bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent
+                      rounded-b-lg"
+                      />
                     </div>
                   </DialogContent>
                 </Dialog>
