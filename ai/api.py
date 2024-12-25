@@ -5,23 +5,44 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 from sentence_transformers import SentenceTransformer, util
 import torch
+from dotenv import load_dotenv
+import time
+import os
+
+load_dotenv()
 
 app = FastAPI()
 
-modelo = SentenceTransformer('all-MiniLM-L6-v2')
+SENTENCE_TRANSFORMER = os.getenv('SENTENCE_TRANSFORMER')
+
+modelo = SentenceTransformer(SENTENCE_TRANSFORMER)
 
 data_store = {
-    "textos": [],
-    "archivos": [],
+    "texts": [],
+    "files": [],
     "embeddings": None
 }
 
-class Consulta(BaseModel):
+class Query(BaseModel):
     query: str
     top_k: int = 5
 
-def extraer_texto_pdf(url: str) -> str:
-    """Extrae el contenido del PDF desde una URL."""
+def extract_text_pdf(url: str) -> str:
+    """
+    Extracts text from a PDF file located at the given URL.
+
+    This function downloads the PDF file from the specified URL, extracts the text from each page,
+    and concatenates it into a single string.
+
+    Args:
+        url (str): The URL of the PDF file to be processed.
+
+    Returns:
+        str: The extracted text from the PDF file.
+
+    Raises:
+        HTTPException: If there is an error processing the PDF file.
+    """
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -38,62 +59,113 @@ def extraer_texto_pdf(url: str) -> str:
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al procesar el PDF: {e}")
 
-@app.post("/load-pdfs/")
-def cargar_pdfs(api_url: str):
-    """Consume una API externa para obtener textos de documentos PDF."""
+def load_pdfs(api_url: str):
+    """
+    Fetches PDF documents from the provided API URL, extracts text from each PDF, 
+    and encodes the text into embeddings.
+    Args:
+        api_url (str): The URL of the API to fetch PDF documents from.
+    Raises:
+        HTTPException: If no documents are found in the API response or if there is an error consuming the API.
+    Returns:
+        None: The function updates the global data_store with the extracted texts, file information, and embeddings.
+    """
     try:
         response = requests.get(api_url)
         response.raise_for_status()
         
-        documentos = response.json()
+        documents = response.json()
         
-        textos = []
-        archivos = []
+        texts = []
+        files = []
         
-        for doc in documentos:
-            contenido_pdf = extraer_texto_pdf(doc['documento_url'])
+        for doc in documents:
+            pdf_content = extract_text_pdf(doc['documento_url'])
             
-            textos.append(contenido_pdf)
-            archivos.append({
-                "nombre": doc['nombre'],
+            texts.append(pdf_content)
+            files.append({
+                "filename": doc['nombre'],
                 "url": doc['documento_url']
             })
         
-        if not textos:
+        if not texts:
             raise HTTPException(status_code=400, detail="No se encontraron documentos en la API proporcionada.")
 
-        embeddings = modelo.encode(textos, convert_to_tensor=True)
+        embeddings = modelo.encode(texts, convert_to_tensor=True)
         
-        data_store["textos"] = textos
-        data_store["archivos"] = archivos
+        data_store["texts"] = texts
+        data_store["files"] = files
         data_store["embeddings"] = embeddings
-
-        return {"mensaje": f"Se cargaron {len(archivos)} documentos.", "archivos": archivos}
     except requests.exceptions.RequestException as e:
         raise HTTPException(status_code=500, detail=f"Error al consumir la API: {e}")
 
-@app.post("/search/")
-def buscar_semanticamente(consulta: Consulta):
-    """Realiza una búsqueda semántica entre los documentos cargados."""
+@app.post("/supersearch/")
+def supersearch(query: Query):
+    """
+    Handles the /supersearch/ endpoint for performing a search query on pre-loaded documents.
+
+    Args:
+        query (Query): The search query containing the text to search for and the number of top results to return.
+
+    Raises:
+        HTTPException: If the document embeddings are not loaded or empty.
+
+    Returns:
+        dict: A dictionary containing the search query, results, and metadata.
+            - query (str): The original search query.
+            - results (dict): The search results.
+                - count (int): The number of results returned.
+                - top_k (int): The number of top results requested.
+                - items (list): A list of dictionaries containing the search results.
+                    - filename (str): The name of the file.
+                    - url (str): The URL of the file.
+                    - fragment (str): A fragment of the text from the file.
+                    - similarity (float): The similarity score of the result.
+            - metadata (dict): Metadata about the search.
+                - search_duration (float): The duration of the search in seconds.
+                - search_duration_unit (str): The unit of the search duration.
+                - timestamp (str): The timestamp of the search in UTC.
+    """
+    DOCS_ENDPOINT = os.getenv('DOCS_ENDPOINT')
+
+    load_pdfs(DOCS_ENDPOINT)
+
     if data_store["embeddings"] is None or data_store["embeddings"].size(0) == 0:
         raise HTTPException(status_code=400, detail="Primero cargue los documentos desde la API.")
 
-    query_embedding = modelo.encode(consulta.query, convert_to_tensor=True)
+    start_time = time.time()
+
+    query_embedding = modelo.encode(query.query, convert_to_tensor=True)
     similitudes = util.cos_sim(query_embedding, data_store["embeddings"])[0]
 
-    top_k = min(consulta.top_k, len(data_store["textos"]))
+    top_k = min(query.top_k, len(data_store["texts"]))
     if top_k == 0:
         return []
 
-    resultados = torch.topk(similitudes, k=top_k)
+    results = torch.topk(similitudes, k=top_k)
 
-    resultados_lista = []
-    for idx in resultados.indices:
-        resultados_lista.append({
-            "archivo": data_store["archivos"][idx]["nombre"],
-            "url": data_store["archivos"][idx]["url"],
-            "fragmento": data_store["textos"][idx][:300],
-            "similitud": similitudes[idx].item()
+    payload_list = []
+    for idx in results.indices:
+        payload_list.append({
+            "filename": data_store["files"][idx]["filename"],
+            "url": data_store["files"][idx]["url"],
+            "fragment": data_store["texts"][idx][:300],
+            "similarity": similitudes[idx].item()
         })
 
-    return {"resultados": resultados_lista}
+    end_time = time.time()
+    search_duration = end_time - start_time
+
+    return {
+        "query": query.query,
+        "results": {
+            "count": len(payload_list),
+            "top_k": query.top_k,
+            "items": payload_list
+        },
+        "metadata": {
+            "search_duration": search_duration,
+            "search_duration_unit": "seconds",
+            "timestamp": time.strftime("%Y-%m-%d %H:%M:%S", time.gmtime())
+        }
+    }
