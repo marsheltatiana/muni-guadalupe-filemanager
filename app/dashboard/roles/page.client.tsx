@@ -2,6 +2,7 @@
 
 import CrearPermiso from "@/components/crear-permiso";
 import { RoleListLoader } from "@/components/loaders/role-list-loader";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -125,9 +126,15 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
                   <TableCell>{role.descripcion}</TableCell>
                   <TableCell>
                     {role.Rol_Permisos.map((rp) => (
-                      <span key={rp.permiso_id} className="mr-2">
-                        {rp.Permisos.nombre_permiso?.replace(/_/g, " ")}
-                      </span>
+                        <Badge
+                        key={rp.permiso_id}
+                        variant="outline"
+                        className="mr-2"
+                        >
+                        {rp.Permisos.nombre_permiso
+                          ?.replace(/_/g, " ")
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                        </Badge>
                     ))}
                   </TableCell>
                   <TableCell className="text-right">
