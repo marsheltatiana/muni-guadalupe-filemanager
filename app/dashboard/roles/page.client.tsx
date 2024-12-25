@@ -129,7 +129,7 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
                         <Badge
                         key={rp.permiso_id}
                         variant="outline"
-                        className="mr-2"
+                        className="m-1"
                         >
                         {rp.Permisos.nombre_permiso
                           ?.replace(/_/g, " ")
