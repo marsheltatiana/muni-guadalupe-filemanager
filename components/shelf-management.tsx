@@ -513,7 +513,7 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                       </SelectContent>
                     </Select>
                     <FormDescription>
-                      Seleccione el rol del usuario en el sistema.
+                      Seleccione el tipo de contenedor.
                     </FormDescription>
                     <FormMessage />
                   </FormItem>
