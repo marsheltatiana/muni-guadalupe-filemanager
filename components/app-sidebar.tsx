@@ -58,7 +58,7 @@ const mantenedoresItems = [
 
 const busquedaItems = [
   {
-    title: "Busqueda semantica",
+    title: "Busqueda",
     url: "/dashboard/search",
     icon: SearchSlash,
   },
