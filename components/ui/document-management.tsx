@@ -22,6 +22,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Categoria_Documento, Contenedor, Estante } from "@prisma/client";
 import { FileText, Upload } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface EstanteWithContainers extends Estante {
@@ -29,6 +30,9 @@ interface EstanteWithContainers extends Estante {
 }
 
 export function DocumentManagement() {
+
+  const router = useRouter();
+
   const [shelves, setShelves] = useState<EstanteWithContainers[]>([]);
   const [selectedShelf, setSelectedShelf] =
     useState<EstanteWithContainers | null>(null);
@@ -94,6 +98,8 @@ export function DocumentManagement() {
         description: `El documento se registró en ${timeInSeconds} segundos`,
         variant: "default",
       });
+
+      router.refresh()
     } else {
       toast({
         title: "Error al registrar el documento",
