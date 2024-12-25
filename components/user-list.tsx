@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
   Table,
@@ -16,6 +17,7 @@ import { Rol, Usuario } from "@prisma/client";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { UserUpdateForm } from "./user-update-form";
 
 interface UserWithRol extends Usuario {
   Rol: Rol;
@@ -136,14 +138,16 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="mr-2"
-                      disabled
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button variant="ghost" size="icon" className="mr-2">
+                          <Edit className="h-4 w-4" />
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent>
+                        <UserUpdateForm user={user} />
+                      </DialogContent>
+                    </Dialog>
                     <Button
                       variant="ghost"
                       size="icon"

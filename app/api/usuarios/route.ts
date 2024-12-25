@@ -5,11 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const users = await prisma.usuario.findMany({
     include: {
-      Rol: {
-        select: {
-          nombre_rol: true,
-        },
-      },
+      Rol: true,
     },
   });
 
@@ -54,6 +50,68 @@ export async function POST(request: NextRequest) {
   }
 
   return NextResponse.json(user, { status: 201 });
+}
+
+export async function PUT(request: NextRequest) {
+  const {
+    name,
+    email,
+    password: passwordTextPlain,
+    role,
+  } = await request.json();
+
+  if (passwordTextPlain === "" || passwordTextPlain === null) {
+    const user = await prisma.usuario.update({
+      where: {
+        email: email,
+      },
+      data: {
+        nombre: name,
+        email,
+        Rol: {
+          connect: {
+            id_rol: Number.parseInt(role),
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "No se pudo actualizar el usuario." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(user, { status: 200 });
+  } else {
+    const hashPwd = await bcrypt.hash(passwordTextPlain, 14);
+
+    const user = await prisma.usuario.update({
+      where: {
+        email: email,
+      },
+      data: {
+        nombre: name,
+        email,
+        contrasenia: hashPwd,
+        Rol: {
+          connect: {
+            id_rol: Number.parseInt(role),
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      return NextResponse.json(
+        { message: "No se pudo actualizar el usuario." },
+        { status: 500 }
+      );
+    }
+
+    return NextResponse.json(user, { status: 200 });
+  }
 }
 
 export async function DELETE(request: NextRequest) {
