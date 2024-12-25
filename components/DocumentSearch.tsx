@@ -81,12 +81,12 @@ export function DocumentSearch() {
       >
         <div className="w-full lg:max-w-[70%] p-6">
           <motion.div layout className="flex flex-col items-center">
-            <motion.h1
-              className="text-5xl font-light mb-8 text-center text-gray-800 font-playfair tracking-wide overflow-hidden"
+            <motion.h1 
+              className="text-5xl font-light text-center text-gray-800 font-playfair tracking-wide overflow-hidden"
               animate={{
-                opacity: hasSearched ? 0 : 1,
-                height: hasSearched ? 0 : "auto",
-                marginBottom: hasSearched ? 0 : 32,
+              fontSize: hasSearched ? "2rem" : "3rem",
+              opacity: 1,
+              marginBottom: hasSearched ? 16 : 32,
               }}
               initial={{ opacity: 0, y: -20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -97,8 +97,8 @@ export function DocumentSearch() {
             <motion.p
               className="text-2xl text-center mb-8 text-gray-600 font-light tracking-wide overflow-hidden"
               animate={{
-                opacity: hasSearched ? 0 : 1,
-                height: hasSearched ? 0 : "auto",
+                fontSize: hasSearched ? "1rem" : "1.2rem",
+                opacity: 1,
                 marginBottom: hasSearched ? 0 : 32,
               }}
               initial={{ opacity: 0, y: 20 }}
@@ -137,7 +137,7 @@ export function DocumentSearch() {
                   <Button
                     onClick={handleSearch}
                     disabled={isSearching}
-                    className="rounded-full w-12 h-12 flex items-center justify-center bg-indigo-500 hover:bg-indigo-600 transition-all duration-300 transform hover:scale-105"
+                    className="rounded-full w-12 h-12 flex items-center justify-center bg-gray-700 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
                   >
                     {isSearching ? (
                       <motion.div
@@ -154,7 +154,7 @@ export function DocumentSearch() {
                     )}
                   </Button>
                   <Button
-                    className="rounded-full w-12 h-12 flex items-center justify-center bg-violet-100 hover:bg-violet-200 transition-all duration-300 transform hover:scale-105"
+                    className="rounded-full w-12 h-12 flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-all duration-300 transform hover:scale-105"
                     onClick={() =>
                       toast({
                         title: "Función no implementada",
@@ -163,7 +163,7 @@ export function DocumentSearch() {
                       })
                     }
                   >
-                    <Mic className="h-5 w-5 text-violet-600" />
+                    <Mic className="h-5 w-5 text-slate-600" />
                   </Button>
                 </div>
               </div>
