@@ -323,7 +323,7 @@ export default function Dashboard() {
               </Table>
             </CardContent>
           </Card>
-          <SupportChat />
+          {/* <SupportChat /> */}
         </div>
       </div>
     </div>
