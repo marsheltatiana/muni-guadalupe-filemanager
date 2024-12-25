@@ -2,7 +2,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { motion } from "framer-motion";
 import { SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { Badge } from "./ui/badge";
 import { Card, CardHeader, CardTitle } from "./ui/card";
 import {
@@ -27,15 +26,13 @@ interface SearchResultsProps {
 }
 
 export function SearchResults({ results }: SearchResultsProps) {
-  const [view, setView] = useState<"list" | "grid">("list");
-
   const sortedResults = [...results].sort(
     (a, b) => b.similarity - a.similarity
   );
 
   return (
     <div className="h-full flex">
-      <div className="w-full border-r border-gray-200 p-6">
+      <div className="w-full p-6">
         <div className="flex items-center justify-between mb-6">
           <div>
             <h2 className="text-2xl font-semibold text-gray-800">Resultados</h2>
@@ -88,9 +85,12 @@ export function SearchResults({ results }: SearchResultsProps) {
                     <span className="font-semibold">
                       Vista previa del contenido
                     </span>
-                    <p className="text-gray-800 text-justify pb-24 text-wrap max-w-md break-all overflow-wrap-anywhere whitespace-pre-line">
-                      {result.fragment}
-                    </p>
+                    <div className="relative">
+                      <p className="text-gray-800 text-justify pb-4 text-wrap max-w-md break-all overflow-wrap-anywhere whitespace-pre-line">
+                        {result.fragment}
+                      </p>
+                      <div className="absolute bottom-0 left-0 w-full h-24 bg-gradient-to-t from-white to-transparent" />
+                    </div>
                   </DialogContent>
                 </Dialog>
               </motion.div>
