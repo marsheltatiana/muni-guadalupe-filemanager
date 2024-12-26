@@ -20,7 +20,6 @@ import { auth } from "@/lib/auth";
 import {
   Archive,
   ChevronUp,
-  FolderArchive,
   History,
   Printer,
   SearchSlash,
@@ -66,13 +65,8 @@ const busquedaItems = [
 
 const prestamosItems = [
   {
-    title: "Registro",
-    url: "/dashboard/loans",
-    icon: FolderArchive,
-  },
-  {
-    title: "Historial",
-    url: "/dashboard/loans/history",
+    title: "Transacciones",
+    url: "/dashboard/transactions",
     icon: History,
   },
 ];
@@ -184,17 +178,17 @@ export async function AppSidebar() {
               <DropdownMenuTrigger asChild>
                 <SidebarMenuButton>
                   {user.image ? (
-                  <Image
-                    src={user.image}
-                    width={24}
-                    height={24}
-                    alt="avatar"
-                    className="rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu"
-                  />
+                    <Image
+                      src={user.image}
+                      width={24}
+                      height={24}
+                      alt="avatar"
+                      className="rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu"
+                    />
                   ) : (
-                  <div className="w-6 h-6 flex items-center justify-center bg-gray-300 rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu">
-                    {user.name!.charAt(0).toUpperCase()}
-                  </div>
+                    <div className="w-6 h-6 flex items-center justify-center bg-gray-300 rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu">
+                      {user.name!.charAt(0).toUpperCase()}
+                    </div>
                   )}
                   {user.name}
                   <ChevronUp className="ml-auto" />
