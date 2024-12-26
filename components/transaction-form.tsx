@@ -19,7 +19,7 @@ import {
 } from "@/components/ui/select";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Rol, Transaccion, Usuario } from "@prisma/client";
+import { Rol, Usuario } from "@prisma/client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -67,12 +67,7 @@ export function TransactionForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      const nuevaTransaccion: Transaccion = {
-        id_transaccion: Math.floor(Math.random() * 1000), // Esto es solo para simular un ID
-        ...values,
-        fecha_fin: values.fecha_fin || null,
-        estado_id: 1, // Asumimos que 1 es el estado "Activo"
-      };
+      console.log(values);
 
       form.reset();
     } catch (error) {

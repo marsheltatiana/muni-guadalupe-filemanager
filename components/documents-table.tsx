@@ -17,9 +17,11 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { EstadoDocumento } from "@/lib/document-states";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
 import { Copy, ExternalLink, FileText, Filter } from "lucide-react";
 import * as React from "react";
+import { DocumentStateBadge } from "./document-state-badge";
 
 interface DocumentoWithContenedorCategoria extends Documento {
   Contenedor: Contenedor;
@@ -101,7 +103,15 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   </TableCell>
                   <TableCell>{doc.descripcion?.slice(0, 20)}...</TableCell>
                   <TableCell>{doc.anio}</TableCell>
-                  <TableCell>{doc.estado}</TableCell>
+                  <TableCell>
+                    {doc.estado && doc.estado ? (
+                      <DocumentStateBadge
+                        state={doc.estado as EstadoDocumento}
+                      />
+                    ) : (
+                      <span>Sin estado</span>
+                    )}
+                  </TableCell>
                   <TableCell>
                     {doc.Categoria_Documento.nombre_categoria}
                   </TableCell>
