@@ -82,6 +82,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
               <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
               <TableHead>Año</TableHead>
+              <TableHead>Estado</TableHead>
               <TableHead>Categoria</TableHead>
               <TableHead>Contenedor</TableHead>
               <TableHead>Fila & Columna</TableHead>
@@ -100,6 +101,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   </TableCell>
                   <TableCell>{doc.descripcion?.slice(0, 20)}...</TableCell>
                   <TableCell>{doc.anio}</TableCell>
+                  <TableCell>{doc.estado}</TableCell>
                   <TableCell>
                     {doc.Categoria_Documento.nombre_categoria}
                   </TableCell>
