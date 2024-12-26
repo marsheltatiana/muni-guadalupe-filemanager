@@ -15,6 +15,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import prisma from "@/lib/db";
+import { formatDistanceToNow } from "date-fns";
+import { es } from "date-fns/locale";
 import {
   BarChart,
   Calendar,
@@ -32,6 +34,19 @@ export default async function Dashboard() {
       created_at: {
         gte: new Date(new Date().setHours(0, 0, 0, 0)),
       },
+    },
+  });
+
+  const totalSearches = await prisma.estadistica_busqueda.count();
+  const averageSearchTime = await prisma.estadistica_busqueda.aggregate({
+    _avg: {
+      tiempo_segundos: true,
+    },
+  });
+  const last5Searches = await prisma.estadistica_busqueda.findMany({
+    take: 5,
+    orderBy: {
+      created_at: "desc",
     },
   });
 
@@ -81,10 +96,10 @@ export default async function Dashboard() {
               <Search className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">12,543</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">{totalSearches}</div>
+              {/* <p className="text-xs text-muted-foreground">
                 +15% desde la semana pasada
-              </p>
+              </p> */}
             </CardContent>
           </Card>
           <Card>
@@ -95,10 +110,12 @@ export default async function Dashboard() {
               <Clock className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1.2s</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">
+                {averageSearchTime._avg.tiempo_segundos?.toFixed(2)}s
+              </div>
+              {/* <p className="text-xs text-muted-foreground">
                 -0.1s desde el mes pasado
-              </p>
+              </p> */}
             </CardContent>
           </Card>
           <Card>
@@ -160,50 +177,37 @@ export default async function Dashboard() {
           </Card>
           <Card>
             <CardHeader>
-              <CardTitle>Documentos más consultados</CardTitle>
-              <CardDescription>En los últimos 7 días</CardDescription>
+              <CardTitle>Ultimas 5 consultas</CardTitle>
             </CardHeader>
             <CardContent>
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Documento</TableHead>
-                    <TableHead>Categoría</TableHead>
-                    <TableHead>Consultas</TableHead>
+                    <TableHead>Consulta</TableHead>
+                    <TableHead>Tiempo</TableHead>
+                    <TableHead>Fecha</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {[
-                    {
-                      doc: "Ordenanza Municipal 2023-001",
-                      category: "Legal",
-                      views: 342,
-                    },
-                    {
-                      doc: "Plano Catastral Zona Norte",
-                      category: "Urbanismo",
-                      views: 289,
-                    },
-                    {
-                      doc: "Presupuesto Anual 2024",
-                      category: "Finanzas",
-                      views: 256,
-                    },
-                    {
-                      doc: "Acta de Sesión Ordinaria 15/10",
-                      category: "Administrativo",
-                      views: 198,
-                    },
-                    {
-                      doc: "Proyecto de Ley Local #45",
-                      category: "Legal",
-                      views: 175,
-                    },
-                  ].map((item, index) => (
+                  {last5Searches.map((item, index) => (
                     <TableRow key={index}>
-                      <TableCell className="font-medium">{item.doc}</TableCell>
-                      <TableCell>{item.category}</TableCell>
-                      <TableCell>{item.views}</TableCell>
+                      <TableCell className="font-medium">
+                        {item.consulta}
+                      </TableCell>
+                      <TableCell>
+                        {item.tiempo_segundos && item.tiempo_segundos
+                          ? item.tiempo_segundos.toFixed(2) + "s"
+                          : "No registrado"}
+                      </TableCell>
+                      <TableCell>
+                        <span>
+                          {item.created_at &&
+                            formatDistanceToNow(item.created_at, {
+                              addSuffix: true,
+                              locale: es,
+                            })}
+                        </span>
+                      </TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
