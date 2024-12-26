@@ -23,7 +23,7 @@ export const signUpSchema = z.object({
 
 export const createShelfSchema = z.object({
   nombre_estante: z.string().min(1, "El nombre del estante es requerido"),
-})
+});
 
 export const createContainerSchema = z.object({
   nombre: z.string().min(1, "El nombre del contenedor es requerido"),
@@ -34,5 +34,12 @@ export const createContainerSchema = z.object({
   fila: z.string().min(1, "La fila es requerida"),
   columna: z.string().optional(),
   tipo_contenedor_id: z.string(),
-})
+});
 
+export const createTransactionSchema = z.object({
+  usuario_id: z.number(),
+  documento_id: z.string(),
+  tipo_transaccion: z.enum(["PRESTAMO", "DEVOLUCION"]),
+  fecha_inicio: z.date(),
+  fecha_fin: z.date().optional(),
+});

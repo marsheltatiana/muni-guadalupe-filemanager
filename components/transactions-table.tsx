@@ -64,14 +64,6 @@ const columns: ColumnDef<Transaccion>[] = [
         : "N/A";
     },
   },
-  {
-    accessorKey: "estado_id",
-    header: "Estado",
-    cell: ({ row }) => {
-      const estadoId = row.getValue("estado_id") as number;
-      return estadoId === 1 ? "Activo" : "Inactivo";
-    },
-  },
 ];
 
 type TablaTransaccionesProps = {
@@ -91,12 +83,8 @@ export function TransactionsTable({
     new Set(transacciones.map((transaccion) => transaccion.tipo_transaccion))
   );
 
-  const filteredTransactions = typeFilter
-    ? transacciones.filter((t) => t.tipo_transaccion === typeFilter)
-    : transacciones;
-
   const table = useReactTable({
-    data: filteredTransactions,
+    data: transacciones,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -134,7 +122,7 @@ export function TransactionsTable({
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => setTypeFilter(null)}>
-                Todos los estados
+                Todos los tipos
               </DropdownMenuItem>
               {uniqueTypes.map((type) => (
                 <DropdownMenuItem

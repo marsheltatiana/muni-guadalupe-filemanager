@@ -17,9 +17,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { createTransactionSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Rol, Usuario } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -34,13 +37,7 @@ import {
 import { Input } from "./ui/input";
 import { UserSelection } from "./user-selection";
 
-const formSchema = z.object({
-  usuario_id: z.number(),
-  documento_id: z.string(),
-  tipo_transaccion: z.enum(["PRESTAMO", "DEVOLUCION"]),
-  fecha_inicio: z.date(),
-  fecha_fin: z.date().optional(),
-});
+const formSchema = createTransactionSchema;
 
 interface UserWithRol extends Usuario {
   Rol: Rol;
@@ -55,6 +52,8 @@ export function TransactionForm({
   className,
   usuarios,
 }: FormularioTransaccionProps) {
+  const router = useRouter();
+
   const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -67,11 +66,37 @@ export function TransactionForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      console.log(values);
+      const response = await fetch("/api/transacciones", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      if (!response.ok) {
+        toast({
+          title: "❌ Error al registrar transacción",
+          description: "Ha ocurrido un error al registrar la transacción",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "✅ Transacción registrada",
+          description: "La transacción ha sido registrada exitosamente",
+        });
+
+        router.refresh();
+      }
 
       form.reset();
     } catch (error) {
       console.error("Error al crear la transacción:", error);
+      toast({
+        title: "❌ Error al registrar transacción",
+        description: "Ha ocurrido un error inesperado",
+        variant: "destructive",
+      });
     } finally {
       setLoading(false);
     }

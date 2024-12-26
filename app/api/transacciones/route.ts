@@ -21,3 +21,27 @@ export async function GET(request: NextRequest) {
     );
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const json = await request.json();
+
+    const transaccion = await prisma.transaccion.create({
+      data: {
+        usuario_id: json.usuario_id,
+        documento_id: json.documento_id,
+        tipo_transaccion: json.tipo_transaccion,
+        fecha_inicio: new Date(json.fecha_inicio),
+        fecha_fin: json.fecha_fin ? new Date(json.fecha_fin) : null,
+      },
+    });
+
+    return NextResponse.json(transaccion, { status: 201 });
+  } catch (error) {
+    console.error("Error creating transaccion:", error);
+    return NextResponse.json(
+      { error: "Error al crear la transacción" },
+      { status: 500 }
+    );
+  }
+}
