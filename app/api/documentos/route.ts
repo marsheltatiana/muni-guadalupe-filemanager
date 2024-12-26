@@ -13,19 +13,17 @@ type DocumentRequest = {
 };
 
 function generateDocumentId(nombre: string, timestamp: number): string {
-  // Prefijo de la empresa
+  // Prefijo de la empresa (3 caracteres)
   const prefix = "MDG";
 
-  // Tomar las primeras palabras del nombre, convertir a minúsculas y limpiar
+  // Tomar las primeras palabras del nombre, convertir a minúsculas y limpiar (7 caracteres)
   let cleanName = nombre
     .toLowerCase()
     .replace(/[^a-z0-9\s]/g, "")
     .split(" ")
     .slice(0, 2)
     .join("-");
-
-  // Limitar cleanName a 8 caracteres (para mantener 30 en total)
-  cleanName = cleanName.slice(0, 8);
+  cleanName = cleanName.slice(0, 7);
 
   // Formatear fecha como YYYYMMDDHHM (11 caracteres)
   const date = new Date(timestamp);
@@ -34,10 +32,10 @@ function generateDocumentId(nombre: string, timestamp: number): string {
     .replace(/[^0-9]/g, "")
     .slice(0, 11);
 
-  // Generar caracteres aleatorios (7 caracteres)
-  const randomStr = Math.random().toString(36).substring(2, 9);
+  // Generar caracteres aleatorios (6 caracteres)
+  const randomStr = Math.random().toString(36).substring(2, 8);
 
-  // Combinar todo en formato: mdg-nombre-fecha-random (30 caracteres total)
+  // Combinar todo en formato: MDG-nombre-fecha-random (exactamente 30 caracteres)
   return `${prefix}-${cleanName}-${dateStr}-${randomStr}`;
 }
 
