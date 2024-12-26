@@ -176,6 +176,7 @@ def supersearch(query: Query):
         payload_list.append({
             "filename": data_store["files"][idx]["filename"],
             "url": data_store["files"][idx]["url"],
+            "category": data_store["files"][idx]["categoria_name"],
             "fragment": data_store["texts"][idx][:300],
             "similarity": similitudes[idx].item(),
             "summary_ESP": compose_summary_ESP,
