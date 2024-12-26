@@ -157,18 +157,19 @@ export function SearchResults({ results }: SearchResultsProps) {
                       Vista previa del contenido
                     </span>
                     <div className="relative mt-4 bg-gray-50 rounded-lg p-4">
-                      <p
-                        className="text-gray-700 leading-relaxed text-base tracking-normal
-                      prose prose-sm max-w-none
-                      font-normal break-words
-                      line-clamp-6"
-                      >
-                        {result.fragment}
-                      </p>
+                      <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
+                        <p
+                          className="text-gray-700 leading-relaxed text-base tracking-normal
+                        prose prose-sm max-w-none
+                        font-normal break-words break-all whitespace-pre-wrap pr-2"
+                        >
+                          {result.fragment}
+                        </p>
+                      </div>
                       <div
                         className="absolute bottom-0 left-0 w-full h-16 
-                      bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent
-                      rounded-b-lg"
+                        bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent
+                        rounded-b-lg pointer-events-none"
                       />
                     </div>
                   </DialogContent>
