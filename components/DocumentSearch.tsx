@@ -81,29 +81,38 @@ export function DocumentSearch() {
       >
         <div className="w-full lg:max-w-[70%] p-6">
           <motion.div layout className="flex flex-col items-center">
-            <motion.h1 
+            <motion.h1
               className="text-5xl font-light text-center text-gray-800 font-playfair tracking-wide overflow-hidden"
+              layout
               animate={{
-              fontSize: hasSearched ? "2rem" : "3rem",
-              opacity: 1,
-              marginBottom: hasSearched ? 16 : 32,
+                scale: hasSearched ? 0.8 : 1,
+                opacity: 1,
+                y: 0,
               }}
-              initial={{ opacity: 0, y: -20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              initial={{ opacity: 0, y: 20 }}
+              transition={{
+                duration: 0.5,
+                ease: [0.16, 1, 0.3, 1],
+                layout: { duration: 0.4 },
+              }}
             >
               ¿En qué puedo ayudarte hoy?
             </motion.h1>
             <motion.p
               className="text-2xl text-center mb-8 text-gray-600 font-light tracking-wide overflow-hidden"
+              layout
               animate={{
-                fontSize: hasSearched ? "1rem" : "1.2rem",
+                scale: hasSearched ? 0.65 : 1,
                 opacity: 1,
-                marginBottom: hasSearched ? 0 : 32,
+                y: 0,
               }}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3, ease: "easeOut" }}
+              initial={{ opacity: 0, y: 15 }}
+              transition={{
+                duration: 0.5,
+                ease: [0.16, 1, 0.3, 1],
+                layout: { duration: 0.4 },
+                delay: 0.1,
+              }}
             >
               Búsqueda de Documentos del Archivo General
             </motion.p>
@@ -174,11 +183,11 @@ export function DocumentSearch() {
                   className="mt-4 text-center"
                 >
                   <p className="text-sm text-gray-600">
-                    <span className="font-medium text-indigo-600">
+                    <span className="font-medium">
                       {totalDocuments.toLocaleString()}
                     </span>{" "}
                     documentos analizados en{" "}
-                    <span className="font-medium text-indigo-600">
+                    <span className="font-medium">
                       {searchDuration.toFixed(2)}
                     </span>{" "}
                     segundos
