@@ -22,7 +22,6 @@ import {
   SortingState,
   useReactTable,
 } from "@tanstack/react-table";
-import { Filter } from "lucide-react";
 import { useState } from "react";
 import {
   Card,
@@ -31,27 +30,47 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "./ui/dropdown-menu";
 
 const columns: ColumnDef<Transaccion>[] = [
   {
     accessorKey: "id_transaccion",
-    header: "ID",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          ID
+        </Button>
+      );
+    },
   },
   {
     accessorKey: "tipo_transaccion",
-    header: "Tipo",
+    header: ({ column }) => {
+      return (
+        <Button
+          variant="ghost"
+          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+        >
+          Tipo
+        </Button>
+      );
+    },
+    enableSorting: true,
+    filterFn: (row, id, value) => {
+      return value === null || row.getValue(id) === value;
+    },
   },
   {
     accessorKey: "fecha_inicio",
     header: "Fecha Inicio",
     cell: ({ row }) => {
-      return new Date(row.getValue("fecha_inicio")).toLocaleDateString();
+      return new Date(row.getValue("fecha_inicio")).toLocaleDateString('es-ES', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit'
+      });
     },
   },
   {
@@ -60,7 +79,11 @@ const columns: ColumnDef<Transaccion>[] = [
     cell: ({ row }) => {
       const fecha = row.getValue("fecha_fin");
       return fecha && typeof fecha === "string"
-        ? new Date(fecha).toLocaleDateString()
+        ? new Date(fecha).toLocaleDateString('es-ES', {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit'
+          })
         : "N/A";
     },
   },
@@ -79,12 +102,12 @@ export function TransactionsTable({
   const [globalFilter, setGlobalFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState<string | null>(null);
 
-  const uniqueTypes = Array.from(
-    new Set(transacciones.map((transaccion) => transaccion.tipo_transaccion))
-  );
+  const filteredData = typeFilter
+    ? transacciones.filter((t) => t.tipo_transaccion === typeFilter)
+    : transacciones;
 
   const table = useReactTable({
-    data: transacciones,
+    data: filteredData,
     columns,
     getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
@@ -113,27 +136,6 @@ export function TransactionsTable({
             onChange={(event) => setGlobalFilter(String(event.target.value))}
             className="max-w-sm"
           />
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Filter className="mr-2 h-4 w-4" />
-                Filtrar por tipo de transacción
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => setTypeFilter(null)}>
-                Todos los tipos
-              </DropdownMenuItem>
-              {uniqueTypes.map((type) => (
-                <DropdownMenuItem
-                  key={type}
-                  onClick={() => setTypeFilter(type)}
-                >
-                  {type}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
         </div>
 
         <div className="rounded-md border">
