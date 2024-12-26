@@ -18,7 +18,8 @@ function generateDocumentId(nombre: string, timestamp: number): string {
     .replace(/[^a-z0-9]/g, "")
     .slice(0, 6);
   const randomString = Math.random().toString(36).substring(2, 6);
-  return `doc-${cleanName}-${timestamp}-${randomString}`;
+  const id = `doc-${cleanName}-${timestamp}-${randomString}`;
+  return id.slice(0, 20);
 }
 
 export async function POST(request: NextRequest) {
