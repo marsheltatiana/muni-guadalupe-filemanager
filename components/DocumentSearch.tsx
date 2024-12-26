@@ -12,6 +12,7 @@ import { Textarea } from "./ui/textarea";
 interface SearchResult {
   filename: string;
   url: string;
+  category: string;
   fragment: string;
   similarity: number;
   summary_ESP: string;

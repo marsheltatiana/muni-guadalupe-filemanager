@@ -20,6 +20,7 @@ import { PdfIcon } from "./ui/icons";
 interface SearchResult {
   filename: string;
   url: string;
+  category: string;
   fragment: string;
   similarity: number;
   summary_ESP: string;
@@ -56,28 +57,40 @@ export function SearchResults({ results }: SearchResultsProps) {
               >
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Card className="group relative flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-all duration-300 hover:bg-gray-50/90 hover:shadow-lg hover:scale-[1.02] h-[140px]">
-                      <div className="absolute top-3 right-3 z-10">
+                    <Card className="group relative h-[220px] overflow-hidden transition-all duration-500 hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.1)] hover:scale-[1.03] bg-white/95border border-gray-100/80 cursor-pointer">
+                      <div className="absolute top-4 right-4 z-10 transform transition-transform duration-500 group-hover:-translate-y-0.5">
                         <Badge
                           variant="secondary"
-                          className="bg-white shadow-sm backdrop-blur-sm font-semibold text-xs"
+                          className="backdrop-blur-md bg-white/90 font-medium text-xs shadow-lg ring-1 ring-gray-100/50"
                         >
-                          {(result.similarity * 100).toFixed(1)}%
+                          {(result.similarity * 100).toFixed(1)}% relevante
                         </Badge>
                       </div>
 
-                      <CardHeader className="flex flex-col items-center space-y-3 p-0 w-full">
-                        <div className="relative group-hover:animate-pulse">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-red-600 rounded-full blur opacity-30 group-hover:opacity-40 transition-opacity" />
-                          <PdfIcon className="relative w-10 h-10 text-red-500" />
+                      <CardHeader className="flex h-full flex-col items-center justify-between p-6 text-center">
+                        <div className="relative mt-2">
+                          <div className="absolute -inset-3 bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-pink-500/30 rounded-full blur-2xl opacity-0 transition-all duration-700 group-hover:opacity-80" />
+                          <div className="relative transform transition-all duration-500 ease-out group-hover:scale-110 group-hover:-translate-y-1">
+                            <PdfIcon className="h-14 w-14 text-indigo-600/90 drop-shadow-md transition-colors duration-500 group-hover:text-indigo-500" />
+                          </div>
                         </div>
 
-                        <CardTitle className="text-sm font-medium text-gray-700 text-center line-clamp-2 w-full transition-colors duration-200 group-hover:text-gray-900">
-                          {result.filename}
-                        </CardTitle>
+                        <div className="space-y-4 mt-4">
+                          <CardTitle className="line-clamp-2 text-sm font-medium text-gray-600 transition-colors duration-300 group-hover:text-gray-900">
+                            {result.filename}
+                          </CardTitle>
+
+                          <Badge
+                            variant="outline"
+                            className="bg-gradient-to-r from-gray-50 to-gray-100/80 text-xs font-medium text-gray-500 transition-all duration-300 group-hover:bg-indigo-50 group-hover:text-indigo-600 ring-1 ring-gray-200/50"
+                          >
+                            {result.category || "Sin categoría"}
+                          </Badge>
+                        </div>
                       </CardHeader>
 
-                      <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg" />
+                      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-indigo-50/5 to-indigo-100/10 opacity-0 transition-all duration-500 group-hover:opacity-100" />
+                      <div className="absolute inset-0 border border-indigo-200/20 rounded-lg opacity-0 transition-all duration-500 group-hover:opacity-100" />
                     </Card>
                   </DialogTrigger>
                   <DialogContent>
