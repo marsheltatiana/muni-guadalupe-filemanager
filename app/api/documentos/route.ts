@@ -63,7 +63,12 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  const documents = await prisma.documento.findMany();
+  const documents = await prisma.documento.findMany({
+    include: {
+      Contenedor: true,
+      Categoria_Documento: true,
+    }
+  });
 
   return NextResponse.json(documents);
 }
