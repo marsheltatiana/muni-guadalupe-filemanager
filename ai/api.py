@@ -85,7 +85,19 @@ def load_pdfs(api_url: str):
             texts.append(pdf_content)
             files.append({
                 "filename": doc['nombre'],
-                "url": doc['documento_url']
+                "url": doc['documento_url'],
+                "description": doc['descripcion'],
+                "year": doc['anio'],
+                "container": {
+                    "type": doc['Contenedor']['Tipo_Contenedor']['nombre'], 
+                    "shelf_name": doc['Contenedor']['Estante']['nombre_estante'],
+                    "anio": doc['Contenedor']['anio'],
+                    "name": doc['Contenedor']['nombre'],
+                    "description": doc['Contenedor']['descripcion'],
+                    "row": doc['Contenedor']['fila'],
+                    "column": doc['Contenedor']['columna']
+                },
+                "categoria_name": doc['Categoria_Documento']['nombre_categoria']
             })
         
         if not texts:
@@ -146,11 +158,24 @@ def supersearch(query: Query):
 
     payload_list = []
     for idx in results.indices:
+
+        compose_summary_ESP = (
+            f"El documento '{data_store['files'][idx]['filename']}' del {data_store['files'][idx]['year']} "
+            f"se encuentra en {data_store['files'][idx]['container']['type'].lower()} "
+            f"'{data_store['files'][idx]['container']['name']}' "
+            f"({data_store['files'][idx]['container']['description']}). "
+            f"Está ubicado en el estante {data_store['files'][idx]['container']['shelf_name']}, "
+            f"en la fila {data_store['files'][idx]['container']['row']} "
+            f"columna {data_store['files'][idx]['container']['column']}. "
+            f"Pertenece a la categoría de {data_store['files'][idx]['categoria_name']}"
+        )
+
         payload_list.append({
             "filename": data_store["files"][idx]["filename"],
             "url": data_store["files"][idx]["url"],
             "fragment": data_store["texts"][idx][:300],
-            "similarity": similitudes[idx].item()
+            "similarity": similitudes[idx].item(),
+            "summary_ESP": compose_summary_ESP,
         })
 
     end_time = time.time()
