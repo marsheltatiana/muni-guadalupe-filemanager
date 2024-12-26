@@ -1,6 +1,10 @@
-export const PdfIcon = () => {
+type IconProps = {
+  className?: string;
+};
+
+export const PdfIcon: React.FC<IconProps> = ({ className }) => {
   return (
-    <svg viewBox="-4 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <svg viewBox="-4 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg" className={className}>
       <g id="SVGRepo_bgCarrier" strokeWidth="0"></g>
       <g
         id="SVGRepo_tracerCarrier"

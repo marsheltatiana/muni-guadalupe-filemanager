@@ -54,18 +54,28 @@ export function SearchResults({ results }: SearchResultsProps) {
               >
                 <Dialog>
                   <DialogTrigger asChild>
-                    <Card className="relative flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-colors hover:bg-gray-50 hover:shadow-sm">
-                      <div className="absolute top-2 right-2">
-                        <Badge variant="outline" className="text-blue-600">
+                    <Card className="group relative flex flex-col items-center p-4 border rounded-lg cursor-pointer transition-all duration-300 hover:bg-gray-50/90 hover:shadow-lg hover:scale-[1.02] h-[140px]">
+                      <div className="absolute top-3 right-3 z-10">
+                        <Badge
+                          variant="secondary"
+                          className="bg-white shadow-sm backdrop-blur-sm font-semibold text-xs"
+                        >
                           {(result.similarity * 100).toFixed(1)}%
                         </Badge>
                       </div>
-                      <CardHeader className="flex flex-col items-center">
-                        <PdfIcon />
-                        <CardTitle className="text-sm font-semibold text-gray-800">
+
+                      <CardHeader className="flex flex-col items-center space-y-3 p-0 w-full">
+                        <div className="relative group-hover:animate-pulse">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-red-600 rounded-full blur opacity-30 group-hover:opacity-40 transition-opacity" />
+                          <PdfIcon className="relative w-10 h-10 text-red-500" />
+                        </div>
+
+                        <CardTitle className="text-sm font-medium text-gray-700 text-center line-clamp-2 w-full transition-colors duration-200 group-hover:text-gray-900">
                           {result.filename}
                         </CardTitle>
                       </CardHeader>
+
+                      <div className="absolute inset-0 bg-gradient-to-t from-white/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 rounded-lg" />
                     </Card>
                   </DialogTrigger>
                   <DialogContent>
