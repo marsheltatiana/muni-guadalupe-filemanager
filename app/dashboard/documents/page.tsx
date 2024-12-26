@@ -10,16 +10,25 @@ interface DocumentoWithContenedorCategoria extends Documento {
 }
 
 const DocumentsPage = async () => {
-  const documents: DocumentoWithContenedorCategoria[] = await fetch(
+  const documents: DocumentoWithContenedorCategoria[] | undefined = await fetch(
     `${process.env.APP_URL}/api/documentos`,
     {
       cache: "no-cache",
     }
-  ).then((res) => res.json());
+  )
+    .then(async (res) => {
+      if (!res.ok) return undefined;
+      return res.json();
+    })
+    .catch((err) => {
+      console.log(err);
+      return undefined;
+    });
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-2">
       <DocumentManagement />
+
       <Suspense fallback={<DocumentListLoader />}>
         <DocumentsTable documents={documents} />
       </Suspense>

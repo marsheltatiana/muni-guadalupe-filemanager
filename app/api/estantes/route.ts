@@ -2,22 +2,32 @@ import prisma from "@/lib/db";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
-  const estantes = await prisma.estante.findMany({
-    include: {
-      Contenedor: true,
-    },
-  });
+  try {
+    const estantes = await prisma.estante.findMany({
+      include: {
+        Contenedor: true,
+      },
+    });
 
-  if (!estantes) {
+    if (!estantes) {
+      return NextResponse.json(
+        {
+          message: "No se encontraron estantes",
+        },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(estantes, { status: 200 });
+  } catch (error) {
     return NextResponse.json(
       {
-        message: "No se encontraron estantes",
+        message: "Error al obtener los estantes",
+        error: error instanceof Error ? error.message : "Unknown error",
       },
-      { status: 404 }
+      { status: 500 }
     );
   }
-
-  return NextResponse.json(estantes);
 }
 
 export async function POST(request: NextRequest) {

@@ -93,29 +93,43 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
-  const documents = await prisma.documento.findMany({
-    include: {
-      Contenedor: {
-        include: {
-          Tipo_Contenedor: {
-            select: {
-              nombre: true,
+  try {
+    const documents = await prisma.documento.findMany({
+      include: {
+        Contenedor: {
+          include: {
+            Tipo_Contenedor: {
+              select: {
+                nombre: true,
+              },
             },
-          },
-          Estante: {
-            select: {
-              nombre_estante: true,
+            Estante: {
+              select: {
+                nombre_estante: true,
+              },
             },
           },
         },
-      },
-      Categoria_Documento: {
-        select: {
-          nombre_categoria: true,
+        Categoria_Documento: {
+          select: {
+            nombre_categoria: true,
+          },
         },
       },
-    },
-  });
+    });
 
-  return NextResponse.json(documents);
+    if (!documents) {
+      return NextResponse.json(
+        { message: "No se encontraron documentos." },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json(documents, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error al obtener los documentos.", error },
+      { status: 500 }
+    );
+  }
 }
