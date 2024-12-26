@@ -154,16 +154,32 @@ export function DocumentSearch() {
                     >
                       {isSearching ? (
                         <motion.div
-                          className="h-5 w-5 rounded-full border-t-2 border-r-2 border-white"
-                          animate={{ rotate: 360 }}
-                          transition={{
-                            duration: 1,
-                            repeat: Infinity,
-                            ease: "linear",
-                          }}
-                        />
+                          initial={{ opacity: 0 }}
+                          animate={{ opacity: 1 }}
+                          className="relative w-5 h-5"
+                        >
+                          <motion.div
+                            className="absolute inset-0 w-4 h-4 m-auto"
+                            animate={{ rotate: 360 }}
+                            transition={{
+                              duration: 1,
+                              ease: "linear",
+                              repeat: Infinity,
+                            }}
+                          >
+                            <div className="w-1 h-1 bg-white rounded-full absolute top-0 left-1/2 transform -translate-x-1/2" />
+                            <div className="w-1 h-1 bg-white rounded-full absolute bottom-0 left-1/2 transform -translate-x-1/2" />
+                            <div className="w-1 h-1 bg-white rounded-full absolute left-0 top-1/2 transform -translate-y-1/2" />
+                            <div className="w-1 h-1 bg-white rounded-full absolute right-0 top-1/2 transform -translate-y-1/2" />
+                          </motion.div>
+                        </motion.div>
                       ) : (
-                        <Search className="h-5 w-5 text-white" />
+                        <motion.div
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.95 }}
+                        >
+                          <Search className="h-5 w-5 text-white" />
+                        </motion.div>
                       )}
                     </Button>
                     <Button
