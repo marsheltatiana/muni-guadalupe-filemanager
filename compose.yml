@@ -1,0 +1,28 @@
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    restart: unless-stopped
+    networks:
+      - app_network
+
+  search-api:
+    build:
+      context: ./ai
+      dockerfile: Dockerfile
+    expose:
+      - "8000"
+    env_file:
+      - ./ai/.env
+    restart: unless-stopped
+    networks:
+      - app_network
+
+networks:
+  app_network:
+    driver: bridge
