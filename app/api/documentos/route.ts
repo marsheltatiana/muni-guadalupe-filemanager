@@ -79,7 +79,11 @@ export async function GET() {
           },
         },
       },
-      Categoria_Documento: true,
+      Categoria_Documento: {
+        select: {
+          nombre_categoria: true,
+        },
+      },
     },
   });
 
