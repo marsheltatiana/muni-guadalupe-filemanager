@@ -35,15 +35,14 @@ model Documento {
   categoria_id        Int?
   documento_url       String
   id                  String               @id(map: "documento_pk") @db.VarChar(30)
+  estado              String?              @db.VarChar(20)
   Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
   Contenedor          Contenedor?          @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_contenedor")
-  Transaccion         Transaccion[]
 }
 
 model Estado_Transaccion {
-  id_estado     Int           @id @default(autoincrement())
-  nombre_estado String?       @db.VarChar(255)
-  Transaccion   Transaccion[]
+  id_estado     Int     @id @default(autoincrement())
+  nombre_estado String? @db.VarChar(255)
 }
 
 model Estante {
@@ -81,16 +80,13 @@ model Tipo_Contenedor {
 }
 
 model Transaccion {
-  id_transaccion     Int                 @id @default(autoincrement())
-  usuario_id         Int?
-  documento_id       String?             @db.VarChar(30)
-  tipo_transaccion   String?             @db.VarChar(255)
-  fecha_inicio       DateTime?           @db.Date
-  fecha_fin          DateTime?           @db.Date
-  estado_id          Int?
-  Estado_Transaccion Estado_Transaccion? @relation(fields: [estado_id], references: [id_estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_estado")
-  Usuario            Usuario?            @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
-  Documento          Documento?          @relation(fields: [documento_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_documento")
+  id_transaccion   Int       @id @default(autoincrement())
+  usuario_id       Int?
+  documento_id     String?   @db.VarChar(30)
+  tipo_transaccion String?   @db.VarChar(255)
+  fecha_inicio     DateTime  @db.Date
+  fecha_fin        DateTime? @db.Date
+  Usuario          Usuario?  @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
 }
 
 model Usuario {
