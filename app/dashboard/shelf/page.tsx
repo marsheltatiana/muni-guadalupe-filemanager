@@ -11,7 +11,11 @@ const ShelfPage = async () => {
     {
       cache: "no-cache",
     }
-  ).then((res) => res.json());
+  )
+    .then((res) => res.json())
+    .catch((err) => {
+      console.log(err);
+    });
 
   const containerTypes: Tipo_Contenedor[] = await fetch(
     `${process.env.APP_URL}/api/contenedor/tipos`,

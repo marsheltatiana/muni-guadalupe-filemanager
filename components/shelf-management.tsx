@@ -168,71 +168,75 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
 
   const renderTreeView = () => (
     <ScrollArea className="h-[calc(100vh-200px)]">
-      {filteredShelves.map((shelf) => (
-        <Collapsible
-          key={shelf.id_estante}
-          open={expandedShelves.has(shelf.id_estante)}
-          onOpenChange={() => toggleShelfExpansion(shelf.id_estante)}
-        >
-          <CollapsibleTrigger asChild>
-            <Button variant="ghost" className="w-full justify-start">
-              {expandedShelves.has(shelf.id_estante) ? (
-                <ChevronDown className="mr-2 h-4 w-4" />
-              ) : (
-                <ChevronRight className="mr-2 h-4 w-4" />
-              )}
-              {shelf.nombre_estante || `Estante ${shelf.id_estante}`}
-            </Button>
-          </CollapsibleTrigger>
-          <CollapsibleContent>
-            <AnimatePresence>
-              {shelf.Contenedor.map((container) => (
-                <motion.div
-                  key={container.id_contenedor}
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: "auto" }}
-                  exit={{ opacity: 0, height: 0 }}
-                  transition={{ duration: 0.3 }}
-                >
-                  <Card className="m-2">
-                    <CardContent className="p-4">
-                      <h4 className="font-semibold">
-                        {container.nombre ||
-                          `Contenedor ${container.id_contenedor}`}
-                      </h4>
-                      <p className="text-sm text-gray-500">
-                        {container.descripcion || "Sin descripción"}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Año:{" "}
-                        {container.anio
-                          ? new Date(container.anio).getFullYear()
-                          : "N/A"}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        Fila: {container.fila} | Columna:{" "}
-                        {container.columna || "N/A"}
-                      </p>
-                    </CardContent>
-                  </Card>
-                </motion.div>
-              ))}
-            </AnimatePresence>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full mt-2"
-              onClick={() => {
-                setSelectedShelfId(shelf.id_estante);
-                setIsNewContainerDialogOpen(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              Agregar Contenedor
-            </Button>
-          </CollapsibleContent>
-        </Collapsible>
-      ))}
+      {filteredShelves && filteredShelves.length > 0 ? (
+        filteredShelves.map((shelf) => (
+          <Collapsible
+            key={shelf.id_estante}
+            open={expandedShelves.has(shelf.id_estante)}
+            onOpenChange={() => toggleShelfExpansion(shelf.id_estante)}
+          >
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" className="w-full justify-start">
+                {expandedShelves.has(shelf.id_estante) ? (
+                  <ChevronDown className="mr-2 h-4 w-4" />
+                ) : (
+                  <ChevronRight className="mr-2 h-4 w-4" />
+                )}
+                {shelf.nombre_estante || `Estante ${shelf.id_estante}`}
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent>
+              <AnimatePresence>
+                {shelf.Contenedor.map((container) => (
+                  <motion.div
+                    key={container.id_contenedor}
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    transition={{ duration: 0.3 }}
+                  >
+                    <Card className="m-2">
+                      <CardContent className="p-4">
+                        <h4 className="font-semibold">
+                          {container.nombre ||
+                            `Contenedor ${container.id_contenedor}`}
+                        </h4>
+                        <p className="text-sm text-gray-500">
+                          {container.descripcion || "Sin descripción"}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Año:{" "}
+                          {container.anio
+                            ? new Date(container.anio).getFullYear()
+                            : "N/A"}
+                        </p>
+                        <p className="text-xs text-gray-400">
+                          Fila: {container.fila} | Columna:{" "}
+                          {container.columna || "N/A"}
+                        </p>
+                      </CardContent>
+                    </Card>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="w-full mt-2"
+                onClick={() => {
+                  setSelectedShelfId(shelf.id_estante);
+                  setIsNewContainerDialogOpen(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Agregar Contenedor
+              </Button>
+            </CollapsibleContent>
+          </Collapsible>
+        ))
+      ) : (
+        <div>No hay estantes disponibles</div>
+      )}
     </ScrollArea>
   );
 
@@ -315,7 +319,7 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
 
   return (
     <div className="p-4 space-y-4 min-h-screen">
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-3">
         <h2 className="text-3xl font-bold text-gray-800">
           Gestión de Estantes
         </h2>
@@ -340,14 +344,14 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
           </Button>
         </div>
       </div>
-      <div className="relative mb-6">
+      <div className="relative mb-6 w-full lg:w-[45%]">
         <Search className="absolute left-2 top-2.5 h-4 w-4 text-gray-500" />
         <Input
           type="text"
           placeholder="Buscar estantes..."
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          className="pl-8 bg-gray-100 border-gray-300"
+          className="pl-8"
         />
       </div>
       {viewMode === "tree" ? renderTreeView() : renderGridView()}
@@ -449,11 +453,11 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                     <FormLabel>Año</FormLabel>
                     <FormControl>
                       <Input
-                      type="text"
-                      {...field}
-                      maxLength={4}
-                      pattern="202[4-9]"
-                      placeholder="2024"
+                        type="text"
+                        {...field}
+                        maxLength={4}
+                        pattern="202[4-9]"
+                        placeholder="2024"
                       />
                     </FormControl>
                     <FormMessage />

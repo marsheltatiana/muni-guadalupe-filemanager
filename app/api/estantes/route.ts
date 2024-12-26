@@ -4,11 +4,11 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   const estantes = await prisma.estante.findMany({
     include: {
-      Contenedor: true
+      Contenedor: true,
     },
   });
 
-  if (estantes.length === 0) {
+  if (!estantes) {
     return NextResponse.json(
       {
         message: "No se encontraron estantes",
