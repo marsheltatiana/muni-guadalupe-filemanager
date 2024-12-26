@@ -17,7 +17,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
-import { Download, ExternalLink, FileText, Filter, Link } from "lucide-react";
+import { Copy, Download, ExternalLink, FileText, Filter, Link } from "lucide-react";
 import * as React from "react";
 
 interface DocumentoWithContenedorCategoria extends Documento {
@@ -89,7 +89,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
           </TableHeader>
           <TableBody>
             {filteredDocuments.map((doc) => (
-              <TableRow key={doc.id_documento}>
+              <TableRow key={doc.id}>
                 <TableCell className="font-medium">
                   <div className="flex items-center gap-2">
                     <FileText className="h-4 w-4" />
@@ -115,6 +115,15 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     Ver
                   </Button>
                 </TableCell>
+              <Button
+                variant="outline"
+                size="sm"
+                className="ml-2"
+                onClick={() => navigator.clipboard.writeText(doc.id)}
+              >
+                <Copy className="h-4 w-4 mr-2" />
+                Copiar ID
+              </Button>
               </TableRow>
             ))}
           </TableBody>

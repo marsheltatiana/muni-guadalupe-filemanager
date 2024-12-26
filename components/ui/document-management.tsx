@@ -189,14 +189,20 @@ export function DocumentManagement() {
                   <SelectValue placeholder="Seleccione un estante" />
                 </SelectTrigger>
                 <SelectContent>
-                  {shelves.map((shelf) => (
-                    <SelectItem
+                    {shelves && shelves.length > 0 ? (
+                    shelves.map((shelf) => (
+                      <SelectItem
                       key={shelf.id_estante}
                       value={shelf.nombre_estante!}
-                    >
+                      >
                       {shelf.nombre_estante}
+                      </SelectItem>
+                    ))
+                    ) : (
+                    <SelectItem value="no-shelves" disabled>
+                      No hay estantes disponibles
                     </SelectItem>
-                  ))}
+                    )}
                 </SelectContent>
               </Select>
             </div>

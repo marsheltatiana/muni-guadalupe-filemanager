@@ -12,6 +12,15 @@ type DocumentRequest = {
   file: File;
 };
 
+function generateDocumentId(nombre: string, timestamp: number): string {
+  const cleanName = nombre
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "")
+    .slice(0, 6);
+  const randomString = Math.random().toString(36).substring(2, 6);
+  return `doc-${cleanName}-${timestamp}-${randomString}`;
+}
+
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const body = Object.fromEntries(formData);
@@ -34,6 +43,7 @@ export async function POST(request: NextRequest) {
 
     const document = await prisma.documento.create({
       data: {
+        id: generateDocumentId(nombre, timestamp),
         contenedor_id,
         nombre,
         descripcion,

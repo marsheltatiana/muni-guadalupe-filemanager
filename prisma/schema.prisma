@@ -28,16 +28,15 @@ model Contenedor {
 }
 
 model Documento {
-  id_documento        Int                  @id @default(autoincrement())
   contenedor_id       Int?
   nombre              String?              @db.VarChar(255)
   descripcion         String?              @db.VarChar(255)
   anio                String?              @db.VarChar(4)
   categoria_id        Int?
   documento_url       String
+  id                  String               @id(map: "documento_pk") @db.VarChar(20)
   Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
   Contenedor          Contenedor?          @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_contenedor")
-  Solicitud           Solicitud[]
   Transaccion         Transaccion[]
 }
 
@@ -51,14 +50,6 @@ model Estante {
   id_estante     Int          @id @default(autoincrement())
   nombre_estante String?      @db.VarChar(255)
   Contenedor     Contenedor[]
-}
-
-model Historial_Transacciones {
-  id_historial   Int          @id @default(autoincrement())
-  transaccion_id Int?
-  estado         String?      @db.VarChar(255)
-  fecha_cambio   DateTime?    @db.Date
-  Transaccion    Transaccion? @relation(fields: [transaccion_id], references: [id_transaccion], onDelete: NoAction, onUpdate: NoAction, map: "fk_historial_transaccion")
 }
 
 model Permisos {
@@ -83,17 +74,6 @@ model Rol_Permisos {
   Rol            Rol?      @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_rol_permiso_rol")
 }
 
-model Solicitud {
-  id_solicitud     Int        @id @default(autoincrement())
-  usuario_id       Int?
-  documento_id     Int?
-  fecha_solicitud  DateTime?  @db.Date
-  estado_solicitud String?    @db.VarChar(255)
-  motivo           String?    @db.VarChar(255)
-  Documento        Documento? @relation(fields: [documento_id], references: [id_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_solicitud_documento")
-  Usuario          Usuario?   @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_solicitud_usuario")
-}
-
 model Tipo_Contenedor {
   id_tipo_contenedor Int          @id @default(autoincrement())
   nombre             String?      @db.VarChar(255)
@@ -101,17 +81,16 @@ model Tipo_Contenedor {
 }
 
 model Transaccion {
-  id_transaccion          Int                       @id @default(autoincrement())
-  usuario_id              Int?
-  documento_id            Int?
-  tipo_transaccion        String?                   @db.VarChar(255)
-  fecha_inicio            DateTime?                 @db.Date
-  fecha_fin               DateTime?                 @db.Date
-  estado_id               Int?
-  Historial_Transacciones Historial_Transacciones[]
-  Documento               Documento?                @relation(fields: [documento_id], references: [id_documento], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_documento")
-  Estado_Transaccion      Estado_Transaccion?       @relation(fields: [estado_id], references: [id_estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_estado")
-  Usuario                 Usuario?                  @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
+  id_transaccion     Int                 @id @default(autoincrement())
+  usuario_id         Int?
+  documento_id       String?             @db.VarChar(20)
+  tipo_transaccion   String?             @db.VarChar(255)
+  fecha_inicio       DateTime?           @db.Date
+  fecha_fin          DateTime?           @db.Date
+  estado_id          Int?
+  Estado_Transaccion Estado_Transaccion? @relation(fields: [estado_id], references: [id_estado], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_estado")
+  Usuario            Usuario?            @relation(fields: [usuario_id], references: [id_usuario], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_usuario")
+  Documento          Documento?          @relation(fields: [documento_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "fk_transaccion_documento")
 }
 
 model Usuario {
@@ -121,7 +100,6 @@ model Usuario {
   contrasenia   String        @db.VarChar(255)
   imagen_perfil String?       @db.VarChar(255)
   rol_id        Int?
-  Solicitud     Solicitud[]
   Transaccion   Transaccion[]
   Rol           Rol?          @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_rol")
 }
