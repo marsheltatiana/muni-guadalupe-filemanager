@@ -16,18 +16,22 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Documento } from "@prisma/client";
-import { Download, FileText, Filter } from "lucide-react";
+import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
+import { Download, ExternalLink, FileText, Filter, Link } from "lucide-react";
 import * as React from "react";
 
+interface DocumentoWithContenedorCategoria extends Documento {
+  Contenedor: Contenedor;
+  Categoria_Documento: Categoria_Documento;
+}
+
 type DocumentsTableProps = {
-  documents: Documento[];
+  documents: DocumentoWithContenedorCategoria[];
 };
 
 export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   documents,
 }) => {
-
   const [search, setSearch] = React.useState("");
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
 
@@ -77,6 +81,9 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
               <TableHead>Nombre</TableHead>
               <TableHead>Descripción</TableHead>
               <TableHead>Año</TableHead>
+              <TableHead>Categoria</TableHead>
+              <TableHead>Contenedor</TableHead>
+              <TableHead>Fila & Columna</TableHead>
               <TableHead>Acciones</TableHead>
             </TableRow>
           </TableHeader>
@@ -89,16 +96,23 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     {doc.nombre}
                   </div>
                 </TableCell>
-                <TableCell>{doc.descripcion}</TableCell>
+                <TableCell>{doc.descripcion?.slice(0, 20)}...</TableCell>
                 <TableCell>{doc.anio}</TableCell>
                 <TableCell>
+                  {doc.Categoria_Documento.nombre_categoria}
+                </TableCell>
+                <TableCell>{doc.Contenedor.nombre}</TableCell>
+                <TableCell>
+                  {doc.Contenedor.fila} - {doc.Contenedor.columna}
+                </TableCell>
+                <TableCell>
                   <Button
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
                     onClick={() => window.open(doc.documento_url, "_blank")}
                   >
-                    <Download className="h-4 w-4 mr-2" />
-                    Descargar
+                    <ExternalLink className="h-4 w-4 mr-2" />
+                    Ver
                   </Button>
                 </TableCell>
               </TableRow>
