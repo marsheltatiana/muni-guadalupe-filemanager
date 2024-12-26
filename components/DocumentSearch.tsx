@@ -14,6 +14,7 @@ interface SearchResult {
   url: string;
   fragment: string;
   similarity: number;
+  summary_ESP: string;
 }
 
 interface SearchResponse {

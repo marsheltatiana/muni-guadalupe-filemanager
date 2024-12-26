@@ -3,6 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Download, Share, SquareArrowOutUpRight } from "lucide-react";
 import Link from "next/link";
+import Markdown from "react-markdown";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { Card, CardHeader, CardTitle } from "./ui/card";
@@ -21,6 +22,7 @@ interface SearchResult {
   url: string;
   fragment: string;
   similarity: number;
+  summary_ESP: string;
 }
 
 interface SearchResultsProps {
@@ -152,7 +154,20 @@ export function SearchResults({ results }: SearchResultsProps) {
                         </div>
                       </DialogDescription>
                     </DialogHeader>
-                    <span className="font-semibold">Ubicación física</span>
+                    <span className="font-semibold">Resumen</span>
+                    <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
+                      <p
+                      className="text-gray-700 leading-relaxed text-base tracking-normal
+                      prose prose-sm max-w-none
+                      prose-p:my-0.5 prose-p:leading-normal
+                      font-normal break-words break-all whitespace-pre-wrap pr-2"
+                      >
+                      <Markdown>
+                      {result.summary_ESP ||
+                      "No se encontró un resumen para este documento"}
+                      </Markdown>
+                      </p>
+                    </div>
                     <span className="font-semibold">
                       Vista previa del contenido
                     </span>

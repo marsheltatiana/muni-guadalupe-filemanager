@@ -160,14 +160,16 @@ def supersearch(query: Query):
     for idx in results.indices:
 
         compose_summary_ESP = (
-            f"El documento '{data_store['files'][idx]['filename']}' del {data_store['files'][idx]['year']} "
-            f"se encuentra en {data_store['files'][idx]['container']['type'].lower()} "
-            f"'{data_store['files'][idx]['container']['name']}' "
-            f"({data_store['files'][idx]['container']['description']}). "
-            f"Está ubicado en el estante {data_store['files'][idx]['container']['shelf_name']}, "
-            f"en la fila {data_store['files'][idx]['container']['row']} "
-            f"columna {data_store['files'][idx]['container']['column']}. "
-            f"Pertenece a la categoría de {data_store['files'][idx]['categoria_name']}"
+            f"# 📄 {data_store['files'][idx]['filename']}\n"
+            f"## 📋 Información General\n"
+            f"🗓️ **Año:** {data_store['files'][idx]['year']}\n"
+            f"📑 **Categoría:** {data_store['files'][idx]['categoria_name']}\n"
+            f"## 📍 Dónde encontrarlo\n"
+            f"📦 **{data_store['files'][idx]['container']['type']}:** {data_store['files'][idx]['container']['name']}\n"
+            f"ℹ️ **Descripción:** {data_store['files'][idx]['container']['description']}\n"
+            f"🗄️ **Estante:** {data_store['files'][idx]['container']['shelf_name']}\n"
+            f"↕️ **Fila:** {data_store['files'][idx]['container']['row']}\n"
+            f"↔️ **Columna:** {data_store['files'][idx]['container']['column']}"
         )
 
         payload_list.append({
