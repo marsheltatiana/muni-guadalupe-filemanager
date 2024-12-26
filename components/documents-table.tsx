@@ -16,8 +16,9 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { toast } from "@/hooks/use-toast";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
-import { Copy, Download, ExternalLink, FileText, Filter, Link } from "lucide-react";
+import { Copy, ExternalLink, FileText, Filter } from "lucide-react";
 import * as React from "react";
 
 interface DocumentoWithContenedorCategoria extends Documento {
@@ -84,7 +85,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
               <TableHead>Categoria</TableHead>
               <TableHead>Contenedor</TableHead>
               <TableHead>Fila & Columna</TableHead>
-              <TableHead>Acciones</TableHead>
+              <TableHead className="text-center">Acciones</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -105,7 +106,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                 <TableCell>
                   {doc.Contenedor.fila} - {doc.Contenedor.columna}
                 </TableCell>
-                <TableCell>
+                <TableCell className="flex gap-3 items-center">
                   <Button
                     variant="outline"
                     size="sm"
@@ -114,16 +115,24 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     <ExternalLink className="h-4 w-4 mr-2" />
                     Ver
                   </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    className="ml-2"
+                    onClick={() => {
+                      navigator.clipboard.writeText(doc.id);
+
+                      toast({
+                        title: "¡ID copiado! 📋✨",
+                        description:
+                          "¡Listo! El ID del documento está en tu portapapeles 🎉",
+                      });
+                    }}
+                  >
+                    <Copy className="h-4 w-4 mr-2" />
+                    Copiar ID
+                  </Button>
                 </TableCell>
-              <Button
-                variant="outline"
-                size="sm"
-                className="ml-2"
-                onClick={() => navigator.clipboard.writeText(doc.id)}
-              >
-                <Copy className="h-4 w-4 mr-2" />
-                Copiar ID
-              </Button>
               </TableRow>
             ))}
           </TableBody>
