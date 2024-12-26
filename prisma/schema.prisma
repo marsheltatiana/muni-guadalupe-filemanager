@@ -36,6 +36,7 @@ model Documento {
   documento_url       String
   id                  String               @id(map: "documento_pk") @db.VarChar(30)
   estado              String?              @db.VarChar(20)
+  created_at          DateTime?            @default(now()) @db.Timestamp(6)
   Categoria_Documento Categoria_Documento? @relation(fields: [categoria_id], references: [id_categoria], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_categoria")
   Contenedor          Contenedor?          @relation(fields: [contenedor_id], references: [id_contenedor], onDelete: NoAction, onUpdate: NoAction, map: "fk_documento_contenedor")
 }
@@ -98,4 +99,10 @@ model Usuario {
   rol_id        Int?
   Transaccion   Transaccion[]
   Rol           Rol?          @relation(fields: [rol_id], references: [id_rol], onDelete: NoAction, onUpdate: NoAction, map: "fk_usuario_rol")
+}
+
+model estadistica_busqueda {
+  consulta        Int?
+  tiempo_segundos Int?
+  id              Int  @id @unique(map: "unique_key_constraint") @default(autoincrement())
 }
