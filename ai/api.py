@@ -163,6 +163,7 @@ def supersearch(query: Query):
             f"# 📄 {data_store['files'][idx]['filename']}\n"
             f"## 📋 Información General\n"
             f"🗓️ **Año:** {data_store['files'][idx]['year']}\n"
+            f"ℹ️ **Descripción:** {data_store['files'][idx]['description']}\n"
             f"📑 **Categoría:** {data_store['files'][idx]['categoria_name']}\n"
             f"## 📍 Dónde encontrarlo\n"
             f"📦 **{data_store['files'][idx]['container']['type']}:** {data_store['files'][idx]['container']['name']}\n"

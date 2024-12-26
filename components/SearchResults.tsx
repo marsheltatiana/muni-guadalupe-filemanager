@@ -157,15 +157,15 @@ export function SearchResults({ results }: SearchResultsProps) {
                     <span className="font-semibold">Resumen</span>
                     <div className="max-h-[200px] overflow-y-auto overflow-x-hidden scrollbar-thin scrollbar-thumb-gray-300">
                       <p
-                      className="text-gray-700 leading-relaxed text-base tracking-normal
+                        className="text-gray-700 leading-relaxed text-base tracking-normal
                       prose prose-sm max-w-none
                       prose-p:my-0.5 prose-p:leading-normal
                       font-normal break-words break-all whitespace-pre-wrap pr-2"
                       >
-                      <Markdown>
-                      {result.summary_ESP ||
-                      "No se encontró un resumen para este documento"}
-                      </Markdown>
+                        <Markdown>
+                          {result.summary_ESP ||
+                            "No se encontró un resumen para este documento"}
+                        </Markdown>
                       </p>
                     </div>
                     <span className="font-semibold">
