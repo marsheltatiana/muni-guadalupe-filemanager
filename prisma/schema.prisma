@@ -102,7 +102,8 @@ model Usuario {
 }
 
 model estadistica_busqueda {
-  consulta        Int?
-  tiempo_segundos Int?
-  id              Int  @id @unique(map: "unique_key_constraint") @default(autoincrement())
+  consulta        String?
+  tiempo_segundos Float?
+  id              Int       @id @unique(map: "unique_key_constraint") @default(autoincrement())
+  created_at      DateTime? @default(now()) @db.Timestamp(6)
 }

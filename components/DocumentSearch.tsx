@@ -59,6 +59,16 @@ export function DocumentSearch() {
       setTotalDocuments(data.metadata.total_documents);
       setSearchDuration(data.metadata.search_duration);
       setHasSearched(true);
+
+      await fetch("/api/estadisticas/search", {
+        method: "POST",
+        body: JSON.stringify({
+          consulta: data.query,
+          tiempo_segundos: data.metadata.search_duration,
+        }),
+      })
+        .then((response) => {})
+        .catch(console.error);
     } catch (error) {
       console.error("Error searching documents:", error);
       toast({

@@ -1,5 +1,3 @@
-import Reports from "@/components/reports";
-import { SupportChat } from "@/components/support-chat";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -8,7 +6,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -17,7 +14,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import prisma from "@/lib/db";
 import {
   BarChart,
   Calendar,
@@ -27,7 +24,17 @@ import {
   Users,
 } from "lucide-react";
 
-export default function Dashboard() {
+export default async function Dashboard() {
+  const users = await prisma.usuario.count();
+  const documents = await prisma.documento.count();
+  const documentsToday = await prisma.documento.count({
+    where: {
+      created_at: {
+        gte: new Date(new Date().setHours(0, 0, 0, 0)),
+      },
+    },
+  });
+
   return (
     <div>
       <div className="max-w-7xl mx-auto">
@@ -36,27 +43,7 @@ export default function Dashboard() {
         </h1>
 
         {/* Búsqueda y estadísticas rápidas */}
-        <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-4">
-          <Card className="md:col-span-3">
-            <CardHeader>
-              <CardTitle>Búsqueda rápida de documentos</CardTitle>
-              <CardDescription>
-                Busca por título, contenido o metadatos
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="flex gap-4">
-                <Input
-                  placeholder="Ingresa términos de búsqueda..."
-                  className="flex-grow"
-                />
-                <Button>
-                  <Search className="mr-2 h-4 w-4" />
-                  Buscar
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
+        <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-5">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -65,16 +52,13 @@ export default function Dashboard() {
               <FileText className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">45,231</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">{documents}</div>
+              {/* <p className="text-xs text-muted-foreground">
                 +2.5% desde el último mes
-              </p>
+              </p> */}
             </CardContent>
           </Card>
-        </div>
 
-        {/* Estadísticas detalladas */}
-        <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-2 lg:grid-cols-4">
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
               <CardTitle className="text-sm font-medium">
@@ -83,10 +67,10 @@ export default function Dashboard() {
               <Users className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">1,274</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">{users}</div>
+              {/* <p className="text-xs text-muted-foreground">
                 +180 nuevos este mes
-              </p>
+              </p> */}
             </CardContent>
           </Card>
           <Card>
@@ -125,14 +109,13 @@ export default function Dashboard() {
               <Calendar className="h-4 w-4 text-muted-foreground" />
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">87</div>
-              <p className="text-xs text-muted-foreground">
+              <div className="text-2xl font-bold">{documentsToday}</div>
+              {/* <p className="text-xs text-muted-foreground">
                 +23% respecto al promedio diario
-              </p>
+              </p> */}
             </CardContent>
           </Card>
         </div>
-
         {/* Accesos rápidos y gráficos */}
         <div className="grid gap-6 mb-8 grid-cols-1 lg:grid-cols-2">
           <Card>
@@ -174,102 +157,6 @@ export default function Dashboard() {
                 </Button>
               </div>
             </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Estadísticas de uso</CardTitle>
-              <CardDescription>
-                Actividad del sistema en los últimos 30 días
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <Reports />
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Actividad reciente y documentos populares */}
-        <div className="grid gap-6 grid-cols-1 lg:grid-cols-2">
-          <Card>
-            <Tabs defaultValue="actividad" className="w-full">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle>Actividad del sistema</CardTitle>
-                  <TabsList>
-                    <TabsTrigger value="actividad">Actividad</TabsTrigger>
-                    <TabsTrigger value="alertas">Alertas</TabsTrigger>
-                  </TabsList>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <TabsContent value="actividad">
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Usuario</TableHead>
-                        <TableHead>Acción</TableHead>
-                        <TableHead>Hora</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {[
-                        {
-                          user: "María L.",
-                          action: "Subió 5 documentos",
-                          time: "Hace 5 min",
-                        },
-                        {
-                          user: "Juan P.",
-                          action: "Actualizó metadatos",
-                          time: "Hace 15 min",
-                        },
-                        {
-                          user: "Ana S.",
-                          action: "Realizó búsqueda avanzada",
-                          time: "Hace 30 min",
-                        },
-                        {
-                          user: "Carlos R.",
-                          action: "Generó reporte mensual",
-                          time: "Hace 1 hora",
-                        },
-                        {
-                          user: "Laura M.",
-                          action: "Modificó permisos de acceso",
-                          time: "Hace 2 horas",
-                        },
-                      ].map((item, index) => (
-                        <TableRow key={index}>
-                          <TableCell className="font-medium">
-                            {item.user}
-                          </TableCell>
-                          <TableCell>{item.action}</TableCell>
-                          <TableCell>{item.time}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </TabsContent>
-                <TabsContent value="alertas">
-                  <ul className="space-y-4">
-                    <li className="bg-yellow-50 border-l-4 border-yellow-400 p-4">
-                      <p className="font-semibold">Mantenimiento programado</p>
-                      <p className="text-sm">
-                        El sistema estará en mantenimiento mañana de 2:00 AM a
-                        4:00 AM.
-                      </p>
-                    </li>
-                    <li className="bg-red-50 border-l-4 border-red-400 p-4">
-                      <p className="font-semibold">Alerta de seguridad</p>
-                      <p className="text-sm">
-                        Se detectaron intentos de acceso no autorizado. Por
-                        favor, verifique sus credenciales.
-                      </p>
-                    </li>
-                  </ul>
-                </TabsContent>
-              </CardContent>
-            </Tabs>
           </Card>
           <Card>
             <CardHeader>
@@ -323,7 +210,6 @@ export default function Dashboard() {
               </Table>
             </CardContent>
           </Card>
-          {/* <SupportChat /> */}
         </div>
       </div>
     </div>
