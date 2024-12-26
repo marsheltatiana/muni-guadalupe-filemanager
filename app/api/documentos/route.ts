@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { EstadoDocumento } from "@/lib/document-states";
 import { put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -67,6 +68,7 @@ export async function POST(request: NextRequest) {
         descripcion,
         anio,
         categoria_id,
+        estado: EstadoDocumento.DISPONIBLE,
         documento_url: blob.url,
       },
     });
