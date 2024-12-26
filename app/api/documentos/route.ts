@@ -66,12 +66,21 @@ export async function GET() {
   const documents = await prisma.documento.findMany({
     include: {
       Contenedor: {
-        include : {
-          Tipo_Contenedor: true
-        }
+        include: {
+          Tipo_Contenedor: {
+            select: {
+              nombre: true,
+            },
+          },
+          Estante: {
+            select: {
+              nombre_estante: true,
+            },
+          },
+        },
       },
       Categoria_Documento: true,
-    }
+    },
   });
 
   return NextResponse.json(documents);
