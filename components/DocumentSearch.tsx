@@ -5,7 +5,9 @@ import { toast } from "@/hooks/use-toast";
 import { AnimatePresence, motion } from "framer-motion";
 import { Mic, Search } from "lucide-react";
 import { useState } from "react";
+import { NeonBorderOverlay } from "./neon-border-overlay";
 import { SearchResults } from "./SearchResults";
+import { Textarea } from "./ui/textarea";
 
 interface SearchResult {
   filename: string;
@@ -117,64 +119,68 @@ export function DocumentSearch() {
               Búsqueda de Documentos del Archivo General
             </motion.p>
             <div className="w-full">
-              <div className="flex gap-2 items-start rounded-xl shadow-lg p-2">
-                <div className="flex-grow relative">
-                  <textarea
-                    placeholder="Resolución Municipal 2024..."
-                    value={query}
-                    onChange={(e) => {
-                      setQuery(e.target.value);
-                      e.target.style.height = "auto";
-                      e.target.style.height = `${e.target.scrollHeight}px`;
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter" && !e.shiftKey) {
-                        e.preventDefault();
-                        handleSearch();
+              <div className="relative">
+                <div className="flex gap-2 items-start rounded-xl shadow-lg p-2">
+                  <div className="flex-grow relative">
+                    <Textarea
+                      placeholder="Resolución Municipal 2024..."
+                      value={query}
+                      onChange={(e) => {
+                        setQuery(e.target.value);
+                        e.target.style.height = "auto";
+                        e.target.style.height = `${e.target.scrollHeight}px`;
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" && !e.shiftKey) {
+                          e.preventDefault();
+                          handleSearch();
+                        }
+                      }}
+                      className="w-full min-h-[48px] max-h-[200px] p-3 text-lg rounded-lg resize-none overflow-hidden bg-transparent"
+                      style={{
+                        border: "none",
+                        outline: "none",
+                        boxShadow: "none",
+                      }}
+                      rows={1}
+                    />
+                  </div>
+
+                  <div className="flex flex-col gap-2">
+                    <Button
+                      onClick={handleSearch}
+                      disabled={isSearching}
+                      className="rounded-full w-12 h-12 flex items-center justify-center bg-gray-700 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
+                    >
+                      {isSearching ? (
+                        <motion.div
+                          className="h-5 w-5 rounded-full border-t-2 border-r-2 border-white"
+                          animate={{ rotate: 360 }}
+                          transition={{
+                            duration: 1,
+                            repeat: Infinity,
+                            ease: "linear",
+                          }}
+                        />
+                      ) : (
+                        <Search className="h-5 w-5 text-white" />
+                      )}
+                    </Button>
+                    <Button
+                      className="rounded-full w-12 h-12 flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-all duration-300 transform hover:scale-105"
+                      onClick={() =>
+                        toast({
+                          title: "Función no implementada",
+                          description:
+                            "La entrada de voz se implementará en el futuro.",
+                        })
                       }
-                    }}
-                    className="w-full min-h-[48px] max-h-[200px] p-3 text-lg rounded-lg resize-none overflow-hidden bg-transparent"
-                    style={{
-                      border: "none",
-                      outline: "none",
-                      boxShadow: "none",
-                    }}
-                    rows={1}
-                  />
+                    >
+                      <Mic className="h-5 w-5 text-slate-600" />
+                    </Button>
+                  </div>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <Button
-                    onClick={handleSearch}
-                    disabled={isSearching}
-                    className="rounded-full w-12 h-12 flex items-center justify-center bg-gray-700 hover:bg-gray-800 transition-all duration-300 transform hover:scale-105"
-                  >
-                    {isSearching ? (
-                      <motion.div
-                        className="h-5 w-5 rounded-full border-t-2 border-r-2 border-white"
-                        animate={{ rotate: 360 }}
-                        transition={{
-                          duration: 1,
-                          repeat: Infinity,
-                          ease: "linear",
-                        }}
-                      />
-                    ) : (
-                      <Search className="h-5 w-5 text-white" />
-                    )}
-                  </Button>
-                  <Button
-                    className="rounded-full w-12 h-12 flex items-center justify-center bg-slate-100 hover:bg-slate-200 transition-all duration-300 transform hover:scale-105"
-                    onClick={() =>
-                      toast({
-                        title: "Función no implementada",
-                        description:
-                          "La entrada de voz se implementará en el futuro.",
-                      })
-                    }
-                  >
-                    <Mic className="h-5 w-5 text-slate-600" />
-                  </Button>
-                </div>
+                <NeonBorderOverlay />
               </div>
               {totalDocuments !== null && (
                 <motion.div
