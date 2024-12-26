@@ -25,6 +25,7 @@ import {
   Search,
   Users,
 } from "lucide-react";
+import Link from "next/link";
 
 export default async function Dashboard() {
   const users = await prisma.usuario.count();
@@ -144,34 +145,43 @@ export default async function Dashboard() {
             </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 gap-4">
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <FileText className="h-8 w-8 mb-2" />
-                  Gestión de documentos
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <Users className="h-8 w-8 mb-2" />
-                  Gestión de usuarios
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <Search className="h-8 w-8 mb-2" />
-                  Búsqueda avanzada
-                </Button>
-                <Button
-                  variant="outline"
-                  className="h-24 flex flex-col items-center justify-center"
-                >
-                  <BarChart className="h-8 w-8 mb-2" />
-                  Reportes y estadísticas
-                </Button>
+                <Link href="/dashboard/documents">
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center justify-center"
+                  >
+                    <FileText className="h-8 w-8 mb-2" />
+                    Gestión de documentos
+                  </Button>
+                </Link>
+                <Link href="/dashboard/users">
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center justify-center"
+                  >
+                    <Users className="h-8 w-8 mb-2" />
+                    Gestión de usuarios
+                  </Button>
+                </Link>
+                <Link href="/dashboard/search">
+                  <Button
+                    variant="outline"
+                    className="h-24 flex flex-col items-center justify-center"
+                  >
+                    <Search className="h-8 w-8 mb-2" />
+                    Super búsqueda
+                  </Button>
+                </Link>
+                <Link href="#">
+                  <Button
+                    variant="outline"
+                    disabled
+                    className="h-24 flex flex-col items-center justify-center"
+                  >
+                    <BarChart className="h-8 w-8 mb-2" />
+                    Reportes y estadísticas
+                  </Button>
+                </Link>
               </div>
             </CardContent>
           </Card>
