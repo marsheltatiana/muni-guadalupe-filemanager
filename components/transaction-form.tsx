@@ -23,7 +23,7 @@ import { createTransactionSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Rol, Usuario } from "@prisma/client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -102,6 +102,12 @@ export function TransactionForm({
     }
   }
 
+  const [isDevolucion, setIsDevolucion] = useState(false);
+  useEffect(() => {
+    const tipoTransaccion = form.watch("tipo_transaccion");
+    setIsDevolucion(tipoTransaccion === "DEVOLUCION");
+  }, [form.watch("tipo_transaccion")]);
+
   return (
     <Card className={cn("w-full max-w-lg mb-3", className)}>
       <CardHeader>
@@ -173,7 +179,9 @@ export function TransactionForm({
               name="fecha_inicio"
               render={({ field }) => (
                 <FormItem className="flex flex-col">
-                  <FormLabel>Fecha de Inicio</FormLabel>
+                  <FormLabel>
+                    {isDevolucion ? "Fecha" : "Fecha de Inicio"}
+                  </FormLabel>
                   <DatePicker
                     selected={field.value}
                     onSelect={field.onChange}
@@ -182,20 +190,22 @@ export function TransactionForm({
                 </FormItem>
               )}
             />
-            <FormField
-              control={form.control}
-              name="fecha_fin"
-              render={({ field }) => (
-                <FormItem className="flex flex-col">
-                  <FormLabel>Fecha de Fin (opcional)</FormLabel>
-                  <DatePicker
-                    selected={field.value}
-                    onSelect={field.onChange}
-                  />
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            {!isDevolucion && (
+              <FormField
+                control={form.control}
+                name="fecha_fin"
+                render={({ field }) => (
+                  <FormItem className="flex flex-col">
+                    <FormLabel>Fecha de Fin (opcional)</FormLabel>
+                    <DatePicker
+                      selected={field.value}
+                      onSelect={field.onChange}
+                    />
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+            )}
             <Button type="submit" disabled={loading}>
               {loading ? "Registrando..." : "Registrar Transacción"}
             </Button>
