@@ -23,7 +23,6 @@ import { Rol, Transaccion, Usuario } from "@prisma/client";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { DocumentSelection } from "./document-selection";
 import {
   Card,
   CardContent,
@@ -32,11 +31,12 @@ import {
   CardHeader,
   CardTitle,
 } from "./ui/card";
+import { Input } from "./ui/input";
 import { UserSelection } from "./user-selection";
 
 const formSchema = z.object({
   usuario_id: z.number(),
-  documento_id: z.number(),
+  documento_id: z.string(),
   tipo_transaccion: z.enum(["PRESTAMO", "DEVOLUCION"]),
   fecha_inicio: z.date(),
   fecha_fin: z.date().optional(),
@@ -67,7 +67,6 @@ export function TransactionForm({
   async function onSubmit(values: z.infer<typeof formSchema>) {
     setLoading(true);
     try {
-      
       const nuevaTransaccion: Transaccion = {
         id_transaccion: Math.floor(Math.random() * 1000), // Esto es solo para simular un ID
         ...values,
@@ -119,7 +118,7 @@ export function TransactionForm({
                 <FormItem>
                   <FormLabel>Documento</FormLabel>
                   <FormControl>
-                    <DocumentSelection onSelect={field.onChange} />
+                    <Input {...field} placeholder="ID del documento" />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

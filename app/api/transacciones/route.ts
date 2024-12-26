@@ -4,6 +4,14 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(request: NextRequest) {
   try {
     const transacciones = await prisma.transaccion.findMany();
+
+    if (!transacciones) {
+      return NextResponse.json(
+        { error: "No se encontraron transacciones" },
+        { status: 404 }
+      );
+    }
+
     return NextResponse.json(transacciones, { status: 200 });
   } catch (error) {
     console.error("Error fetching transacciones:", error);
