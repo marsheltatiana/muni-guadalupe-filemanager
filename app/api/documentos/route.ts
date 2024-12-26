@@ -65,7 +65,11 @@ export async function POST(request: NextRequest) {
 export async function GET() {
   const documents = await prisma.documento.findMany({
     include: {
-      Contenedor: true,
+      Contenedor: {
+        include : {
+          Tipo_Contenedor: true
+        }
+      },
       Categoria_Documento: true,
     }
   });
