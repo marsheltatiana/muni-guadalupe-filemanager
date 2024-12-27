@@ -71,13 +71,13 @@ const prestamosItems = [
   },
 ];
 
-const reportesItems = [
+/* const reportesItems = [
   {
     title: "Reporte de busquedas",
     url: "/dashboard/reports/search",
     icon: Printer,
   },
-];
+]; */
 
 export async function AppSidebar() {
   const session = await auth();
@@ -151,7 +151,7 @@ export async function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-          <SidebarGroupLabel>Reportes</SidebarGroupLabel>
+{/*           <SidebarGroupLabel>Reportes</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {reportesItems.map((item) => (
@@ -168,7 +168,7 @@ export async function AppSidebar() {
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
-          </SidebarGroupContent>
+          </SidebarGroupContent> */}
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
