@@ -36,6 +36,7 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { UserSelection } from "./user-selection";
+import { EstadoDocumento } from "@/lib/document-states";
 
 const formSchema = createTransactionSchema;
 
@@ -85,6 +86,27 @@ export function TransactionForm({
           title: "✅ Transacción registrada",
           description: "La transacción ha sido registrada exitosamente",
         });
+
+        if (values.tipo_transaccion === "PRESTAMO") {
+            await fetch(`/api/documentos/estados?id=${
+            values.documento_id 
+          }`, {
+            method: 'POST',
+            body: JSON.stringify({
+              estado: EstadoDocumento.PRESTADO
+            })
+          })
+        } else {
+          await fetch(`/api/documentos/estados?id=${
+            values.documento_id 
+          }`, {
+            method: 'POST',
+            body: JSON.stringify({
+              estado: EstadoDocumento.DISPONIBLE
+            })
+          })
+        }
+        
 
         router.refresh();
       }
