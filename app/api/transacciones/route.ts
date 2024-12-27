@@ -3,7 +3,12 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    const transacciones = await prisma.transaccion.findMany();
+    const transacciones = await prisma.transaccion.findMany({
+      include: {
+        Usuario: true,
+        Documento: true
+      }
+    });
 
     if (!transacciones) {
       return NextResponse.json(

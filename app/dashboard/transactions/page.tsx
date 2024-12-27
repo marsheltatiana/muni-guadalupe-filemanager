@@ -1,11 +1,16 @@
 import { DocumentListLoader } from "@/components/loaders/document-list-loader";
 import { TransactionForm } from "@/components/transaction-form";
 import { TransactionsTable } from "@/components/transactions-table";
-import { Rol, Transaccion, Usuario } from "@prisma/client";
+import { Documento, Rol, Transaccion, Usuario } from "@prisma/client";
 import { Suspense } from "react";
 
 interface UserWithRol extends Usuario {
   Rol: Rol;
+}
+
+interface TransaccioUser extends Transaccion {
+  Usuario: Usuario,
+  Documento: Documento
 }
 
 const TransactionsPage = async () => {
@@ -16,7 +21,7 @@ const TransactionsPage = async () => {
     }
   ).then((res) => res.json());
 
-  const transacciones: Transaccion[] = await fetch(
+  const transacciones: TransaccioUser[] = await fetch(
     `${process.env.APP_URL}/api/transacciones`,
     {
       cache: "no-cache",

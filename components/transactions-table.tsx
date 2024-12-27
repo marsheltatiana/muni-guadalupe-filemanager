@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Transaccion } from "@prisma/client";
+import { Transaccion, Usuario, Documento } from "@prisma/client";
 import {
   ColumnDef,
   flexRender,
@@ -31,7 +31,12 @@ import {
   CardTitle,
 } from "./ui/card";
 
-const columns: ColumnDef<Transaccion>[] = [
+interface TransaccioUser extends Transaccion {
+  Usuario: Usuario,
+  Documento: Documento
+}
+
+const columns: ColumnDef<TransaccioUser>[] = [
   {
     accessorKey: "id_transaccion",
     header: ({ column }) => {
@@ -44,6 +49,18 @@ const columns: ColumnDef<Transaccion>[] = [
         </Button>
       );
     },
+  },
+  {
+    accessorKey: "Usuario",
+    cell: ({ row }) => {
+      return row.original.Usuario.nombre
+    }
+  },
+  {
+    accessorKey: "Documento",
+    cell: ({ row }) => {
+      return row.original.Documento.nombre
+    }
   },
   {
     accessorKey: "tipo_transaccion",
@@ -91,7 +108,7 @@ const columns: ColumnDef<Transaccion>[] = [
 
 type TablaTransaccionesProps = {
   className?: string;
-  transacciones: Transaccion[];
+  transacciones: TransaccioUser[];
 };
 
 export function TransactionsTable({
