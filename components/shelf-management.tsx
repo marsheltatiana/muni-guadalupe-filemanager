@@ -21,6 +21,7 @@ import {
   List,
   Plus,
   Search,
+  Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -219,7 +220,8 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                   </motion.div>
                 ))}
               </AnimatePresence>
-              <Button
+              <div className="flex gap-3">
+<Button
                 variant="ghost"
                 size="sm"
                 className="w-full mt-2"
@@ -231,6 +233,48 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                 <Plus className="mr-2 h-4 w-4" />
                 Agregar Contenedor
               </Button>
+              <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-2"
+                      onClick={async () => {
+                        const estanteId = shelf.id_estante; // Asegúrate de que `estante` sea la variable que contiene el objeto.
+
+                        try {
+                          // Llamada a la API para eliminar el estante
+                          const response = await fetch(`/api/estantes/?id=${estanteId}`, {
+                            method: "DELETE",
+                          });
+
+                          if (response.ok) {
+                            router.refresh(); // Actualiza la página o la lista de estantes
+
+                            toast({
+                              title: "Estante eliminado!",
+                              description: `El estante con ID ${estanteId} ha sido eliminado exitosamente.`,
+                            });
+                          } else {
+                            const errorData = await response.json();
+                            toast({
+                              title: "Error al eliminar el estante",
+                              description: errorData.message || "Ocurrió un error desconocido.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "Error de red",
+                            description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Eliminar
+                    </Button>
+              </div>
+              
             </CollapsibleContent>
           </Collapsible>
         ))
@@ -295,6 +339,7 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                         </Card>
                       ))}
                     </div>
+                    <div className="flex gap-3">
                     <Button
                       variant="ghost"
                       size="sm"
@@ -307,6 +352,48 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                       <Plus className="mr-2 h-4 w-4" />
                       Agregar Contenedor
                     </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="w-full mt-2"
+                      onClick={async () => {
+                        const estanteId = shelf.id_estante; // Asegúrate de que `estante` sea la variable que contiene el objeto.
+
+                        try {
+                          // Llamada a la API para eliminar el estante
+                          const response = await fetch(`/api/estantes/?id=${estanteId}`, {
+                            method: "DELETE",
+                          });
+
+                          if (response.ok) {
+                            router.refresh(); // Actualiza la página o la lista de estantes
+
+                            toast({
+                              title: "Estante eliminado!",
+                              description: `El estante con ID ${estanteId} ha sido eliminado exitosamente.`,
+                            });
+                          } else {
+                            const errorData = await response.json();
+                            toast({
+                              title: "Error al eliminar el estante",
+                              description: errorData.message || "Ocurrió un error desconocido.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "Error de red",
+                            description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 className="mr-2 h-4 w-4" />
+                      Eliminar
+                    </Button>
+
+                    </div>
                   </motion.div>
                 )}
               </AnimatePresence>
