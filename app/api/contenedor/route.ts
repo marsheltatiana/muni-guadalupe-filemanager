@@ -60,3 +60,41 @@ export async function POST(request: NextRequest) {
     status: 201,
   });
 }
+
+export async function DELETE(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const contenedor_id = searchParams.get("contenedor_id");
+
+  if (!contenedor_id) {
+    return NextResponse.json(
+      {
+        message: "El ID del contenedor es requerido para eliminarlo.",
+      },
+      { status: 400 }
+    );
+  }
+
+  try {
+    const deletedContainer = await prisma.contenedor.delete({
+      where: {
+        id_contenedor: Number.parseInt(contenedor_id),
+      },
+    });
+
+    return NextResponse.json(
+      {
+        message: "Contenedor eliminado correctamente.",
+        deletedContainer,
+      },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      {
+        message: "Error al eliminar el contenedor.",
+        error: error instanceof Error ? error.message : "Error desconocido",
+      },
+      { status: 500 }
+    );
+  }
+}

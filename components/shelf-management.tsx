@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Collapsible,
   CollapsibleContent,
@@ -216,6 +216,47 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                           {container.columna || "N/A"}
                         </p>
                       </CardContent>
+                      <CardFooter>
+                        <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-2"
+                        onClick={async () => {
+
+                          try {
+                            // Llamada a la API para eliminar el estante
+                            const response = await fetch(`/api/contenedor/?contenedor_id=${container.id_contenedor}`, {
+                              method: "DELETE",
+                            });
+
+                            if (response.ok) {
+                              router.refresh(); // Actualiza la página o la lista de estantes
+
+                              toast({
+                                title: "Contenedor eliminado!",
+                                description: `El Contenedor  ${container.nombre} ha sido eliminado exitosamente.`,
+                              });
+                            } else {
+                              const errorData = await response.json();
+                              toast({
+                                title: "Error al eliminar el contenedor",
+                                description: errorData.message || "Ocurrió un error desconocido.",
+                                variant: "destructive",
+                              });
+                            }
+                          } catch (error) {
+                            toast({
+                              title: "Error de red",
+                              description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar
+                      </Button>
+                      </CardFooter>
                     </Card>
                   </motion.div>
                 ))}
@@ -336,6 +377,47 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                                 : "N/A"}
                             </p>
                           </CardContent>
+                          <CardFooter>
+                        <Button
+                        variant="ghost"
+                        size="sm"
+                        className="w-full mt-2"
+                        onClick={async () => {
+
+                          try {
+                            // Llamada a la API para eliminar el estante
+                            const response = await fetch(`/api/contenedor/?contenedor_id=${container.id_contenedor}`, {
+                              method: "DELETE",
+                            });
+
+                            if (response.ok) {
+                              router.refresh(); // Actualiza la página o la lista de estantes
+
+                              toast({
+                                title: "Contenedor eliminado!",
+                                description: `El Contenedor  ${container.nombre} ha sido eliminado exitosamente.`,
+                              });
+                            } else {
+                              const errorData = await response.json();
+                              toast({
+                                title: "Error al eliminar el contenedor",
+                                description: errorData.message || "Ocurrió un error desconocido.",
+                                variant: "destructive",
+                              });
+                            }
+                          } catch (error) {
+                            toast({
+                              title: "Error de red",
+                              description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                              variant: "destructive",
+                            });
+                          }
+                        }}
+                      >
+                        <Trash2 className="mr-2 h-4 w-4" />
+                        Eliminar
+                      </Button>
+                      </CardFooter>
                         </Card>
                       ))}
                     </div>
