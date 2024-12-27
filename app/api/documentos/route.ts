@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { EstadoDocumento } from "@/lib/document-states";
-import { put } from "@vercel/blob";
+import { put, del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 type DocumentRequest = {
@@ -129,6 +129,50 @@ export async function GET() {
   } catch (error) {
     return NextResponse.json(
       { message: "Error al obtener los documentos.", error },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request: NextRequest) {
+  try {
+    // Obtener el ID del documento desde los parámetros de la URL
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { message: "Se requiere un ID de documento para eliminar." },
+        { status: 400 }
+      );
+    }
+
+    // Verificar si el documento existe antes de eliminar
+    const documentExists = await prisma.documento.findUnique({
+      where: { id },
+    });
+
+    if (!documentExists) {
+      return NextResponse.json(
+        { message: "Documento no encontrado." },
+        { status: 404 }
+      );
+    }
+
+    // Eliminar el documento
+    await prisma.documento.delete({
+      where: { id },
+    });
+
+    await del(documentExists.documento_url)
+
+    return NextResponse.json(
+      { message: "Documento eliminado exitosamente." },
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json(
+      { message: "Error al eliminar el documento.", error },
       { status: 500 }
     );
   }

@@ -19,9 +19,10 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { EstadoDocumento } from "@/lib/document-states";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
-import { Copy, ExternalLink, FileText, Filter } from "lucide-react";
+import { Copy, ExternalLink, FileText, Filter, Trash2 } from "lucide-react";
 import * as React from "react";
 import { DocumentStateBadge } from "./document-state-badge";
+import { useRouter } from "next/navigation";
 
 interface DocumentoWithContenedorCategoria extends Documento {
   Contenedor: Contenedor;
@@ -35,6 +36,9 @@ type DocumentsTableProps = {
 export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   documents,
 }) => {
+
+  const router = useRouter()
+
   const [search, setSearch] = React.useState("");
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
 
@@ -144,6 +148,47 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     >
                       <Copy className="h-4 w-4 mr-2" />
                       Copiar ID
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="ml-2"
+                      onClick={async () => {
+                        const documentId = doc.id;
+                      
+                        try {
+                          // Llamada a la API para eliminar el documento
+                          const response = await fetch(`/api/documentos/?id=${documentId}`, {
+                            method: "DELETE",
+                          });
+
+                          if (response.ok) {
+
+                            router.refresh()
+                            
+                            toast({
+                              title: "Documento eliminado!",
+                              description: `El documento con ID ${documentId} ha sido eliminado exitosamente.`,
+                            });
+                          } else {
+                            const errorData = await response.json();
+                            toast({
+                              title: "Error al eliminar el documento",
+                              description: errorData.message || "Ocurrió un error desconocido.",
+                              variant: "destructive",
+                            });
+                          }
+                        } catch (error) {
+                          toast({
+                            title: "Error de red",
+                            description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                            variant: "destructive",
+                          });
+                        }
+                      }}
+                    >
+                      <Trash2 className="h-4 w-4 mr-2" />
+                      Eliminar
                     </Button>
                   </TableCell>
                 </TableRow>
