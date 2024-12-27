@@ -1,3 +1,4 @@
+import { Suspense } from 'react';
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -14,20 +15,32 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import { Skeleton } from "@/components/ui/skeleton";
 import prisma from "@/lib/db";
 import { formatDistanceToNow } from "date-fns";
 import { es } from "date-fns/locale";
-import {
-  BarChart,
-  Calendar,
-  Clock,
-  FileText,
-  Search,
-  Users,
-} from "lucide-react";
+import { BarChart, Calendar, Clock, FileText, Search, Users, ArrowRight, TrendingUp, TrendingDown, TypeIcon as type, LucideIcon } from 'lucide-react';
 import Link from "next/link";
 
-export default async function Dashboard() {
+interface Stats {
+  users: number;
+  documents: number;
+  documentsToday: number;
+  totalSearches: number;
+  averageSearchTime: {
+    _avg: {
+      tiempo_segundos: number | null;
+    };
+  };
+  last5Searches: Array<{
+    id: number;
+    consulta: string | null;
+    tiempo_segundos: number | null;
+    created_at: Date | null;
+  }>;
+}
+
+async function getStats(): Promise<Stats> {
   const users = await prisma.usuario.count();
   const documents = await prisma.documento.count();
   const documentsToday = await prisma.documento.count({
@@ -51,181 +64,209 @@ export default async function Dashboard() {
     },
   });
 
+  return {
+    users,
+    documents,
+    documentsToday,
+    totalSearches,
+    averageSearchTime,
+    last5Searches,
+  };
+}
+
+interface StatCardProps {
+  title: string;
+  value: string | number;
+  icon: LucideIcon;
+  trend: string;
+  trendValue: number;
+}
+
+function StatCard({ title, value, icon: Icon, trend, trendValue }: StatCardProps) {
+  const isPositive = trendValue > 0;
+  const TrendIcon = isPositive ? TrendingUp : TrendingDown;
+  const trendColor = isPositive ? 'text-green-500' : 'text-red-500';
+
   return (
-    <div>
-      <div className="max-w-7xl mx-auto">
-        <h1 className="text-4xl font-bold mb-8 text-gray-800">
-          Panel de control
-        </h1>
+    <Card className="overflow-hidden">
+      <CardHeader className="border-b bg-muted/50 p-4">
+        <CardTitle className="text-sm font-medium flex items-center">
+          <Icon className="h-4 w-4 mr-2 text-muted-foreground" />
+          {title}
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="p-6">
+        <div className="text-3xl font-bold mb-2">{value}</div>
+        {trend && (
+          <p className={`text-sm flex items-center ${trendColor}`}>
+            <TrendIcon className="h-4 w-4 mr-1" />
+            {trend}
+          </p>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
-        {/* Búsqueda y estadísticas rápidas */}
-        <div className="grid gap-6 mb-8 grid-cols-1 md:grid-cols-5">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Documentos totales
-              </CardTitle>
-              <FileText className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{documents}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +2.5% desde el último mes
-              </p> */}
-            </CardContent>
-          </Card>
+interface QuickAccessButtonProps {
+  href: string;
+  icon: LucideIcon;
+  children: React.ReactNode;
+}
 
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Usuarios activos
-              </CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{users}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +180 nuevos este mes
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Búsquedas realizadas
-              </CardTitle>
-              <Search className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{totalSearches}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +15% desde la semana pasada
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Tiempo promedio de búsqueda
-              </CardTitle>
-              <Clock className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">
-                {averageSearchTime._avg.tiempo_segundos?.toFixed(2)}s
-              </div>
-              {/* <p className="text-xs text-muted-foreground">
-                -0.1s desde el mes pasado
-              </p> */}
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">
-                Documentos digitalizados hoy
-              </CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{documentsToday}</div>
-              {/* <p className="text-xs text-muted-foreground">
-                +23% respecto al promedio diario
-              </p> */}
-            </CardContent>
-          </Card>
-        </div>
-        {/* Accesos rápidos y gráficos */}
-        <div className="grid gap-6 mb-8 grid-cols-1 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle>Accesos rápidos</CardTitle>
-              <CardDescription>
-                Funciones principales del sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 gap-4">
-                <Link href="/dashboard/documents">
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <FileText className="h-8 w-8 mb-2" />
-                    Gestión de documentos
-                  </Button>
-                </Link>
-                <Link href="/dashboard/users">
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Users className="h-8 w-8 mb-2" />
-                    Gestión de usuarios
-                  </Button>
-                </Link>
-                <Link href="/dashboard/search">
-                  <Button
-                    variant="outline"
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <Search className="h-8 w-8 mb-2" />
-                    Super búsqueda
-                  </Button>
-                </Link>
-                <Link href="#">
-                  <Button
-                    variant="outline"
-                    disabled
-                    className="h-24 flex flex-col items-center justify-center"
-                  >
-                    <BarChart className="h-8 w-8 mb-2" />
-                    Reportes y estadísticas
-                  </Button>
-                </Link>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardHeader>
-              <CardTitle>Ultimas 5 consultas</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Consulta</TableHead>
-                    <TableHead>Tiempo</TableHead>
-                    <TableHead>Fecha</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {last5Searches.map((item, index) => (
-                    <TableRow key={index}>
-                      <TableCell className="font-medium">
-                        {item.consulta}
-                      </TableCell>
-                      <TableCell>
-                        {item.tiempo_segundos && item.tiempo_segundos
-                          ? item.tiempo_segundos.toFixed(2) + "s"
-                          : "No registrado"}
-                      </TableCell>
-                      <TableCell>
-                        <span>
-                          {item.created_at &&
-                            formatDistanceToNow(item.created_at, {
-                              addSuffix: true,
-                              locale: es,
-                            })}
-                        </span>
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </CardContent>
-          </Card>
-        </div>
+function QuickAccessButton({ href, icon: Icon, children }: QuickAccessButtonProps) {
+  return (
+    <Link href={href}>
+      <Button
+        variant="outline"
+        className="h-24 w-full flex flex-col items-center justify-center hover:bg-primary hover:text-primary-foreground transition-all duration-300 shadow-md hover:shadow-lg"
+      >
+        <Icon className="h-8 w-8 mb-2" />
+        <span className="text-sm font-medium">{children}</span>
+      </Button>
+    </Link>
+  );
+}
+
+function DashboardSkeleton() {
+  return (
+    <div className="space-y-8">
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
+        {[...Array(5)].map((_, i) => (
+          <Skeleton key={i} className="h-[160px]" />
+        ))}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-[400px]" />
+        <Skeleton className="h-[400px]" />
       </div>
     </div>
   );
 }
+
+export default function Dashboard() {
+  return (
+    <div className="container mx-auto py-10 px-4">
+      <h1 className="text-4xl font-bold mb-8 text-primary">Panel de Control</h1>
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent />
+      </Suspense>
+    </div>
+  );
+}
+
+async function DashboardContent() {
+  const stats = await getStats();
+
+  return (
+    <>
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-5 mb-8">
+        <StatCard
+          title="Documentos totales"
+          value={stats.documents.toLocaleString()}
+          icon={FileText}
+          trend="+2.5% desde el último mes"
+          trendValue={2.5}
+        />
+        <StatCard
+          title="Usuarios activos"
+          value={stats.users.toLocaleString()}
+          icon={Users}
+          trend="+180 nuevos este mes"
+          trendValue={180}
+        />
+        <StatCard
+          title="Búsquedas realizadas"
+          value={stats.totalSearches.toLocaleString()}
+          icon={Search}
+          trend="+15% desde la semana pasada"
+          trendValue={15}
+        />
+        <StatCard
+          title="Tiempo promedio de búsqueda"
+          value={`${stats.averageSearchTime._avg.tiempo_segundos?.toFixed(2)}s`}
+          icon={Clock}
+          trend="-0.1s desde el mes pasado"
+          trendValue={-0.1}
+        />
+        <StatCard
+          title="Documentos digitalizados hoy"
+          value={stats.documentsToday.toLocaleString()}
+          icon={Calendar}
+          trend="+23% respecto al promedio diario"
+          trendValue={23}
+        />
+      </div>
+
+      <div className="grid gap-6 md:grid-cols-2">
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center">
+              <FileText className="h-5 w-5 mr-2" />
+              Accesos rápidos
+            </CardTitle>
+            <CardDescription>Funciones principales del sistema</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 gap-4">
+              <QuickAccessButton href="/dashboard/documents" icon={FileText}>
+                Gestión de documentos
+              </QuickAccessButton>
+              <QuickAccessButton href="/dashboard/users" icon={Users}>
+                Gestión de usuarios
+              </QuickAccessButton>
+              <QuickAccessButton href="/dashboard/search" icon={Search}>
+                Super búsqueda
+              </QuickAccessButton>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="col-span-1">
+          <CardHeader>
+            <CardTitle className="text-xl flex items-center">
+              <Search className="h-5 w-5 mr-2" />
+              Últimas 5 consultas
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Consulta</TableHead>
+                  <TableHead>Tiempo</TableHead>
+                  <TableHead>Fecha</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {stats.last5Searches.map((item, index) => (
+                  <TableRow key={item.id}>
+                    <TableCell className="font-medium">
+                      {item.consulta || 'N/A'}
+                    </TableCell>
+                    <TableCell>
+                      {item.tiempo_segundos
+                        ? item.tiempo_segundos.toFixed(2) + "s"
+                        : "No registrado"}
+                    </TableCell>
+                    <TableCell>
+                      <span className="text-muted-foreground">
+                        {item.created_at
+                          ? formatDistanceToNow(item.created_at, {
+                              addSuffix: true,
+                              locale: es,
+                            })
+                          : 'Fecha no disponible'}
+                      </span>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+  );
+}
+
