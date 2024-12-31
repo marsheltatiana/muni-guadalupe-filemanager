@@ -13,7 +13,7 @@ load_dotenv()
 
 app = FastAPI()
 
-SENTENCE_TRANSFORMER = os.getenv('SENTENCE_TRANSFORMER')
+SENTENCE_TRANSFORMER = "all-MiniLM-L6-v2"
 
 modelo = SentenceTransformer(SENTENCE_TRANSFORMER)
 
@@ -138,7 +138,7 @@ def supersearch(query: Query):
                 - search_duration_unit (str): The unit of the search duration.
                 - timestamp (str): The timestamp of the search in UTC.
     """
-    DOCS_ENDPOINT = os.getenv('DOCS_ENDPOINT')
+    DOCS_ENDPOINT = "https://munifilemanager.vercel.app/api/documentos"
 
     load_pdfs(DOCS_ENDPOINT)
 
