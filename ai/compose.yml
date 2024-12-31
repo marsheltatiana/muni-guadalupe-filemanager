@@ -1,0 +1,12 @@
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8022:8022"
+    volumes:
+      - .:/app
+    environment:
+      - ENV=production
+    restart: always
