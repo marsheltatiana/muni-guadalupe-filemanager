@@ -9,4 +9,6 @@ services:
       - .:/app
     environment:
       - ENV=production
+      - DOCS_ENDPOINT=http://localhost:3000/api/documentos
+      - SENTENCE_TRANSFORMER=all-MiniLM-L6-v2
     restart: always
