@@ -12,7 +12,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import { Transaccion, Usuario, Documento } from "@prisma/client";
+import { Documento, Transaccion, Usuario } from "@prisma/client";
 import {
   ColumnDef,
   flexRender,
@@ -32,8 +32,8 @@ import {
 } from "./ui/card";
 
 interface TransaccioUser extends Transaccion {
-  Usuario: Usuario,
-  Documento: Documento
+  Usuario: Usuario;
+  Documento: Documento;
 }
 
 const columns: ColumnDef<TransaccioUser>[] = [
@@ -53,14 +53,14 @@ const columns: ColumnDef<TransaccioUser>[] = [
   {
     accessorKey: "Usuario",
     cell: ({ row }) => {
-      return row.original.Usuario.nombre
-    }
+      return row.original.Usuario.nombre;
+    },
   },
   {
     accessorKey: "Documento",
     cell: ({ row }) => {
-      return row.original.Documento.nombre
-    }
+      return row.original.Documento?.nombre || "No Disponible o Eliminado";
+    },
   },
   {
     accessorKey: "tipo_transaccion",
@@ -83,11 +83,14 @@ const columns: ColumnDef<TransaccioUser>[] = [
     accessorKey: "fecha_inicio",
     header: "Fecha Inicio",
     cell: ({ row }) => {
-      return new Date(row.getValue("fecha_inicio")).toLocaleDateString('es-ES', {
-        year: 'numeric',
-        month: '2-digit',
-        day: '2-digit'
-      });
+      return new Date(row.getValue("fecha_inicio")).toLocaleDateString(
+        "es-ES",
+        {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        }
+      );
     },
   },
   {
@@ -96,10 +99,10 @@ const columns: ColumnDef<TransaccioUser>[] = [
     cell: ({ row }) => {
       const fecha = row.getValue("fecha_fin");
       return fecha && typeof fecha === "string"
-        ? new Date(fecha).toLocaleDateString('es-ES', {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
+        ? new Date(fecha).toLocaleDateString("es-ES", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
           })
         : "N/A";
     },
