@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { Documento } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
@@ -6,9 +7,26 @@ export async function GET(request: NextRequest) {
     const transacciones = await prisma.transaccion.findMany({
       include: {
         Usuario: true,
-        Documento: true
-      }
+      },
     });
+
+    const documentosIds = transacciones
+      .map((t) => t.documento_id)
+      .filter((id): id is string => id !== null);
+
+    const documentos: Documento[] = await prisma.documento.findMany({
+      where: {
+        id: {
+          in: documentosIds,
+        },
+      },
+    });
+
+    const transaccionesConDocumentos = transacciones.map((transaccion) => ({
+      ...transaccion,
+      Documento:
+        documentos.find((doc) => doc.id === transaccion.documento_id) || null,
+    }));
 
     if (!transacciones) {
       return NextResponse.json(
@@ -17,7 +35,7 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json(transacciones, { status: 200 });
+    return NextResponse.json(transaccionesConDocumentos, { status: 200 });
   } catch (error) {
     console.error("Error fetching transacciones:", error);
     return NextResponse.json(
