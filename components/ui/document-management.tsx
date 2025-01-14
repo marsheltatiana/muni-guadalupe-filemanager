@@ -30,7 +30,6 @@ interface EstanteWithContainers extends Estante {
 }
 
 export function DocumentManagement() {
-
   const router = useRouter();
 
   const [shelves, setShelves] = useState<EstanteWithContainers[]>([]);
@@ -78,8 +77,8 @@ export function DocumentManagement() {
     formData.append("descripcion", description);
     formData.append("anio", year);
     formData.append("categoria_id", selectedCategory);
-    formData.append("file_name", selectedFile!.name);
-    formData.append("file", selectedFile!);
+    formData.append("file_name", selectedFile?.name ?? "");
+    formData.append("file", selectedFile ?? "");
 
     const initialTime = new Date().getTime();
 
@@ -99,7 +98,7 @@ export function DocumentManagement() {
         variant: "default",
       });
 
-      router.refresh()
+      router.refresh();
     } else {
       toast({
         title: "Error al registrar el documento",
@@ -189,20 +188,20 @@ export function DocumentManagement() {
                   <SelectValue placeholder="Seleccione un estante" />
                 </SelectTrigger>
                 <SelectContent>
-                    {shelves && shelves.length > 0 ? (
+                  {shelves && shelves.length > 0 ? (
                     shelves.map((shelf) => (
                       <SelectItem
-                      key={shelf.id_estante}
-                      value={shelf.nombre_estante!}
+                        key={shelf.id_estante}
+                        value={shelf.nombre_estante!}
                       >
-                      {shelf.nombre_estante}
+                        {shelf.nombre_estante}
                       </SelectItem>
                     ))
-                    ) : (
+                  ) : (
                     <SelectItem value="no-shelves" disabled>
                       No hay estantes disponibles
                     </SelectItem>
-                    )}
+                  )}
                 </SelectContent>
               </Select>
             </div>

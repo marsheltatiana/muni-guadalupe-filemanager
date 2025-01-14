@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { EstadoDocumento } from "@/lib/document-states";
-import { put, del } from "@vercel/blob";
+import { BlobAccessError, del, put } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 type DocumentRequest = {
@@ -44,7 +44,8 @@ function generateDocumentId(nombre: string, timestamp: number): string {
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const body = Object.fromEntries(formData);
-  const file = (body.file as Blob) || null;
+  const file = body.file || null;
+
   const contenedor_id = Number(body.contenedor_id);
   const nombre = String(body.nombre);
   const descripcion = String(body.descripcion);
@@ -52,14 +53,29 @@ export async function POST(request: NextRequest) {
   const categoria_id = Number(body.categoria_id);
   const file_name = String(body.file_name);
 
-  if (file) {
-    const buffer = Buffer.from(await file.arrayBuffer());
+  let document_url = "";
+  const timestamp = new Date().getTime();
 
-    const timestamp = new Date().getTime();
-
-    const blob = await put(`${file_name}-${timestamp}.pdf`, buffer, {
-      access: "public",
-    });
+  try {
+    if (file !== null) {
+      try {
+        const fileBlob = file as Blob;
+        const buffer = Buffer.from(await fileBlob.arrayBuffer());
+        const blob = await put(`${file_name}-${timestamp}.pdf`, buffer, {
+          access: "public",
+        });
+        document_url = blob.url;
+      } catch (error) {
+        if (error instanceof BlobAccessError) {
+          return NextResponse.json(
+            { message: `No se pudo subir el archivo. Rason: ${error.message}` },
+            { status: 400 }
+          );
+        } else {
+          throw error;
+        }
+      }
+    }
 
     const document = await prisma.documento.create({
       data: {
@@ -70,7 +86,7 @@ export async function POST(request: NextRequest) {
         anio,
         categoria_id,
         estado: EstadoDocumento.DISPONIBLE,
-        documento_url: blob.url,
+        documento_url: document_url,
       },
     });
 
@@ -85,10 +101,10 @@ export async function POST(request: NextRequest) {
         { status: 400 }
       );
     }
-  } else {
+  } catch (error) {
     return NextResponse.json(
-      { message: "No se pudo subir el archivo." },
-      { status: 400 }
+      { message: "Error al subir el documento.", error },
+      { status: 500 }
     );
   }
 }
@@ -165,7 +181,12 @@ export async function DELETE(request: NextRequest) {
       where: { id },
     });
 
-    await del(documentExists.documento_url)
+    if (
+      documentExists.documento_url !== "" ||
+      documentExists.documento_url !== null
+    ) {
+      await del(documentExists.documento_url!);
+    }
 
     return NextResponse.json(
       { message: "Documento eliminado exitosamente." },
