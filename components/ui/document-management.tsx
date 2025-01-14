@@ -46,6 +46,7 @@ export function DocumentManagement() {
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [blob, setBlob] = useState<PutBlobResult | null>(null);
+  const [submitingBlob, setSubmitingBlob] = useState(false);
   //////////////////////////////////////
 
   const [categories, setCategories] = useState<Categoria_Documento[] | null>(
@@ -82,6 +83,7 @@ export function DocumentManagement() {
 
     const initialTime = new Date().getTime();
 
+    setSubmitingBlob(true);
     if (selectedFile !== null) {
       try {
         const fileBlob = selectedFile as Blob;
@@ -98,18 +100,22 @@ export function DocumentManagement() {
 
         formData.append("blob_url", blob.url);
       } catch (error) {
+        toast({
+          title: "Error al subir el documento",
+          variant: "destructive",
+        });
         console.error(error);
+        setSubmitingBlob(false);
+        return;
       }
-
-      return;
     }
 
-    const response = await fetch("/api/documentos", {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const response = await fetch("/api/documentos", {
+        method: "POST",
+        body: formData,
+      });
 
-    if (response.ok) {
       const finalTime = new Date().getTime();
 
       const timeInSeconds = (finalTime - initialTime) / 1000;
@@ -119,13 +125,14 @@ export function DocumentManagement() {
         description: `El documento se registró en ${timeInSeconds} segundos`,
         variant: "default",
       });
-
       router.refresh();
-    } else {
+    } catch (error) {
       toast({
         title: "Error al registrar el documento",
         variant: "destructive",
       });
+    } finally {
+      setSubmitingBlob(false);
     }
   };
 
@@ -285,9 +292,13 @@ export function DocumentManagement() {
         </form>
       </CardContent>
       <CardFooter>
-        <Button onClick={handleSubmit} className="w-full">
+        <Button
+          onClick={handleSubmit}
+          className="w-full"
+          disabled={submitingBlob}
+        >
           <FileText className="mr-2 h-4 w-4" />
-          Registrar Documento
+          {submitingBlob ? "Registrando documento..." : "Registrar documento"}
         </Button>
       </CardFooter>
     </Card>
