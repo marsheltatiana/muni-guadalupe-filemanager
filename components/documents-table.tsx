@@ -19,10 +19,18 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { EstadoDocumento } from "@/lib/document-states";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
-import { Copy, ExternalLink, FileText, Filter, Trash2 } from "lucide-react";
+import {
+  ArrowUpRight,
+  Copy,
+  ExternalLink,
+  FileText,
+  Filter,
+  Trash2,
+} from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import * as React from "react";
 import { DocumentStateBadge } from "./document-state-badge";
-import { useRouter } from "next/navigation";
 
 interface DocumentoWithContenedorCategoria extends Documento {
   Contenedor: Contenedor;
@@ -36,8 +44,7 @@ type DocumentsTableProps = {
 export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   documents,
 }) => {
-
-  const router = useRouter()
+  const router = useRouter();
 
   const [search, setSearch] = React.useState("");
   const [yearFilter, setYearFilter] = React.useState<string | null>(null);
@@ -127,7 +134,9 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     <Button
                       variant="outline"
                       size="sm"
-                      onClick={() => window.open(doc.documento_url, "_blank")}
+                      onClick={() =>
+                        window.open(doc.documento_url ?? "#", "_blank")
+                      }
                     >
                       <ExternalLink className="h-4 w-4 mr-2" />
                       Ver
@@ -149,23 +158,34 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                       <Copy className="h-4 w-4 mr-2" />
                       Copiar ID
                     </Button>
+                    <Button variant="outline" size="sm" className="ml-2">
+                      <Link
+                        href={`/dashboard/transactions?document_id=${doc.id}`}
+                        className="flex gap-3"
+                      >
+                        <ArrowUpRight className="h-4 w-4 mr-2" />
+                        Usar
+                      </Link>
+                    </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       className="ml-2"
                       onClick={async () => {
                         const documentId = doc.id;
-                      
+
                         try {
                           // Llamada a la API para eliminar el documento
-                          const response = await fetch(`/api/documentos/?id=${documentId}`, {
-                            method: "DELETE",
-                          });
+                          const response = await fetch(
+                            `/api/documentos/?id=${documentId}`,
+                            {
+                              method: "DELETE",
+                            }
+                          );
 
                           if (response.ok) {
+                            router.refresh();
 
-                            router.refresh()
-                            
                             toast({
                               title: "Documento eliminado!",
                               description: `El documento con ID ${documentId} ha sido eliminado exitosamente.`,
@@ -174,14 +194,17 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                             const errorData = await response.json();
                             toast({
                               title: "Error al eliminar el documento",
-                              description: errorData.message || "Ocurrió un error desconocido.",
+                              description:
+                                errorData.message ||
+                                "Ocurrió un error desconocido.",
                               variant: "destructive",
                             });
                           }
                         } catch (error) {
                           toast({
                             title: "Error de red",
-                            description: "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
+                            description:
+                              "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
                             variant: "destructive",
                           });
                         }

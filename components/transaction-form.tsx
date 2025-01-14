@@ -18,11 +18,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { toast } from "@/hooks/use-toast";
+import { EstadoDocumento } from "@/lib/document-states";
 import { cn } from "@/lib/utils";
 import { createTransactionSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Rol, Usuario } from "@prisma/client";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
@@ -36,7 +37,6 @@ import {
 } from "./ui/card";
 import { Input } from "./ui/input";
 import { UserSelection } from "./user-selection";
-import { EstadoDocumento } from "@/lib/document-states";
 
 const formSchema = createTransactionSchema;
 
@@ -53,6 +53,10 @@ export function TransactionForm({
   className,
   usuarios,
 }: FormularioTransaccionProps) {
+  const searchParams = useSearchParams();
+
+  const documentId = searchParams.get("document_id");
+
   const router = useRouter();
 
   const [loading, setLoading] = useState(false);
@@ -60,6 +64,7 @@ export function TransactionForm({
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      documento_id: documentId ?? "",
       tipo_transaccion: "PRESTAMO",
     },
   });
@@ -88,25 +93,20 @@ export function TransactionForm({
         });
 
         if (values.tipo_transaccion === "PRESTAMO") {
-            await fetch(`/api/documentos/estados?id=${
-            values.documento_id 
-          }`, {
-            method: 'POST',
+          await fetch(`/api/documentos/estados?id=${values.documento_id}`, {
+            method: "POST",
             body: JSON.stringify({
-              estado: EstadoDocumento.PRESTADO
-            })
-          })
+              estado: EstadoDocumento.PRESTADO,
+            }),
+          });
         } else {
-          await fetch(`/api/documentos/estados?id=${
-            values.documento_id 
-          }`, {
-            method: 'POST',
+          await fetch(`/api/documentos/estados?id=${values.documento_id}`, {
+            method: "POST",
             body: JSON.stringify({
-              estado: EstadoDocumento.DISPONIBLE
-            })
-          })
+              estado: EstadoDocumento.DISPONIBLE,
+            }),
+          });
         }
-        
 
         router.refresh();
       }
