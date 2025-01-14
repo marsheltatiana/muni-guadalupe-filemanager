@@ -1,6 +1,6 @@
 import prisma from "@/lib/db";
 import { EstadoDocumento } from "@/lib/document-states";
-import { BlobAccessError, del, put } from "@vercel/blob";
+import { del } from "@vercel/blob";
 import { NextRequest, NextResponse } from "next/server";
 
 type DocumentRequest = {
@@ -44,39 +44,17 @@ function generateDocumentId(nombre: string, timestamp: number): string {
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const body = Object.fromEntries(formData);
-  const file = body.file || null;
 
   const contenedor_id = Number(body.contenedor_id);
   const nombre = String(body.nombre);
   const descripcion = String(body.descripcion);
   const anio = String(body.anio);
   const categoria_id = Number(body.categoria_id);
-  const file_name = String(body.file_name);
+  const blob_url = String(body.blob_url) ?? "";
 
-  let document_url = "";
   const timestamp = new Date().getTime();
 
   try {
-    if (file !== null) {
-      try {
-        const fileBlob = file as Blob;
-        const buffer = Buffer.from(await fileBlob.arrayBuffer());
-        const blob = await put(`${file_name}-${timestamp}.pdf`, buffer, {
-          access: "public",
-        });
-        document_url = blob.url;
-      } catch (error) {
-        if (error instanceof BlobAccessError) {
-          return NextResponse.json(
-            { message: `No se pudo subir el archivo. Rason: ${error.message}` },
-            { status: 400 }
-          );
-        } else {
-          throw error;
-        }
-      }
-    }
-
     const document = await prisma.documento.create({
       data: {
         id: generateDocumentId(nombre, timestamp),
@@ -86,7 +64,7 @@ export async function POST(request: NextRequest) {
         anio,
         categoria_id,
         estado: EstadoDocumento.DISPONIBLE,
-        documento_url: document_url,
+        documento_url: blob_url,
       },
     });
 

@@ -21,6 +21,8 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { toast } from "@/hooks/use-toast";
 import { Categoria_Documento, Contenedor, Estante } from "@prisma/client";
+import { PutBlobResult } from "@vercel/blob";
+import { upload } from "@vercel/blob/client";
 import { FileText, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -43,7 +45,7 @@ export function DocumentManagement() {
   const [tomeNumber, setTomeNumber] = useState("1");
   const [year, setYear] = useState(new Date().getFullYear().toString());
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-
+  const [blob, setBlob] = useState<PutBlobResult | null>(null);
   //////////////////////////////////////
 
   const [categories, setCategories] = useState<Categoria_Documento[] | null>(
@@ -77,10 +79,30 @@ export function DocumentManagement() {
     formData.append("descripcion", description);
     formData.append("anio", year);
     formData.append("categoria_id", selectedCategory);
-    formData.append("file_name", selectedFile?.name ?? "");
-    formData.append("file", selectedFile ?? "");
 
     const initialTime = new Date().getTime();
+
+    if (selectedFile !== null) {
+      try {
+        const fileBlob = selectedFile as Blob;
+        const buffer = Buffer.from(await fileBlob.arrayBuffer());
+        console.log(buffer);
+        const blob = await upload(
+          `${selectedFile?.name}-${initialTime}.pdf`,
+          buffer,
+          {
+            access: "public",
+            handleUploadUrl: "/api/documentos/upload",
+          }
+        );
+
+        formData.append("blob_url", blob.url);
+      } catch (error) {
+        console.error(error);
+      }
+
+      return;
+    }
 
     const response = await fetch("/api/documentos", {
       method: "POST",
