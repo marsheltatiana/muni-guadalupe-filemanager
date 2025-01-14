@@ -50,7 +50,7 @@ export async function POST(request: NextRequest) {
   const descripcion = String(body.descripcion);
   const anio = String(body.anio);
   const categoria_id = Number(body.categoria_id);
-  const blob_url = String(body.blob_url) ?? "";
+  const blob_url = String(body.blob_url ?? "");
 
   const timestamp = new Date().getTime();
 
@@ -159,10 +159,7 @@ export async function DELETE(request: NextRequest) {
       where: { id },
     });
 
-    if (
-      documentExists.documento_url !== "" ||
-      documentExists.documento_url !== null
-    ) {
+    if (documentExists.documento_url) {
       await del(documentExists.documento_url!);
     }
 
