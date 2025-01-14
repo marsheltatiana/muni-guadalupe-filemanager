@@ -40,6 +40,7 @@ function generateDocumentId(nombre: string, timestamp: number): string {
   return `${prefix}-${cleanName}-${dateStr}-${randomStr}`;
 }
 
+// https://vercel.com/docs/storage/vercel-blob/client-upload
 export async function POST(request: NextRequest) {
   const formData = await request.formData();
   const body = Object.fromEntries(formData);
