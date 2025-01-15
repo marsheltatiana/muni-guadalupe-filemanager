@@ -98,3 +98,50 @@ export async function DELETE(request: NextRequest) {
     );
   }
 }
+
+export async function PUT(request: NextRequest) {
+  const body = await request.json();
+
+  const { searchParams } = new URL(request.url);
+  const contenedor_id = searchParams.get("contenedor_id");
+
+  if (!contenedor_id) {
+    return NextResponse.json(
+      {
+        message: "El ID del contenedor es requerido para actualizarlo.",
+      },
+      { status: 400 }
+    );
+  }
+
+  const { nombre, descripcion, anio, fila, columna, tipo_contenedor_id } =
+    await createContainerSchema.parseAsync(body);
+
+  const tipoContainer = await prisma.tipo_Contenedor.findUnique({
+    where: {
+      id_tipo_contenedor: Number.parseInt(tipo_contenedor_id),
+    },
+  });
+
+  const updatedContainer = await prisma.contenedor.update({
+    where: {
+      id_contenedor: Number.parseInt(contenedor_id),
+    },
+    data: {
+      nombre: nombre,
+      descripcion: descripcion,
+      fila: fila,
+      columna: columna,
+      anio: anio,
+      Tipo_Contenedor: {
+        connect: {
+          id_tipo_contenedor: tipoContainer?.id_tipo_contenedor,
+        },
+      },
+    },
+  });
+
+  return NextResponse.json(updatedContainer, {
+    status: 200,
+  });
+}

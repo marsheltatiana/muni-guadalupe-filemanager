@@ -23,6 +23,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import {
   ChevronDown,
   ChevronRight,
+  Edit2,
   Grid,
   List,
   Plus,
@@ -30,7 +31,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import * as z from "zod";
 import {
@@ -80,6 +81,11 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   const [isNewShelfDialogOpen, setIsNewShelfDialogOpen] = useState(false);
   const [isNewContainerDialogOpen, setIsNewContainerDialogOpen] =
     useState(false);
+  const [isEditContainerDialogOpen, setIsEditContainerDialogOpen] =
+    useState(false);
+  const [editContainerItem, setEditContainerItem] = useState<Contenedor | null>(
+    null
+  );
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
 
   const filteredShelves = shelves.filter((shelf) =>
@@ -115,6 +121,32 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
       columna: "",
     },
   });
+
+  const editContainerForm = useForm<z.infer<typeof createContainerSchema>>({
+    resolver: zodResolver(createContainerSchema),
+    defaultValues: {
+      nombre: "",
+      descripcion: "",
+      anio: "",
+      fila: "",
+      columna: "",
+      tipo_contenedor_id: "",
+    },
+  });
+
+  React.useEffect(() => {
+    if (editContainerItem) {
+      editContainerForm.reset({
+        nombre: editContainerItem.nombre || "",
+        descripcion: editContainerItem.descripcion || "",
+        anio: editContainerItem.anio || "",
+        fila: editContainerItem.fila || "",
+        columna: editContainerItem.columna || "",
+        tipo_contenedor_id:
+          editContainerItem.tipo_contenedor_id?.toString() || "",
+      });
+    }
+  }, [editContainerForm, editContainerItem]);
 
   const onSubmitShelf = async (values: z.infer<typeof createShelfSchema>) => {
     try {
@@ -168,6 +200,36 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
       toast({
         title: "Error 😞",
         description: "No se pudo crear el contenedor",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const onSubmitEditContainer = async (
+    values: z.infer<typeof createContainerSchema>
+  ) => {
+    try {
+      const response = await fetch(
+        `/api/contenedor?contenedor_id=${editContainerItem?.id_contenedor}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(values),
+        }
+      );
+      if (!response.ok) throw new Error("Failed to create container");
+      setIsNewContainerDialogOpen(false);
+
+      toast({
+        title: "Éxito 🎉",
+        description: "Contenedor actualizado correctamente ✅",
+      });
+
+      router.refresh();
+    } catch (error) {
+      toast({
+        title: "Error 😞",
+        description: "No se pudo actualizar el contenedor",
         variant: "destructive",
       });
     }
@@ -266,6 +328,18 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                         >
                           <Trash2 className="mr-2 h-4 w-4" />
                           Eliminar
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          className="w-full mt-2"
+                          onClick={() => {
+                            setEditContainerItem(container);
+                            setIsEditContainerDialogOpen(true);
+                          }}
+                        >
+                          <Edit2 className="mr-2 h-4 w-4" />
+                          Editar
                         </Button>
                       </CardFooter>
                     </Card>
@@ -719,6 +793,137 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                 )}
               />
               <Button type="submit">Crear Contenedor</Button>
+            </form>
+          </Form>
+        </DialogContent>
+      </Dialog>
+      <Dialog
+        open={isEditContainerDialogOpen}
+        onOpenChange={setIsEditContainerDialogOpen}
+      >
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Editar Contenedor</DialogTitle>
+            <DialogDescription>
+              Ingrese los detalles de los nuevos datos del contenedor.
+            </DialogDescription>
+          </DialogHeader>
+          <Form {...editContainerForm}>
+            <form
+              onSubmit={editContainerForm.handleSubmit(onSubmitEditContainer)}
+              className="space-y-8"
+            >
+              <FormField
+                control={editContainerForm.control}
+                name="nombre"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Nombre del Contenedor</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder={`Ingrese el nombre del contenedor ${field.value}`}
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editContainerForm.control}
+                name="descripcion"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Descripción</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder="Descripción del contenedor"
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editContainerForm.control}
+                name="anio"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Año</FormLabel>
+                    <FormControl>
+                      <Input
+                        type="text"
+                        {...field}
+                        maxLength={4}
+                        pattern="202[4-9]"
+                        placeholder="2024"
+                      />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editContainerForm.control}
+                name="fila"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Fila</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Fila del contenedor" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editContainerForm.control}
+                name="columna"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Columna</FormLabel>
+                    <FormControl>
+                      <Input placeholder="Columna del contenedor" {...field} />
+                    </FormControl>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={editContainerForm.control}
+                name="tipo_contenedor_id"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Tipo de Contenedor</FormLabel>
+                    <Select
+                      onValueChange={field.onChange}
+                      defaultValue={field.value}
+                    >
+                      <FormControl>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Seleccione el tipo" />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {containerTypes.map((containerType) => (
+                          <SelectItem
+                            key={containerType.id_tipo_contenedor}
+                            value={containerType.id_tipo_contenedor.toString()}
+                          >
+                            {containerType.nombre}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormDescription>
+                      Seleccione el tipo de contenedor.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
+              <Button type="submit">Actualizar Contenedor</Button>
             </form>
           </Form>
         </DialogContent>
