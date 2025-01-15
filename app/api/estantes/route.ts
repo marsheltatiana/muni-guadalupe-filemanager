@@ -5,7 +5,11 @@ export async function GET(request: NextRequest) {
   try {
     const estantes = await prisma.estante.findMany({
       include: {
-        Contenedor: true,
+        Contenedor: {
+          include: {
+            Tipo_Contenedor: true,
+          },
+        },
       },
     });
 
@@ -74,7 +78,8 @@ export async function DELETE(request: NextRequest) {
     if (!deletedEstante) {
       return NextResponse.json(
         {
-          message: "No se pudo eliminar el estante. Verifica el ID proporcionado.",
+          message:
+            "No se pudo eliminar el estante. Verifica el ID proporcionado.",
         },
         { status: 404 }
       );

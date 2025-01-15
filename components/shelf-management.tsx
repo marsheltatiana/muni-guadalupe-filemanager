@@ -58,8 +58,12 @@ import {
   SelectValue,
 } from "./ui/select";
 
+interface ContenedorWithTipo extends Contenedor {
+  Tipo_Contenedor: Tipo_Contenedor;
+}
+
 interface EstanteWithContainers extends Estante {
-  Contenedor: Contenedor[];
+  Contenedor: ContenedorWithTipo[];
 }
 
 type ShelfManagementProps = {
@@ -273,6 +277,9 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                         <p className="text-sm text-gray-500">
                           {container.descripcion || "Sin descripción"}
                         </p>
+                        <p className="text-xs text-gray-400 underline">
+                          {container.Tipo_Contenedor?.nombre || "N/A"}
+                        </p>
                         <p className="text-xs text-gray-400">
                           Año:{" "}
                           {container.anio
@@ -461,13 +468,16 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                             <p className="text-xs text-gray-500 truncate">
                               {container.descripcion || "Sin descripción"}
                             </p>
+                            <p className="text-xs text-gray-400 underline">
+                              {container.Tipo_Contenedor?.nombre || "N/A"}
+                            </p>
                             <p className="text-xs text-gray-400">
                               {container.anio
                                 ? new Date(container.anio).getFullYear()
                                 : "N/A"}
                             </p>
                           </CardContent>
-                          <CardFooter>
+                          <CardFooter className="flex flex-col gap-1">
                             <Button
                               variant="ghost"
                               size="sm"
@@ -511,6 +521,18 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Eliminar
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="w-full mt-2"
+                              onClick={() => {
+                                setEditContainerItem(container);
+                                setIsEditContainerDialogOpen(true);
+                              }}
+                            >
+                              <Edit2 className="mr-2 h-4 w-4" />
+                              Editar
                             </Button>
                           </CardFooter>
                         </Card>

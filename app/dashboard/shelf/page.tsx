@@ -1,8 +1,12 @@
 import { ShelfManagement } from "@/components/shelf-management";
 import { Contenedor, Estante, Tipo_Contenedor } from "@prisma/client";
 
+interface ContenedorWithTipo extends Contenedor {
+  Tipo_Contenedor: Tipo_Contenedor;
+}
+
 interface EstanteWithContainers extends Estante {
-  Contenedor: Contenedor[];
+  Contenedor: ContenedorWithTipo[];
 }
 
 const ShelfPage = async () => {
