@@ -2,7 +2,7 @@
 
 import CrearPermiso from "@/components/crear-permiso";
 import { RoleListLoader } from "@/components/loaders/role-list-loader";
-import { Badge } from "@/components/ui/badge";
+import { RolesTable } from "@/components/roles/roles-table";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -17,18 +17,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
-import { Edit, Plus, Search, Trash2 } from "lucide-react";
+import { Plus, Search } from "lucide-react";
 import React, { Suspense, useState } from "react";
 
 interface Rol_PermisosWithPermiso extends Rol_Permisos {
@@ -108,65 +99,11 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
 
       <div className="bg-white shadow rounded-lg overflow-hidden">
         <Suspense fallback={<RoleListLoader />}>
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Nombre del Rol</TableHead>
-                <TableHead>Descripción</TableHead>
-                <TableHead>Permisos</TableHead>
-                <TableHead className="text-right">Acciones</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {filteredRoles.map((role) => (
-                <TableRow key={role.id_rol}>
-                  <TableCell className="font-medium">
-                    {role.nombre_rol}
-                  </TableCell>
-                  <TableCell>{role.descripcion}</TableCell>
-                  <TableCell>
-                    {role.Rol_Permisos.map((rp) => (
-                        <Badge
-                        key={rp.permiso_id}
-                        variant="outline"
-                        className="m-1"
-                        >
-                        {rp.Permisos.nombre_permiso
-                          ?.replace(/_/g, " ")
-                          .replace(/\b\w/g, (char) => char.toUpperCase())}
-                        </Badge>
-                    ))}
-                  </TableCell>
-                  <TableCell className="text-right">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      disabled
-                      onClick={() => {
-                        setIsDialogOpen(true);
-                      }}
-                    >
-                      <Edit className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {}}
-                      disabled
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={3}>Total</TableCell>
-                <TableCell className="text-right">{roles.length}</TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
+          <RolesTable
+            roles={roles}
+            filteredRoles={filteredRoles}
+            setIsDialogOpen={setIsDialogOpen}
+          />
         </Suspense>
       </div>
     </div>

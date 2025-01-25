@@ -61,3 +61,39 @@ export async function POST(request: NextRequest) {
 
   return NextResponse.json(nuevorol, { status: 201 });
 }
+
+export async function PUT(request: NextRequest) {
+  const {
+    rol,
+    permisos,
+  }: {
+    rol: Rol;
+    permisos: number[];
+  } = await request.json();
+
+  const { id_rol, descripcion } = rol;
+
+  const rolactualizado = await prisma.rol.update({
+    where: {
+      id_rol,
+    },
+    data: {
+      descripcion,
+      Rol_Permisos: {
+        deleteMany: {},
+        create: permisos.map((permiso) => ({
+          permiso_id: permiso,
+        })),
+      },
+    },
+  });
+
+  if (!rolactualizado) {
+    return NextResponse.json(
+      { message: "No se pudo actualizar el rol." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(rolactualizado, { status: 200 });
+}
