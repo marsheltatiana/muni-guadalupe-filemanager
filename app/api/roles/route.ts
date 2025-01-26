@@ -109,13 +109,16 @@ export async function DELETE(request: NextRequest) {
     );
   }
 
+  await prisma.rol_Permisos.deleteMany({
+    where: {
+      rol_id: id,
+    },
+  });
+
   const rol = await prisma.rol.delete({
     where: {
       id_rol: id,
     },
-    include: {
-      Rol_Permisos: true
-    }
   });
 
   if (!rol) {
