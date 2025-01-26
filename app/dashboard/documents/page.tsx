@@ -39,7 +39,7 @@ const DocumentsPage = async () => {
 
   return (
     <div className="w-full flex flex-col space-y-3">
-      <section className="flex justify-between">
+      <section className="w-full flex justify-between">
         <section>
           <h3 className="font-bold text-xl">Gestion de Documentos</h3>
         </section>

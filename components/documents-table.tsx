@@ -133,17 +133,16 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                   <TableCell className="flex gap-3 items-center">
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       onClick={() =>
                         window.open(doc.documento_url ?? "#", "_blank")
                       }
                     >
-                      <ExternalLink className="h-4 w-4 mr-2" />
-                      Ver
+                      <ExternalLink className="h-4 w-4" />
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       className="ml-2"
                       onClick={() => {
                         navigator.clipboard.writeText(doc.id);
@@ -155,21 +154,18 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                         });
                       }}
                     >
-                      <Copy className="h-4 w-4 mr-2" />
-                      Copiar ID
+                      <Copy className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="sm" className="ml-2">
+                    <Button variant="outline" size="icon" className="ml-2">
                       <Link
                         href={`/dashboard/transactions?document_id=${doc.id}`}
-                        className="flex gap-3"
                       >
-                        <ArrowUpRight className="h-4 w-4 mr-2" />
-                        Usar
+                        <ArrowUpRight className="h-4 w-4" />
                       </Link>
                     </Button>
                     <Button
                       variant="outline"
-                      size="sm"
+                      size="icon"
                       className="ml-2"
                       onClick={async () => {
                         const documentId = doc.id;
@@ -210,8 +206,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                         }
                       }}
                     >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Eliminar
+                      <Trash2 className="h-4 w-4" />
                     </Button>
                   </TableCell>
                 </TableRow>
