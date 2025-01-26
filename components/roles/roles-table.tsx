@@ -14,6 +14,11 @@ import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
+import {
+  HoverCard,
+  HoverCardContent,
+  HoverCardTrigger,
+} from "../ui/hover-card";
 
 interface Rol_PermisosWithPermiso extends Rol_Permisos {
   Permisos: Permisos;
@@ -86,13 +91,53 @@ export const RolesTable: React.FC<RolesTableProps> = ({
             <TableCell className="font-medium">{role.nombre_rol}</TableCell>
             <TableCell>{role.descripcion}</TableCell>
             <TableCell>
-              {role.Rol_Permisos.map((rp, index) => (
-                <Badge key={index} variant="outline" className="m-1">
-                  {rp.Permisos.nombre_permiso
-                    ?.replace(/_/g, " ")
-                    .replace(/\b\w/g, (char) => char.toUpperCase())}
-                </Badge>
-              ))}
+              <div className="flex flex-wrap gap-1 max-w-[300px]">
+                {role.Rol_Permisos.length > 3 ? (
+                  <>
+                    {role.Rol_Permisos.slice(0, 2).map((rp, index) => (
+                      <Badge
+                        key={index}
+                        variant="secondary"
+                        className="text-xs"
+                      >
+                        {rp.Permisos.nombre_permiso
+                          ?.replace(/_/g, " ")
+                          .replace(/\b\w/g, (char) => char.toUpperCase())}
+                      </Badge>
+                    ))}
+                    <HoverCard>
+                      <HoverCardTrigger>
+                        <Badge variant="outline" className="cursor-help">
+                          +{role.Rol_Permisos.length - 2} más
+                        </Badge>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80">
+                        <div className="flex flex-wrap gap-1">
+                          {role.Rol_Permisos.slice(2).map((rp, index) => (
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-xs"
+                            >
+                              {rp.Permisos.nombre_permiso
+                                ?.replace(/_/g, " ")
+                                .replace(/\b\w/g, (char) => char.toUpperCase())}
+                            </Badge>
+                          ))}
+                        </div>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </>
+                ) : (
+                  role.Rol_Permisos.map((rp, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {rp.Permisos.nombre_permiso
+                        ?.replace(/_/g, " ")
+                        .replace(/\b\w/g, (char) => char.toUpperCase())}
+                    </Badge>
+                  ))
+                )}
+              </div>
             </TableCell>
             <TableCell className="text-right">
               <Button

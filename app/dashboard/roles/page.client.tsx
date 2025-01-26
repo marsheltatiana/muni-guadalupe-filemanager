@@ -45,11 +45,15 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
   );
 
   return (
-    <div className="container w-fit">
+    <div className="w-full">
       <h3 className="font-bold text-xl">Gestión de roles y permisos</h3>
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 mb-6">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-6 mb-6">
         <div className="relative w-full md:w-fit top-2 mr-3">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 " width={14} height={14}/>
+          <Search
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 "
+            width={14}
+            height={14}
+          />
           <Input
             type="text"
             placeholder="Buscar roles..."
@@ -77,7 +81,7 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
         </section>
       </div>
 
-      <div className="bg-white shadow rounded-lg overflow-hidden">
+      <div className="w-full">
         <Suspense fallback={<RoleListLoader />}>
           <RolesTable
             roles={roles}
