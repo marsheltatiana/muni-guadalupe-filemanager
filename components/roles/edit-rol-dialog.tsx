@@ -31,7 +31,7 @@ export const EditRolDialog = ({
 }: EditRolDialogProps) => {
   return (
     <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
           <DialogTitle>Editar Rol {rolSelected?.nombre_rol}</DialogTitle>
           <DialogDescription>Edita el rol y asigna permisos</DialogDescription>

@@ -34,6 +34,21 @@ export const EditRolForm: React.FC<EditRoleFormProps> = ({
     descripcion: rol?.descripcion || "",
   });
 
+  const permissionsByCategory = permissions.reduce<Record<string, Permisos[]>>(
+    (ac, permission) => {
+      const key: string = permission.categoria!;
+
+      if (!ac[key]) {
+        ac[key] = [];
+      }
+
+      ac[key].push(permission);
+
+      return ac;
+    },
+    {}
+  );
+
   const selectedPermissions = useMemo(
     () =>
       rol?.Rol_Permisos.map((rp) => rp.Permisos.nombre_permiso).filter(
@@ -123,40 +138,55 @@ export const EditRolForm: React.FC<EditRoleFormProps> = ({
         </div>
         <div className="grid grid-cols-4 items-start gap-4">
           <Label className="text-right">Permisos</Label>
-          <ScrollArea className="h-[200px] col-span-3">
-            {permissions?.map((permiso: Permisos) => (
-              <div
-                key={permiso.id_permiso}
-                className="flex items-center space-x-2 mb-2"
-              >
-                <Checkbox
-                  id={permiso.id_permiso?.toString()}
-                  checked={persmisosSeleccionados?.some(
-                    (spName) => spName === permiso.nombre_permiso
-                  )}
-                  onCheckedChange={(state) => {
-                    if (!state) {
-                      setPersmisosSeleccionados(
-                        persmisosSeleccionados.filter(
-                          (id) => id !== permiso.nombre_permiso
-                        )
-                      );
-                      return;
-                    }
-                    setPersmisosSeleccionados([
-                      ...persmisosSeleccionados,
-                      permiso.nombre_permiso!,
-                    ]);
-                  }}
-                />
-                <label
-                  htmlFor={`permission-${permiso.id_permiso}`}
-                  className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-                >
-                  {permiso.nombre_permiso?.replace(/_/g, " ").toUpperCase()}
-                </label>
-              </div>
-            ))}
+          <ScrollArea className="h-[300px] col-span-3">
+            <section className="grid grid-cols-3 gap-3">
+              {Object.entries(permissionsByCategory).map(
+                ([permissionCategory, permissions], index) => {
+                  return (
+                    <section key={index} className="space-y-3">
+                      <span className="font-semibold">
+                        {permissionCategory?.replace(/_/g, " ").toUpperCase()}
+                      </span>
+                      {permissions?.map((permiso: Permisos) => (
+                        <div
+                          key={permiso.id_permiso}
+                          className="flex items-center space-x-2 mb-2"
+                        >
+                          <Checkbox
+                            id={permiso.id_permiso?.toString()}
+                            checked={persmisosSeleccionados?.some(
+                              (spName) => spName === permiso.nombre_permiso
+                            )}
+                            onCheckedChange={(state) => {
+                              if (!state) {
+                                setPersmisosSeleccionados(
+                                  persmisosSeleccionados.filter(
+                                    (id) => id !== permiso.nombre_permiso
+                                  )
+                                );
+                                return;
+                              }
+                              setPersmisosSeleccionados([
+                                ...persmisosSeleccionados,
+                                permiso.nombre_permiso!,
+                              ]);
+                            }}
+                          />
+                          <label
+                            htmlFor={`permission-${permiso.id_permiso}`}
+                            className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                          >
+                            {permiso.nombre_permiso
+                              ?.replace(/_/g, " ")
+                              .toUpperCase()}
+                          </label>
+                        </div>
+                      ))}
+                    </section>
+                  );
+                }
+              )}
+            </section>
           </ScrollArea>
         </div>
       </div>

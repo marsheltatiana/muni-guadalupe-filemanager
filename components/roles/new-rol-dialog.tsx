@@ -1,3 +1,4 @@
+import { Permisos } from "@prisma/client";
 import { Plus } from "lucide-react";
 import { Button } from "../ui/button";
 import {
@@ -13,7 +14,7 @@ import { NewRolForm } from "./new-rol-form";
 type NewRolDialogProps = {
   isDialogOpen: boolean;
   setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
-  permisos: { id_permiso: number; nombre_permiso: string | null }[];
+  permisos: Permisos[];
 };
 
 export const NewRolDialog = ({
