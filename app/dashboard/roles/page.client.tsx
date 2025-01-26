@@ -5,6 +5,8 @@ import { EditRolDialog } from "@/components/roles/edit-rol-dialog";
 import { NewRolDialog } from "@/components/roles/new-rol-dialog";
 import { RolesTable } from "@/components/roles/roles-table";
 import { Input } from "@/components/ui/input";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import { Search } from "lucide-react";
 import React, { Suspense, useState } from "react";
@@ -20,11 +22,13 @@ interface RolWithPermissions extends Rol {
 type RolesClientPageProps = {
   roles: RolWithPermissions[];
   permisos: Permisos[];
+  user: AuthenticatedUser;
 };
 
 const RolesClientPage: React.FC<RolesClientPageProps> = ({
   roles,
   permisos,
+  user,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -67,11 +71,13 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
             isPermissionDialogOpen={isPermissionDialogOpen}
             setIsPermissionDialogOpen={setIsPermissionDialogOpen}
           /> */}
-          <NewRolDialog
-            isDialogOpen={isDialogOpen}
-            setIsDialogOpen={setIsDialogOpen}
-            permisos={permisos}
-          />
+          {hasAccess(user, Permission.CREATE_ROLES) && (
+            <NewRolDialog
+              isDialogOpen={isDialogOpen}
+              setIsDialogOpen={setIsDialogOpen}
+              permisos={permisos}
+            />
+          )}
           <EditRolDialog
             isEditDialogOpen={isEditDialogOpen}
             setIsEditDialogOpen={setIsEditDialogOpen}
@@ -88,6 +94,7 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
             filteredRoles={filteredRoles}
             setRolSelected={setRolSelected}
             setIsEditDialogOpen={setIsEditDialogOpen}
+            user={user}
           />
         </Suspense>
       </div>

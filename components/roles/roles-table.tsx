@@ -10,6 +10,8 @@ import {
 } from "@/components/ui/table";
 
 import { toast } from "@/hooks/use-toast";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import { Edit, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -35,6 +37,7 @@ type RolesTableProps = {
     React.SetStateAction<RolWithPermissions | null>
   >;
   setIsEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  user: AuthenticatedUser;
 };
 
 export const RolesTable: React.FC<RolesTableProps> = ({
@@ -42,6 +45,7 @@ export const RolesTable: React.FC<RolesTableProps> = ({
   filteredRoles,
   setRolSelected,
   setIsEditDialogOpen,
+  user,
 }) => {
   const router = useRouter();
 
@@ -140,25 +144,29 @@ export const RolesTable: React.FC<RolesTableProps> = ({
               </div>
             </TableCell>
             <TableCell className="text-right">
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  setRolSelected(role);
-                  setIsEditDialogOpen(true);
-                }}
-              >
-                <Edit className="h-4 w-4" />
-              </Button>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => {
-                  handleDelete(role);
-                }}
-              >
-                <Trash2 className="h-4 w-4" />
-              </Button>
+              {hasAccess(user, Permission.EDIT_ROLES) && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    setRolSelected(role);
+                    setIsEditDialogOpen(true);
+                  }}
+                >
+                  <Edit className="h-4 w-4" />
+                </Button>
+              )}
+              {hasAccess(user, Permission.DELETE_ROLES) && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => {
+                    handleDelete(role);
+                  }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </TableCell>
           </TableRow>
         ))}

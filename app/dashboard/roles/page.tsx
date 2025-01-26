@@ -33,5 +33,5 @@ export default async function RolesPage() {
     }
   ).then((res) => res.json());
 
-  return <RolesClientPage roles={roles} permisos={permissions} />;
+  return <RolesClientPage roles={roles} permisos={permissions} user={user}/>;
 }
