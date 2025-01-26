@@ -1,3 +1,4 @@
+import { Maintainers, Search, Transactions } from "@/app/config/site";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -17,67 +18,11 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
-import {
-  Archive,
-  ChevronUp,
-  History,
-  Printer,
-  SearchSlash,
-  Sheet,
-  Touchpad,
-  User2,
-} from "lucide-react";
+import { ChevronUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { SignOut } from "./sign-out";
-
-const mantenedoresItems = [
-  {
-    title: "Gestion de Usuarios",
-    url: "/dashboard/users",
-    icon: User2,
-  },
-  {
-    title: "Gestion de Roles y permisos",
-    url: "/dashboard/roles",
-    icon: Sheet,
-  },
-  {
-    title: "Gestión de documentos",
-    url: "/dashboard/documents",
-    icon: Touchpad,
-  },
-  {
-    title: "Gestion de Estantes",
-    url: "/dashboard/shelf",
-    icon: Archive,
-  },
-];
-
-const busquedaItems = [
-  {
-    title: "Busqueda",
-    url: "/dashboard/search",
-    icon: SearchSlash,
-  },
-];
-
-const prestamosItems = [
-  {
-    title: "Transacciones",
-    url: "/dashboard/transactions",
-    icon: History,
-  },
-];
-
-/* const reportesItems = [
-  {
-    title: "Reporte de busquedas",
-    url: "/dashboard/reports/search",
-    icon: Printer,
-  },
-]; */
 
 export async function AppSidebar() {
   const session = await auth();
@@ -100,7 +45,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Mantenedores</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mantenedoresItems.map((item) => (
+              {Maintainers.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"
@@ -118,7 +63,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Busqueda</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {busquedaItems.map((item) => (
+              {Search.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"
@@ -136,7 +81,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Prestamos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {prestamosItems.map((item) => (
+              {Transactions.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"
@@ -151,7 +96,7 @@ export async function AppSidebar() {
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
-{/*           <SidebarGroupLabel>Reportes</SidebarGroupLabel>
+          {/*           <SidebarGroupLabel>Reportes</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {reportesItems.map((item) => (

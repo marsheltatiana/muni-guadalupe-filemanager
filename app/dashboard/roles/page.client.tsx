@@ -61,10 +61,10 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
           />
         </div>
         <section className="flex items-center gap-4">
-          <NewPermissionDialog
+          {/* <NewPermissionDialog
             isPermissionDialogOpen={isPermissionDialogOpen}
             setIsPermissionDialogOpen={setIsPermissionDialogOpen}
-          />
+          /> */}
           <NewRolDialog
             isDialogOpen={isDialogOpen}
             setIsDialogOpen={setIsDialogOpen}
