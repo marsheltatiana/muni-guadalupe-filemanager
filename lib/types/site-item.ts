@@ -1,5 +1,6 @@
 import { LucideProps } from "lucide-react";
 import { ForwardRefExoticComponent, RefAttributes } from "react";
+import { Permission } from "../policy";
 
 export interface SiteItem {
   title: string;
@@ -7,4 +8,5 @@ export interface SiteItem {
   icon: ForwardRefExoticComponent<
     Omit<LucideProps, "ref"> & RefAttributes<SVGSVGElement>
   >;
+  viewPolicy: Permission;
 }

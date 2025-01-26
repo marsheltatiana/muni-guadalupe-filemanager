@@ -1,4 +1,7 @@
 import { ShelfManagement } from "@/components/shelf-management";
+import { auth } from "@/lib/auth";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Contenedor, Estante, Tipo_Contenedor } from "@prisma/client";
 
 interface ContenedorWithTipo extends Contenedor {
@@ -10,6 +13,12 @@ interface EstanteWithContainers extends Estante {
 }
 
 const ShelfPage = async () => {
+  const session = await auth();
+
+  const user = session?.user as AuthenticatedUser;
+
+  if (!hasAccess(user, Permission.VIEW_SHELVES)) return;
+
   const shelfves: EstanteWithContainers[] = await fetch(
     `${process.env.APP_URL}/api/estantes`,
     {

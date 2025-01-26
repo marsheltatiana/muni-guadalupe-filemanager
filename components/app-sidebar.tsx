@@ -18,6 +18,8 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { auth } from "@/lib/auth";
+import { hasAccess } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { ChevronUp } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +33,19 @@ export async function AppSidebar() {
     redirect("/");
   }
 
-  const user = session?.user;
+  const user = session?.user as AuthenticatedUser;
+
+  const filterMaintainers = Maintainers.filter((maintainer) =>
+    hasAccess(user, maintainer.viewPolicy)
+  );
+
+  const filterSearch = Search.filter((search) =>
+    hasAccess(user, search.viewPolicy)
+  );
+
+  const filterTransactions = Transactions.filter((transaction) =>
+    hasAccess(user, transaction.viewPolicy)
+  );
 
   return (
     <Sidebar>
@@ -45,7 +59,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Mantenedores</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Maintainers.map((item) => (
+              {filterMaintainers.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"
@@ -63,7 +77,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Busqueda</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Search.map((item) => (
+              {filterSearch.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"
@@ -81,7 +95,7 @@ export async function AppSidebar() {
           <SidebarGroupLabel>Prestamos</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {Transactions.map((item) => (
+              {filterTransactions.map((item) => (
                 <SidebarMenuItem
                   key={item.title}
                   className="hover:bg-gray-100 hover:scale-105 transition-transform duration-150 ease-in-out transform-gpu"

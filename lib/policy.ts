@@ -10,7 +10,7 @@ export enum Permission {
   // User Management
   CREATE_USERS = "crear_usuarios",
   EDIT_USERS = "editar_usuarios",
-  VIEW_USERS = "ver_usuarioss",
+  VIEW_USERS = "ver_usuarios",
   DELETE_USERS = "eliminar_usuarios",
 
   // Role Management

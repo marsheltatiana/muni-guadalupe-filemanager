@@ -1,6 +1,9 @@
 import { DocumentListLoader } from "@/components/loaders/document-list-loader";
 import { TransactionForm } from "@/components/transaction-form";
 import { TransactionsTable } from "@/components/transactions-table";
+import { auth } from "@/lib/auth";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Documento, Rol, Transaccion, Usuario } from "@prisma/client";
 import { Suspense } from "react";
 
@@ -9,11 +12,17 @@ interface UserWithRol extends Usuario {
 }
 
 interface TransaccioUser extends Transaccion {
-  Usuario: Usuario,
-  Documento: Documento
+  Usuario: Usuario;
+  Documento: Documento;
 }
 
 const TransactionsPage = async () => {
+  const session = await auth();
+
+  const user = session?.user as AuthenticatedUser;
+
+  if (!hasAccess(user, Permission.CREATE_TRANSACTION)) return;
+
   const users: UserWithRol[] = await fetch(
     `${process.env.APP_URL}/api/usuarios`,
     {

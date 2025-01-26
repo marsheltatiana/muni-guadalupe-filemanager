@@ -1,6 +1,9 @@
 import { UserListLoader } from "@/components/loaders/user-list-loader";
 import { UserList } from "@/components/user-list";
 import { UserRegistrationForm } from "@/components/user-registration-form";
+import { auth } from "@/lib/auth";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Rol, Usuario } from "@prisma/client";
 import { Suspense } from "react";
 
@@ -9,6 +12,12 @@ interface UserWithRol extends Usuario {
 }
 
 const UsersPage = async () => {
+  const session = await auth();
+
+  const user = session?.user as AuthenticatedUser;
+
+  if (!hasAccess(user, Permission.VIEW_DOCUMENTS)) return;
+
   const users: UserWithRol[] = await fetch(
     `${process.env.APP_URL}/api/usuarios`,
     {

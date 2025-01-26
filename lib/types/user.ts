@@ -1,6 +1,7 @@
 export interface AuthenticatedUser {
   name: string;
   email: string;
+  image: string
   role: Rol;
 }
 
