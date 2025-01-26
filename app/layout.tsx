@@ -1,8 +1,9 @@
+import KeyPressListener from "@/components/key-press-listener";
+import { Toaster } from "@/components/ui/toaster";
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import { Toaster } from "@/components/ui/toaster";
-import KeyPressListener from "@/components/key-press-listener";
+import { SessionProvider } from "next-auth/react";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -17,7 +18,8 @@ const geistMono = localFont({
 
 export const metadata: Metadata = {
   title: "Muni Guadalupe File Manager",
-  description: "Administrador de archivos para la municipalidad distrital de Guadalupe",
+  description:
+    "Administrador de archivos para la municipalidad distrital de Guadalupe",
 };
 
 export default function RootLayout({
@@ -30,9 +32,11 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
-        <Toaster />
-        <KeyPressListener />
+        <SessionProvider>
+          {children}
+          <Toaster />
+          <KeyPressListener />
+        </SessionProvider>
       </body>
     </html>
   );

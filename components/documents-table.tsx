@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
 import { EstadoDocumento } from "@/lib/document-states";
+import { hasAccess, Permission } from "@/lib/policy";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
 import {
   ArrowUpRight,
@@ -31,6 +32,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { DocumentStateBadge } from "./document-state-badge";
+import { AuthenticatedUser } from "@/lib/types/user";
 
 interface DocumentoWithContenedorCategoria extends Documento {
   Contenedor: Contenedor;
@@ -39,10 +41,12 @@ interface DocumentoWithContenedorCategoria extends Documento {
 
 type DocumentsTableProps = {
   documents?: DocumentoWithContenedorCategoria[];
+  user: AuthenticatedUser
 };
 
 export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   documents,
+  user
 }) => {
   const router = useRouter();
 
@@ -156,58 +160,63 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                     >
                       <Copy className="h-4 w-4" />
                     </Button>
-                    <Button variant="outline" size="icon" className="ml-2">
-                      <Link
-                        href={`/dashboard/transactions?document_id=${doc.id}`}
-                      >
-                        <ArrowUpRight className="h-4 w-4" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="ml-2"
-                      onClick={async () => {
-                        const documentId = doc.id;
+                    {hasAccess(user, Permission.CREATE_TRANSACTION) && (
+                      <Button variant="outline" size="icon" className="ml-2">
+                        <Link
+                          href={`/dashboard/transactions?document_id=${doc.id}`}
+                        >
+                          <ArrowUpRight className="h-4 w-4" />
+                        </Link>
+                      </Button>
+                    )}
 
-                        try {
-                          // Llamada a la API para eliminar el documento
-                          const response = await fetch(
-                            `/api/documentos/?id=${documentId}`,
-                            {
-                              method: "DELETE",
+                    {hasAccess(user, Permission.DELETE_DOCUMENTS) && (
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        className="ml-2"
+                        onClick={async () => {
+                          const documentId = doc.id;
+
+                          try {
+                            // Llamada a la API para eliminar el documento
+                            const response = await fetch(
+                              `/api/documentos/?id=${documentId}`,
+                              {
+                                method: "DELETE",
+                              }
+                            );
+
+                            if (response.ok) {
+                              router.refresh();
+
+                              toast({
+                                title: "Documento eliminado!",
+                                description: `El documento con ID ${documentId} ha sido eliminado exitosamente.`,
+                              });
+                            } else {
+                              const errorData = await response.json();
+                              toast({
+                                title: "Error al eliminar el documento",
+                                description:
+                                  errorData.message ||
+                                  "Ocurrió un error desconocido.",
+                                variant: "destructive",
+                              });
                             }
-                          );
-
-                          if (response.ok) {
-                            router.refresh();
-
+                          } catch (error) {
                             toast({
-                              title: "Documento eliminado!",
-                              description: `El documento con ID ${documentId} ha sido eliminado exitosamente.`,
-                            });
-                          } else {
-                            const errorData = await response.json();
-                            toast({
-                              title: "Error al eliminar el documento",
+                              title: "Error de red",
                               description:
-                                errorData.message ||
-                                "Ocurrió un error desconocido.",
+                                "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
                               variant: "destructive",
                             });
                           }
-                        } catch (error) {
-                          toast({
-                            title: "Error de red",
-                            description:
-                              "No se pudo conectar al servidor. Inténtalo de nuevo más tarde.",
-                            variant: "destructive",
-                          });
-                        }
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                        }}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))

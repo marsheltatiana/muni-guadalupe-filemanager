@@ -43,20 +43,22 @@ const DocumentsPage = async () => {
         <section>
           <h3 className="font-bold text-xl">Gestion de Documentos</h3>
         </section>
-        <Dialog>
-          <DialogTrigger asChild>
-            <Button>
-              Nuevo Documento <Plus />
-            </Button>
-          </DialogTrigger>
-          <DialogContent>
-            <DocumentManagement />
-          </DialogContent>
-        </Dialog>
+        {hasAccess(user, Permission.CREATE_DOCUMENTS) && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                Nuevo Documento <Plus />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DocumentManagement />
+            </DialogContent>
+          </Dialog>
+        )}
       </section>
 
       <Suspense fallback={<DocumentListLoader />}>
-        <DocumentsTable documents={documents} />
+        <DocumentsTable documents={documents} user={user} />
       </Suspense>
     </div>
   );
