@@ -187,7 +187,7 @@ export async function AppSidebar() {
                     />
                   ) : (
                     <div className="w-6 h-6 flex items-center justify-center bg-gray-300 rounded-full hover:scale-90 transition-transform duration-150 ease-in-out transform-gpu">
-                      {user.name!.charAt(0).toUpperCase()}
+                      {user.name?.charAt(0).toUpperCase()}
                     </div>
                   )}
                   {user.name}

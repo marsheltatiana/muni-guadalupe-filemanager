@@ -1,4 +1,5 @@
 import prisma from "@/lib/db";
+import { AuthenticatedUser } from "@/lib/types/user";
 import bcrypt from "bcrypt";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -16,10 +17,18 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const user = await prisma.usuario.findUnique({
+    let user = await prisma.usuario.findUnique({
       where: { email },
       include: {
-        Rol: true,
+        Rol: {
+          include: {
+            Rol_Permisos: {
+              include: {
+                Permisos: true,
+              },
+            },
+          },
+        },
       },
     });
 
@@ -72,13 +81,43 @@ export async function POST(req: NextRequest) {
           },
         });
       }
+
+      user = await prisma.usuario.findUnique({
+        where: {
+          id_usuario: user.id_usuario,
+        },
+        include: {
+          Rol: {
+            include: {
+              Rol_Permisos: {
+                include: {
+                  Permisos: true,
+                },
+              },
+            },
+          },
+        },
+      });
     }
 
-    return NextResponse.json({
-      id: user.id_usuario.toString(),
+    if (!user) {
+      return NextResponse.json({ message: "User not found." }, { status: 404 });
+    }
+
+    const authenticadedUser: AuthenticatedUser = {
       name: user.nombre,
-      email: user.email,
-    });
+      email: email,
+      role: {
+        name: user.Rol!.nombre_rol!,
+        permissions: user.Rol!.Rol_Permisos?.map((rp) => {
+          return {
+            name: rp.Permisos!.nombre_permiso!,
+          };
+        })!,
+      },
+    };
+
+    return NextResponse.json(authenticadedUser);
   } catch (error) {
     console.error("Error in bcrypt handler:", error);
     return NextResponse.json(

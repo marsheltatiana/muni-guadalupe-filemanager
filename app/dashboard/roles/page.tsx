@@ -1,3 +1,5 @@
+import { auth } from "@/lib/auth";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import RolesClientPage from "./page.client";
 
@@ -23,6 +25,10 @@ export default async function RolesPage() {
       cache: "no-cache",
     }
   ).then((res) => res.json());
+
+  const session = await auth();
+
+  const user = session?.user as AuthenticatedUser;
 
   return <RolesClientPage roles={roles} permisos={permissions} />;
 }

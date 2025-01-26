@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import Credentials from "next-auth/providers/credentials";
 import Google from "next-auth/providers/google";
+import { AuthenticatedUser } from "./types/user";
 
 export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [
@@ -22,7 +23,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             throw new Error("Invalid credentials.");
           }
 
-          const user = await response.json();
+          const user: AuthenticatedUser = await response.json();
 
           return user;
         } catch (error) {
@@ -36,4 +37,22 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       },
     }),
   ],
+  callbacks: {
+    jwt: async ({ token, user }) => {
+      if (user) {
+        token.role = (user as AuthenticatedUser).role;
+      }
+      return token;
+    },
+    session: async ({ session, token }) => {
+      const sessionExtended = {
+        ...session,
+        user: {
+          ...session.user,
+          role: token.role,
+        },
+      };
+      return sessionExtended;
+    },
+  },
 });
