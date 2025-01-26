@@ -1,5 +1,6 @@
 import { toast } from "@/hooks/use-toast";
 import { Permisos, Rol } from "@prisma/client";
+import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { Button } from "../ui/button";
 import { Checkbox } from "../ui/checkbox";
@@ -18,6 +19,8 @@ export const NewRolForm: React.FC<RoleFormProps> = ({ permisos }) => {
     nombre_rol: "",
     descripcion: "",
   });
+
+  const router = useRouter();
 
   const [persmisosSeleccionados, setPersmisosSeleccionados] = useState<
     number[]
@@ -50,6 +53,8 @@ export const NewRolForm: React.FC<RoleFormProps> = ({ permisos }) => {
         variant: "destructive",
       });
     }
+
+    router.refresh();
   };
 
   return (
