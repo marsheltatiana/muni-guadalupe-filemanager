@@ -55,6 +55,7 @@ model Estante {
 model Permisos {
   id_permiso     Int            @id @default(autoincrement())
   nombre_permiso String?        @db.VarChar(255)
+  categoria      String?        @db.VarChar(20)
   Rol_Permisos   Rol_Permisos[]
 }
 
