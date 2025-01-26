@@ -1,7 +1,6 @@
 "use client";
 
 import { RoleListLoader } from "@/components/loaders/role-list-loader";
-import { NewPermissionDialog } from "@/components/permissions/new-permission-dialog";
 import { EditRolDialog } from "@/components/roles/edit-rol-dialog";
 import { NewRolDialog } from "@/components/roles/new-rol-dialog";
 import { RolesTable } from "@/components/roles/roles-table";
@@ -46,12 +45,11 @@ const RolesClientPage: React.FC<RolesClientPageProps> = ({
   );
 
   return (
-    <div className="container p-6 w-fit">
-      <h1 className="text-3xl font-bold mb-6">Gestión de roles y permisos</h1>
-
+    <div className="container w-fit">
+      <h3 className="font-bold text-xl">Gestión de roles y permisos</h3>
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-4 mb-6">
         <div className="relative w-full md:w-fit top-2 mr-3">
-          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400" />
+          <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 " width={14} height={14}/>
           <Input
             type="text"
             placeholder="Buscar roles..."

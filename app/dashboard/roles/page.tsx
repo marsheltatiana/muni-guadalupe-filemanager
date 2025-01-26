@@ -13,6 +13,12 @@ interface RolWithPermissions extends Rol {
 }
 
 export default async function RolesPage() {
+  const session = await auth();
+
+  const user = session?.user as AuthenticatedUser;
+
+  if (!hasAccess(user, Permission.VIEW_ROLES)) return;
+
   const roles: RolWithPermissions[] = await fetch(
     `${process.env.APP_URL}/api/roles`,
     {
@@ -26,12 +32,6 @@ export default async function RolesPage() {
       cache: "no-cache",
     }
   ).then((res) => res.json());
-
-  const session = await auth();
-
-  const user = session?.user as AuthenticatedUser;
-
-  if (!hasAccess(user, Permission.VIEW_ROLES)) return;
 
   return <RolesClientPage roles={roles} permisos={permissions} />;
 }
