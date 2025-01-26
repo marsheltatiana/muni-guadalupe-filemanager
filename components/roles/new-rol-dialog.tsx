@@ -29,14 +29,14 @@ export const NewRolDialog = ({
           <Plus className="mr-2 h-4 w-4" /> Añadir Rol
         </Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[725px]">
         <DialogHeader>
           <DialogTitle>Añadir Nuevo Rol</DialogTitle>
           <DialogDescription>
             Crea un nuevo rol y asigna permisos
           </DialogDescription>
         </DialogHeader>
-        <NewRolForm permisos={permisos} />
+        <NewRolForm permissions={permisos} />
       </DialogContent>
     </Dialog>
   );
