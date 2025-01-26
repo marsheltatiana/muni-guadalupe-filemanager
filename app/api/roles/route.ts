@@ -100,7 +100,14 @@ export async function PUT(request: NextRequest) {
 }
 
 export async function DELETE(request: NextRequest) {
-  const { id } = await request.json();
+  const id = Number(request.nextUrl.searchParams.get("id"));
+
+  if (!id) {
+    return NextResponse.json(
+      { message: "ID de rol no proporcionado" },
+      { status: 400 }
+    );
+  }
 
   const rol = await prisma.rol.delete({
     where: {
