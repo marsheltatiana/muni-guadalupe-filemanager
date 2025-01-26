@@ -113,6 +113,9 @@ export async function DELETE(request: NextRequest) {
     where: {
       id_rol: id,
     },
+    include: {
+      Rol_Permisos: true
+    }
   });
 
   if (!rol) {
