@@ -37,7 +37,7 @@ const ShelfPage = async () => {
     }
   ).then((res) => res.json());
 
-  return <ShelfManagement shelves={shelfves} containerTypes={containerTypes} />;
+  return <ShelfManagement shelves={shelfves} containerTypes={containerTypes} user={user} />;
 };
 
 export default ShelfPage;

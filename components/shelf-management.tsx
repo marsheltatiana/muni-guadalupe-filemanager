@@ -16,6 +16,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { toast } from "@/hooks/use-toast";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { createContainerSchema, createShelfSchema } from "@/lib/zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Contenedor, Estante, Tipo_Contenedor } from "@prisma/client";
@@ -69,11 +71,13 @@ interface EstanteWithContainers extends Estante {
 type ShelfManagementProps = {
   shelves: EstanteWithContainers[];
   containerTypes: Tipo_Contenedor[];
+  user: AuthenticatedUser;
 };
 
 export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   shelves,
   containerTypes,
+  user,
 }) => {
   const router = useRouter();
 
@@ -92,7 +96,7 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   );
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
 
-  const filteredShelves = shelves.filter((shelf) =>
+  const filteredShelves = shelves?.filter((shelf) =>
     shelf.nombre_estante?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -609,11 +613,9 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   );
 
   return (
-    <div className="p-4 space-y-4 min-h-screen">
+    <div className="space-y-4 min-h-screen">
       <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-6 space-y-3">
-        <h2 className="text-3xl font-bold text-gray-800">
-          Gestión de Estantes
-        </h2>
+        <h3 className="font-bold text-xl">Gestión de Estantes</h3>
         <div className="flex space-x-2">
           <Button
             variant={viewMode === "tree" ? "default" : "outline"}
@@ -629,10 +631,12 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
           >
             <Grid className="h-4 w-4" />
           </Button>
-          <Button onClick={() => setIsNewShelfDialogOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Nuevo Estante
-          </Button>
+          {hasAccess(user, Permission.CREATE_SHELVES) && (
+            <Button onClick={() => setIsNewShelfDialogOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Nuevo Estante
+            </Button>
+          )}
         </div>
       </div>
       <div className="relative mb-6 w-full lg:w-[45%]">
