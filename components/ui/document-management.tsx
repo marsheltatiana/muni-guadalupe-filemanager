@@ -137,7 +137,7 @@ export function DocumentManagement() {
   };
 
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card className="w-full max-w-2xl mx-auto border-0 shadow-none">
       <CardHeader>
         <CardTitle>Registro de Documento</CardTitle>
         <CardDescription>

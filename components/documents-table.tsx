@@ -60,7 +60,7 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   const uniqueYears = Array.from(new Set(documents?.map((doc) => doc.anio)));
 
   return (
-    <div className="w-full p-4">
+    <div className="w-full">
       <div className="flex items-center justify-between mb-4">
         <Input
           placeholder="Buscar documentos..."

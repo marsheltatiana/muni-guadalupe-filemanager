@@ -1,10 +1,13 @@
 import { DocumentsTable } from "@/components/documents-table";
 import { DocumentListLoader } from "@/components/loaders/document-list-loader";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { DocumentManagement } from "@/components/ui/document-management";
 import { auth } from "@/lib/auth";
 import { hasAccess, Permission } from "@/lib/policy";
 import { AuthenticatedUser } from "@/lib/types/user";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
+import { Plus } from "lucide-react";
 import { Suspense } from "react";
 
 interface DocumentoWithContenedorCategoria extends Documento {
@@ -35,8 +38,22 @@ const DocumentsPage = async () => {
     });
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-2">
-      <DocumentManagement />
+    <div className="w-full flex flex-col space-y-3">
+      <section className="flex justify-between">
+        <section>
+          <h3 className="font-bold text-xl">Gestion de Documentos</h3>
+        </section>
+        <Dialog>
+          <DialogTrigger asChild>
+            <Button>
+              Nuevo Documento <Plus />
+            </Button>
+          </DialogTrigger>
+          <DialogContent>
+            <DocumentManagement />
+          </DialogContent>
+        </Dialog>
+      </section>
 
       <Suspense fallback={<DocumentListLoader />}>
         <DocumentsTable documents={documents} />
