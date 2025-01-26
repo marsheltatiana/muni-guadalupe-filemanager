@@ -19,6 +19,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { EstadoDocumento } from "@/lib/document-states";
 import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Categoria_Documento, Contenedor, Documento } from "@prisma/client";
 import {
   ArrowUpRight,
@@ -32,7 +33,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 import { DocumentStateBadge } from "./document-state-badge";
-import { AuthenticatedUser } from "@/lib/types/user";
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "./ui/hover-card";
 
 interface DocumentoWithContenedorCategoria extends Documento {
   Contenedor: Contenedor;
@@ -41,12 +42,12 @@ interface DocumentoWithContenedorCategoria extends Documento {
 
 type DocumentsTableProps = {
   documents?: DocumentoWithContenedorCategoria[];
-  user: AuthenticatedUser
+  user: AuthenticatedUser;
 };
 
 export const DocumentsTable: React.FC<DocumentsTableProps> = ({
   documents,
-  user
+  user,
 }) => {
   const router = useRouter();
 
@@ -116,7 +117,42 @@ export const DocumentsTable: React.FC<DocumentsTableProps> = ({
                       {doc.nombre}
                     </div>
                   </TableCell>
-                  <TableCell>{doc.descripcion?.slice(0, 20)}...</TableCell>
+                  <TableCell>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          className="h-auto w-full px-0 hover:bg-transparent"
+                        >
+                          <div className="flex items-center gap-2 text-left">
+                            {doc.descripcion ? (
+                              <span className="text-sm text-muted-foreground">
+                                {doc.descripcion.length > 30
+                                  ? `${doc.descripcion.slice(0, 30)}...`
+                                  : doc.descripcion}
+                              </span>
+                            ) : (
+                              <span className="text-sm text-muted-foreground/60 italic">
+                                Sin descripción
+                              </span>
+                            )}
+                          </div>
+                        </Button>
+                      </HoverCardTrigger>
+                      {doc.descripcion && doc.descripcion.length > 30 && (
+                        <HoverCardContent className="w-80">
+                          <div className="space-y-2">
+                            <h4 className="text-sm font-semibold">
+                              Descripción completa
+                            </h4>
+                            <p className="text-sm text-muted-foreground">
+                              {doc.descripcion}
+                            </p>
+                          </div>
+                        </HoverCardContent>
+                      )}
+                    </HoverCard>
+                  </TableCell>
                   <TableCell>{doc.anio}</TableCell>
                   <TableCell>
                     {doc.estado && doc.estado ? (
