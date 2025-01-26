@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import {
@@ -13,6 +12,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { toast } from "@/hooks/use-toast";
+import { hasAccess, Permission } from "@/lib/policy";
+import { AuthenticatedUser } from "@/lib/types/user";
 import { Rol, Usuario } from "@prisma/client";
 import { Edit, Search, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -26,9 +27,14 @@ interface UserWithRol extends Usuario {
 interface UserListProps {
   className?: string;
   users: UserWithRol[];
+  user: AuthenticatedUser;
 }
 
-export const UserList: React.FC<UserListProps> = ({ className, users }) => {
+export const UserList: React.FC<UserListProps> = ({
+  className,
+  users,
+  user: authUser,
+}) => {
   const router = useRouter();
 
   const [newUser, setNewUser] = useState({
@@ -94,13 +100,10 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
   );
 
   return (
-    <Card className={className}>
-      <CardHeader>
-        <CardTitle className="text-2xl">Lista de Usuarios</CardTitle>
-      </CardHeader>
-      <CardContent>
+    <div className={className}>
+      <section>
         {/* Búsqueda */}
-        <div className="mb-6">
+        <div className="mb-6 w-full">
           <div className="relative">
             <Search className="absolute left-2 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
             <Input
@@ -108,7 +111,7 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
               placeholder="Buscar usuarios..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-8"
+              className="pl-8 w-full md:max-w-72"
             />
           </div>
         </div>
@@ -138,30 +141,34 @@ export const UserList: React.FC<UserListProps> = ({ className, users }) => {
                     </span>
                   </TableCell>
                   <TableCell className="text-right">
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button variant="ghost" size="icon" className="mr-2">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <UserUpdateForm user={user} />
-                      </DialogContent>
-                    </Dialog>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => handleDeleteUser(user.id_usuario)}
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    {hasAccess(authUser, Permission.EDIT_USERS) && (
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="icon" className="mr-2">
+                            <Edit className="h-4 w-4" />
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <UserUpdateForm user={user} />
+                        </DialogContent>
+                      </Dialog>
+                    )}
+                    {hasAccess(authUser, Permission.DELETE_USERS) && (
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => handleDeleteUser(user.id_usuario)}
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    )}
                   </TableCell>
                 </TableRow>
               ))}
             </TableBody>
           </Table>
         </div>
-      </CardContent>
-    </Card>
+      </section>
+    </div>
   );
 };
