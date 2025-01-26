@@ -12,6 +12,7 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Permisos, Rol, Rol_Permisos } from "@prisma/client";
 import { Edit, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 interface Rol_PermisosWithPermiso extends Rol_Permisos {
@@ -37,6 +38,8 @@ export const RolesTable: React.FC<RolesTableProps> = ({
   setRolSelected,
   setIsEditDialogOpen,
 }) => {
+  const router = useRouter();
+
   const handleDelete = async (role: RolWithPermissions) => {
     await fetch(`/api/roles?id=${role.id_rol}`, {
       method: "DELETE",
@@ -61,6 +64,9 @@ export const RolesTable: React.FC<RolesTableProps> = ({
           description: `Causa: ${e.message}`,
           variant: "destructive",
         });
+      })
+      .finally(() => {
+        router.refresh();
       });
   };
 
@@ -99,9 +105,13 @@ export const RolesTable: React.FC<RolesTableProps> = ({
               >
                 <Edit className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="icon" onClick={() => {
-                handleDelete(role);
-              }}>
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => {
+                  handleDelete(role);
+                }}
+              >
                 <Trash2 className="h-4 w-4" />
               </Button>
             </TableCell>
