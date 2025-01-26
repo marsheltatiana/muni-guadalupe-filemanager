@@ -24,13 +24,17 @@ interface RolWithPermissions extends Rol {
 type RolesTableProps = {
   roles: RolWithPermissions[];
   filteredRoles: RolWithPermissions[];
-  setIsDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  setRolSelected: React.Dispatch<
+    React.SetStateAction<RolWithPermissions | null>
+  >;
+  setIsEditDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export const RolesTable: React.FC<RolesTableProps> = ({
   roles,
   filteredRoles,
-  setIsDialogOpen,
+  setRolSelected,
+  setIsEditDialogOpen,
 }) => {
   return (
     <Table>
@@ -60,9 +64,9 @@ export const RolesTable: React.FC<RolesTableProps> = ({
               <Button
                 variant="ghost"
                 size="icon"
-                disabled
                 onClick={() => {
-                  setIsDialogOpen(true);
+                  setRolSelected(role);
+                  setIsEditDialogOpen(true);
                 }}
               >
                 <Edit className="h-4 w-4" />

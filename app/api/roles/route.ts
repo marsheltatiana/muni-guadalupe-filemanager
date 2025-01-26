@@ -16,7 +16,7 @@ export async function GET(request: NextRequest) {
       },
     },
   });
-  
+
   if (roles.length === 0) {
     return NextResponse.json(
       { message: "No hay roles registrados." },
@@ -71,13 +71,14 @@ export async function PUT(request: NextRequest) {
     permisos: number[];
   } = await request.json();
 
-  const { id_rol, descripcion } = rol;
+  const { id_rol, nombre_rol, descripcion } = rol;
 
   const rolactualizado = await prisma.rol.update({
     where: {
       id_rol,
     },
     data: {
+      nombre_rol,
       descripcion,
       Rol_Permisos: {
         deleteMany: {},
@@ -96,4 +97,23 @@ export async function PUT(request: NextRequest) {
   }
 
   return NextResponse.json(rolactualizado, { status: 200 });
+}
+
+export async function DELETE(request: NextRequest) {
+  const { id } = await request.json();
+
+  const rol = await prisma.rol.delete({
+    where: {
+      id_rol: id,
+    },
+  });
+
+  if (!rol) {
+    return NextResponse.json(
+      { message: "No se pudo eliminar el rol." },
+      { status: 500 }
+    );
+  }
+
+  return NextResponse.json(rol, { status: 200 });
 }
