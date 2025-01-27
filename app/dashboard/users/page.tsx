@@ -34,7 +34,7 @@ const UsersPage = async () => {
         <section>
           <h3 className="font-bold text-xl">Gestion de Usuarios</h3>
         </section>
-        {hasAccess(user, Permission.CREATE_DOCUMENTS) && (
+        {hasAccess(user, Permission.CREATE_USERS) && (
           <Dialog>
             <DialogTrigger asChild>
               <Button>
