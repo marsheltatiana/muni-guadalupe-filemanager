@@ -1,10 +1,13 @@
 import { DocumentListLoader } from "@/components/loaders/document-list-loader";
 import { TransactionForm } from "@/components/transaction-form";
 import { TransactionsTable } from "@/components/transactions-table";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
 import { auth } from "@/lib/auth";
 import { hasAccess, Permission } from "@/lib/policy";
 import { AuthenticatedUser } from "@/lib/types/user";
 import { Documento, Rol, Transaccion, Usuario } from "@prisma/client";
+import { Plus } from "lucide-react";
 import { Suspense } from "react";
 
 interface UserWithRol extends Usuario {
@@ -40,13 +43,27 @@ const TransactionsPage = async () => {
     .catch((e) => console.error(e));
 
   return (
-    <div className="grid grid-cols-1 lg:grid-cols-12 gap-3">
-      <TransactionForm usuarios={users} className="lg:col-span-4" />
+    <div className="w-full flex flex-col space-y-3">
+      <section className="w-full flex justify-between">
+        <section>
+          <h3 className="font-bold text-xl">Gestion de Transacciones</h3>
+        </section>
+        {hasAccess(user, Permission.CREATE_TRANSACTION) && (
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button>
+                Nueva Transacción <Plus />
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <TransactionForm usuarios={users} className="lg:col-span-4" />
+            </DialogContent>
+          </Dialog>
+        )}
+      </section>
+
       <Suspense fallback={<DocumentListLoader />}>
-        <TransactionsTable
-          transacciones={transacciones}
-          className="lg:col-span-8"
-        />
+        <TransactionsTable transacciones={transacciones} />
       </Suspense>
     </div>
   );

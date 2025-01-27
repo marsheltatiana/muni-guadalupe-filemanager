@@ -128,10 +128,10 @@ export function TransactionForm({
   useEffect(() => {
     const tipoTransaccion = form.watch("tipo_transaccion");
     setIsDevolucion(tipoTransaccion === "DEVOLUCION");
-  }, [form.watch("tipo_transaccion")]);
+  }, [form]);
 
   return (
-    <Card className={cn("w-full max-w-lg mb-3", className)}>
+    <Card className={cn("w-full shadow-none border-0", className)}>
       <CardHeader>
         <CardTitle>Registro nueva transacción</CardTitle>
         <CardDescription>
