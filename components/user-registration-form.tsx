@@ -35,15 +35,14 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 
 const formSchema = z.object({
-  name: z.string().min(2, {
-    message: "El nombre debe tener al menos 2 caracteres.",
-  }),
+  name: z.string().nonempty("El nombre es obligatorio"),
   email: z.string().email({
     message: "Debe ser un correo electrónico válido.",
   }),
-  password: z.string().min(8, {
-    message: "La contraseña debe tener al menos 8 caracteres.",
-  }),
+  password: z
+    .string()
+    .min(10, "Debe tener al menos 10 caracteres")
+    .max(32, "Debe tener menos de 32 caracteres"),
   role: z.string({
     required_error: "Por favor seleccione un rol.",
   }),
