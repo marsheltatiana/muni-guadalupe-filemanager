@@ -97,7 +97,7 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
 
   const filteredShelves = shelves?.filter((shelf) =>
-    shelf.nombre_estante?.toLowerCase().includes(searchTerm.toLowerCase())
+    shelf.nombre_estante?.toLowerCase().includes(searchTerm.toLowerCase()) || shelf.Contenedor.some((container) => container.nombre?.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const toggleShelfExpansion = (shelfId: number) => {
