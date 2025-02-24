@@ -9,8 +9,14 @@ export async function GET(request: NextRequest) {
           include: {
             Tipo_Contenedor: true,
           },
+          orderBy: {
+            id_contenedor: "desc",
+          }
         },
       },
+      orderBy: {
+        id_estante: "desc",
+      }
     });
 
     if (!estantes) {

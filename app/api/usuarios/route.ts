@@ -7,6 +7,9 @@ export async function GET(request: NextRequest) {
     include: {
       Rol: true,
     },
+    orderBy: {
+      id_usuario: "desc",
+    },
   });
 
   if (users.length === 0) {

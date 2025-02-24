@@ -3,7 +3,11 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(request: NextRequest) {
   try {
-    const permisos = await prisma.permisos.findMany();
+    const permisos = await prisma.permisos.findMany({
+      orderBy: {
+        id_permiso: "desc",
+      },
+    });
 
     if (permisos.length === 0) {
       return NextResponse.json(
