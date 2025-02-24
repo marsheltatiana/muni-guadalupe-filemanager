@@ -96,8 +96,12 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
   );
   const [selectedShelfId, setSelectedShelfId] = useState<number | null>(null);
 
-  const filteredShelves = shelves?.filter((shelf) =>
-    shelf.nombre_estante?.toLowerCase().includes(searchTerm.toLowerCase()) || shelf.Contenedor.some((container) => container.nombre?.toLowerCase().includes(searchTerm.toLowerCase()))
+  const filteredShelves = shelves?.filter(
+    (shelf) =>
+      shelf.nombre_estante?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      shelf.Contenedor.some((container) =>
+        container.nombre?.toLowerCase().includes(searchTerm.toLowerCase())
+      )
   );
 
   const toggleShelfExpansion = (shelfId: number) => {
@@ -766,11 +770,11 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                     <FormLabel>Año</FormLabel>
                     <FormControl>
                       <Input
-                        type="text"
+                        type="number"
                         {...field}
                         maxLength={4}
-                        pattern="202[4-9]"
-                        placeholder="2024"
+                        min={1800}
+                        placeholder="2025"
                       />
                     </FormControl>
                     <FormMessage />
@@ -784,7 +788,12 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                   <FormItem>
                     <FormLabel>Fila</FormLabel>
                     <FormControl>
-                      <Input placeholder="Fila del contenedor" {...field} />
+                      <Input
+                        placeholder="Fila del contenedor"
+                        {...field}
+                        type="number"
+                        min={1}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -797,7 +806,12 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
                   <FormItem>
                     <FormLabel>Columna</FormLabel>
                     <FormControl>
-                      <Input placeholder="Columna del contenedor" {...field} />
+                      <Input
+                        placeholder="Columna del contenedor"
+                        {...field}
+                        type="number"
+                        min={1}
+                      />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
