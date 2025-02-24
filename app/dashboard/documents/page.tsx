@@ -1,4 +1,5 @@
 import { DocumentsTable } from "@/components/documents-table";
+import { CreateDocumentDialog } from "@/components/documents/create-document-dialog";
 import { DocumentListLoader } from "@/components/loaders/document-list-loader";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTrigger } from "@/components/ui/dialog";
@@ -44,16 +45,7 @@ const DocumentsPage = async () => {
           <h3 className="font-bold text-xl">Gestion de Documentos</h3>
         </section>
         {hasAccess(user, Permission.CREATE_DOCUMENTS) && (
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button>
-                Nuevo Documento <Plus />
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DocumentManagement />
-            </DialogContent>
-          </Dialog>
+          <CreateDocumentDialog />
         )}
       </section>
 

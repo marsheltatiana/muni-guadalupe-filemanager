@@ -25,13 +25,17 @@ import { PutBlobResult } from "@vercel/blob";
 import { upload } from "@vercel/blob/client";
 import { FileText, Upload } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface EstanteWithContainers extends Estante {
   Contenedor: Contenedor[];
 }
 
-export function DocumentManagement() {
+type DocumentManagementProps = {
+  setIsOpen: (isOpen: boolean) => void;
+};
+
+export function DocumentManagement({ setIsOpen }: DocumentManagementProps) {
   const router = useRouter();
 
   const [shelves, setShelves] = useState<EstanteWithContainers[]>([]);
@@ -70,6 +74,8 @@ export function DocumentManagement() {
       setSelectedFile(e.target.files[0]);
     }
   };
+
+  const formRef = useRef<HTMLFormElement>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -125,7 +131,13 @@ export function DocumentManagement() {
         description: `El documento se registró en ${timeInSeconds} segundos`,
         variant: "default",
       });
+
+      formRef.current?.reset();
+      setSelectedFile(null);
+
       router.refresh();
+
+      setIsOpen(false);
     } catch (error) {
       toast({
         title: "Error al registrar el documento",
@@ -145,7 +157,7 @@ export function DocumentManagement() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <form onSubmit={handleSubmit} className="space-y-6">
+        <form onSubmit={handleSubmit} className="space-y-6" ref={formRef}>
           <div className="grid gap-4">
             <div className="grid gap-2">
               <Label htmlFor="documentName">Nombre del documento</Label>
