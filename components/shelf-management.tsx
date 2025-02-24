@@ -175,6 +175,8 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
         description: "Estante creado correctamente ✅",
       });
 
+      shelfForm.reset();
+
       router.refresh();
     } catch (error) {
       toast({
