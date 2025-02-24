@@ -206,6 +206,8 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
         description: "Contenedor creado correctamente ✅",
       });
 
+      containerForm.reset();
+
       router.refresh();
     } catch (error) {
       console.error("Error creating container:", error);
@@ -236,6 +238,8 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
         title: "Éxito 🎉",
         description: "Contenedor actualizado correctamente ✅",
       });
+
+      editContainerForm.reset();
 
       router.refresh();
 
