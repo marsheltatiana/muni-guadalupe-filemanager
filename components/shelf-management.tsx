@@ -234,6 +234,8 @@ export const ShelfManagement: React.FC<ShelfManagementProps> = ({
       });
 
       router.refresh();
+
+      setIsEditContainerDialogOpen(false);
     } catch (error) {
       toast({
         title: "Error 😞",
