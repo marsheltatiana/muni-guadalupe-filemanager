@@ -1,44 +1,36 @@
 "use client";
 
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import Link from "next/link";
 import { SignInForm } from "./signin-form";
 
 export function ProfileForm() {
   return (
-    <Card className="w-full md:max-w-[450px]">
-      <CardHeader>
-        <CardTitle>Municipalidad Distrital de Guadalupe</CardTitle>
-        <CardDescription>
-          Inicia sesión para acceder al archivo general
-        </CardDescription>
-      </CardHeader>
-      <CardContent className="space-y-3">
+    <div className="w-full max-w-sm duration-700 fade-in motion-safe:animate-in">
+      <h2 className="font-[family-name:var(--font-display)] text-3xl font-semibold tracking-tight">
+        Inicia sesión
+      </h2>
+      <p className="mt-2 text-sm text-muted-foreground">
+        Usa tu correo institucional para entrar al archivo.
+      </p>
+      <div className="mt-8">
         <SignInForm />
-      </CardContent>
-      <CardFooter className="flex gap-3">
-        <Link href={"#"}>
-          <span className="text-sm text-primary underline-offset-4 underline">
-            ¿Olvidaste tu contraseña?
-          </span>
+      </div>
+      <div className="mt-6 flex flex-wrap items-center justify-between gap-x-6 gap-y-2 text-sm">
+        <Link
+          href={"#"}
+          className="rounded-sm text-foreground underline underline-offset-4 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          ¿Olvidaste tu contraseña?
         </Link>
         <Link
           href="https://muni-guadalupe-filemanager-documentacion.vercel.app/"
           target="_blank"
           rel="noopener noreferrer"
+          className="rounded-sm text-muted-foreground underline-offset-4 hover:text-foreground hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          <span className="text-sm text-primary underline-offset-4">
-            Ayuda en linea
-          </span>
+          Ayuda en línea
         </Link>
-      </CardFooter>
-    </Card>
+      </div>
+    </div>
   );
 }
